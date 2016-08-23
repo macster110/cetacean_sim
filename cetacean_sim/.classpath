@@ -9,5 +9,7 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="src/jars/jts-1.14.jar" sourcepath="src/jars/jts-1.14-sources.jar"/>
+	<classpathentry kind="lib" path="src/jars/edu-mines-jtk-1.0.0.jar"/>
+	<classpathentry kind="lib" path="src/jars/controlsfx-8.40.11.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

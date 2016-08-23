@@ -1,5 +1,7 @@
 package bathymetry;
 
+import layout.utils.SettingsPane;
+
 /**
  * Really simple Bathymetry whihc is just a single depth. 
  * @author Jamie Macaulay
@@ -8,15 +10,35 @@ package bathymetry;
 public class BasthymetrySimple implements BathymetryType {
 
 	@Override
-	public void changeSettings() {
+	public void loadBathy() {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public double[][] getBathySurface() {
+	public double[][] getDepthSurface() {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public double getDepth(double x, double y) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public String getName() {
+		// TODO Auto-generated method stub
+		return "Simple Bathmetry";
+	}
+
+	@Override
+	public SettingsPane getSettingsPane() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
 
 }

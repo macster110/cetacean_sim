@@ -7,9 +7,13 @@ import java.text.DecimalFormatSymbols;
 
 public class CSVReader {
 
-	public static double[][] readCSV() {
+	/**
+	 * Load a csv file and return data. The csv file must have a uniform number of columns. 
+	 * @param csvFile - the csv file to load
+	 * @return data in csv file. 
+	 */
+	public static double[][] readCSV(String csvFile) {
 
-		String csvFile = "E:/Google Drive/SMRU_research/Kyle Rhea 2014/bathymetry_data/Kyle Rhea Bthy.csv";
 		String line = "";
 		String cvsSplitBy = ",";
 
