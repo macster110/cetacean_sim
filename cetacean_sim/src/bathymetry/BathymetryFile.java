@@ -10,7 +10,7 @@ import utils.CSVReader;
  * @author Jamie Macaulay 
  *
  */
-public class BathymetryFile implements BathymetryType {
+public class BathymetryFile implements BathymetryModel {
 	
 	private CetSimControl cetSimControl;
 	

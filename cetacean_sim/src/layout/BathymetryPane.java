@@ -6,8 +6,10 @@ import org.controlsfx.glyphfont.Glyph;
 
 import bathymetry.BasthymetrySimple;
 import bathymetry.BathymetryFile;
-import bathymetry.BathymetryType;
+import bathymetry.BathymetryModel;
 import cetaceanSim.CetSimControl;
+import de.jensd.fx.glyphs.GlyphsDude;
+import de.jensd.fx.glyphs.materialicons.MaterialIcon;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Button;
@@ -15,6 +17,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import javafx.util.StringConverter;
 
 /**
@@ -24,17 +27,21 @@ import javafx.util.StringConverter;
  */
 public class BathymetryPane extends BorderPane {
 	
+	/**
+	 * Reference to the GUI. 
+	 */
 	private CetSimView cetSimView;
 	
 	/**
 	 * Allows user to select bathymetry type. 
 	 */
-	private ComboBox<BathymetryType> comboBathy; 
+	private ComboBox<BathymetryModel> comboBathy; 
 	
 	/**
 	 * Holds a list of bathymetry types
 	 */
-	private ObservableList<BathymetryType> bathyList;
+	private ObservableList<BathymetryModel> bathyList;
+	
 
 	/**
 	 * The main holder 
@@ -48,9 +55,9 @@ public class BathymetryPane extends BorderPane {
 		this.cetSimView=cetSimView; 
 		
 		//Bathymetry List//
-		ArrayList<BathymetryType> bathyList= new ArrayList<BathymetryType>(); 
+		ArrayList<BathymetryModel> bathyList= new ArrayList<BathymetryModel>(); 
 		bathyList.add(new BasthymetrySimple());
-		bathyList.add(new BathymetryFile());
+		bathyList.add(new BathymetryFile(cetSimView.getCetSimControl()));
 		this.bathyList=FXCollections.observableArrayList(bathyList); 
 		/////////////////
 		
@@ -59,18 +66,21 @@ public class BathymetryPane extends BorderPane {
 		
 	}
 	
-	public void createBathyPane(){
+	/**
+	 * Create the basic controls for the bathymetry pane. 
+	 */
+	private void createBathyPane(){
 		
 		HBox comboHBox=new HBox();
 		comboHBox.setSpacing(5);
 	
-		comboBathy=new ComboBox<BathymetryType>();
+		comboBathy=new ComboBox<BathymetryModel>();
 		comboBathy.setItems(bathyList);
 		
 		//show name of the bathymetry type in the combo box
-		comboBathy.setConverter(new StringConverter<BathymetryType>() {
+		comboBathy.setConverter(new StringConverter<BathymetryModel>() {
 			@Override
-			public String toString(BathymetryType user) {
+			public String toString(BathymetryModel user) {
 				if (user== null){
 					return null;
 				} else {
@@ -79,7 +89,7 @@ public class BathymetryPane extends BorderPane {
 			}
 
 			@Override
-			public BathymetryType fromString(String id) {
+			public BathymetryModel fromString(String id) {
 				return null;
 			}
 		});
@@ -90,7 +100,7 @@ public class BathymetryPane extends BorderPane {
 		});
 		
 		
-        Glyph graphic = Glyph.create( "FontAwesome|DOWNLOAD").sizeFactor(2).color(Color.GRAY);
+        Text graphic = GlyphsDude.createIcon(MaterialIcon.ARROW_DOWNLOAD);
         Button buttonLoad=new Button();
         comboBathy.prefHeightProperty().bind(buttonLoad.heightProperty());
         buttonLoad.setGraphic(graphic);

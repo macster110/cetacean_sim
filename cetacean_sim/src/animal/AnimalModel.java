@@ -1,12 +1,27 @@
 package animal;
 
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.StringProperty;
+
 /**
  * Defines a animal in the simulation
  * @author Jamie Macaulay 
  *
  */
-public interface AnimalType {
+public interface AnimalModel {
 	
+		/**
+		 * The name fo the animal type
+		 * @return the 
+		 */
+		public StringProperty sensorNameProperty();
+		
+		/**
+		 * The number of these animals in the simulation
+		 * @return the number property for the nu,ber of animals in the simulations
+		 */
+		public IntegerProperty numberAnimalsameProperty();
+		
 		/**
 		 * Get the track of the animal. 
 		 * @return the track of an animal. 
@@ -37,6 +52,8 @@ public interface AnimalType {
 		 * @return an array of vocalisation starts times and amplitude in dB re 1uPa
 		 */
 		double[][] getVocSeries(long timeStart, long longTimeEnd);
+
+		
 	
 
 

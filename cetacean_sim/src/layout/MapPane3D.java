@@ -19,6 +19,7 @@ import javafx.scene.shape.MeshView;
 import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
+import layout.utils.SurfacePlot;
 
 /**
  * Shows a 3D map. Bathymetry etc can be added.  

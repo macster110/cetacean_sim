@@ -7,7 +7,7 @@ import layout.utils.SettingsPane;
  * @author Jamie Macaulay
  *
  */
-public class BasthymetrySimple implements BathymetryType {
+public class BasthymetrySimple implements BathymetryModel {
 
 	@Override
 	public void loadBathy() {
@@ -16,7 +16,7 @@ public class BasthymetrySimple implements BathymetryType {
 	}
 
 	@Override
-	public double[][] getDepthSurface() {
+	public float[][] getDepthSurface() {
 		// TODO Auto-generated method stub
 		return null;
 	}

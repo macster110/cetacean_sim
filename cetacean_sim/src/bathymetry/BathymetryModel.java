@@ -7,7 +7,7 @@ import layout.utils.SettingsPane;
  * @author Jamie Macaulay
  *
  */
-public interface BathymetryType {
+public interface BathymetryModel {
 	
 	/**
 	 * Called to chnage settings. May open a dialog. 

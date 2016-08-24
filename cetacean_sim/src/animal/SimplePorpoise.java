@@ -1,6 +1,9 @@
 package animal;
 
-public class SimplePorpoise implements AnimalType {
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.StringProperty;
+
+public class SimplePorpoise implements AnimalModel {
 
 	@Override
 	public double[][] getTrack(long timeStart, long longTimeEnd, double[][] bathySurface, double[][] tide) {
@@ -21,6 +24,18 @@ public class SimplePorpoise implements AnimalType {
 
 	@Override
 	public double[][] getVocSeries(long timeStart, long longTimeEnd) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public StringProperty sensorNameProperty() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public IntegerProperty numberAnimalsameProperty() {
 		// TODO Auto-generated method stub
 		return null;
 	}
