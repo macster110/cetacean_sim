@@ -8,6 +8,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
+import layout.bathymetry.BathymetryPane;
 import utils.BathymetryUtils;
 import utils.CSVReader;
 
@@ -58,7 +59,6 @@ public class CetSimView extends BorderPane {
 		holder.getChildren().addAll(animalTitle,animalPane= new AnimalPane(this) ); 
 		
 
-		
 		//finally add the map pane. 
 		
 		StackPane stackPane=new StackPane(); 
@@ -69,7 +69,8 @@ public class CetSimView extends BorderPane {
 		SplitPane sp = new SplitPane();
 		sp.getItems().add(holder);
 		sp.getItems().add(stackPane);
-		
+		sp.setDividerPositions(0.2f, 0.8f);
+		 
 		this.setCenter(sp);
 		
 		

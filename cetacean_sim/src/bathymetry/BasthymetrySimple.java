@@ -20,6 +20,16 @@ public class BasthymetrySimple implements BathymetryModel {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	@Override
+	public float getGridXSize(){
+		return 0; 
+	}
+	
+	@Override
+	public float getGridYSize(){
+		return 0; 
+	}
 
 	@Override
 	public double getDepth(double x, double y) {

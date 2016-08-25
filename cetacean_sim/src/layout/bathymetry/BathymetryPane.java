@@ -1,4 +1,4 @@
-package layout;
+package layout.bathymetry;
 
 import java.util.ArrayList;
 
@@ -19,6 +19,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.util.StringConverter;
+import layout.CetSimView;
 
 /**
  * Holds various types of bathymetry. 

@@ -23,27 +23,52 @@ public class BathymetryUtils {
 		return surface;
 	}
 	
-	
+	/**
+	 * Convert latitude and longitude to cartesian. The referenc elatitude and longitude is the middle of the grid. 
+	 * @param ref - the reference lat lon. Can be null to use a ref in the middle of the grid. 
+	 * @return points converted to cartesian co-ordinate frame with (0,0,0) the reference latitude and longitude. 
+	 */
 	public static double[][] latLong2Cart(LatLong[] points){
 		return latLong2Cart(points, null);
 	}
 	
-	
+	/**
+	 * Convert latitude and longitude to cartesian. 
+	 * @param points an array of latitude longitude points. 
+	 * @param ref - the reference lat lon. Can be null to use a ref in the middle of the grid. 
+	 * @return points converted to cartesian co-ordinate frame with (0,0,0) the reference latitude and longitude. 
+	 */
 	public static double[][] latLong2Cart(LatLong[] points, LatLong ref){
 		LatLong refLatLong;
+		
+		//make the ref the middle of the grid. 
 		if (ref==null){
 			//use min lat as the reference point. 
 			double minLat=Double.MAX_VALUE;  
+			double minLon=Double.MAX_VALUE;  
+			double maxLat=-Double.MAX_VALUE;  
+			double maxLon=-Double.MAX_VALUE;  
 			int index=0; 
 			for (int i=0; i<points.length; i++){
+				
+				
 				if (points[i].getLatitude()<minLat){
 					minLat=points[i].getLatitude(); 
-					index=i; 
+				}
+				if (points[i].getLongitude()<minLon){
+					minLon=points[i].getLongitude(); 
+				}
+				if (points[i].getLatitude()>maxLat){
+					maxLat=points[i].getLatitude(); 
+				}
+				if (points[i].getLongitude()>maxLon){
+					maxLon=points[i].getLongitude(); 
 				}
 			}
 
-			refLatLong=points[index].clone();
+			refLatLong=new LatLong((maxLat-minLat)/2, (maxLon-minLon)/2, 0); 
 		}
+		
 		else refLatLong= ref.clone();
 
 		double[][] array = new double[points.length][3];

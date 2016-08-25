@@ -7,20 +7,21 @@ import javafx.scene.Node;
  * @author Jamie Macaulay
  *
  */
-public interface SettingsPane {
+public interface SettingsPane<T> {
 
 	
 	/**
 	 * Get settings from the pane.
 	 * @return settings class
 	 */
-	public void getParams(); 
+	public T getParams(); 
 	
 	/**
 	 * Called whenever the pane is first shown/open to set pane to show current settings.
-	 * @param input- current settings class.
+	 * @param settingsData- current settings class.
+	 * @parma clone - true to clone the settings class. This means any changes that take place do not effect main settings class. Use this with dialogs. 
 	 */
-	public void setParams();
+	public void setParams(T settingsData, boolean clone);
 
 	/**
 	 * Get the name of the pane.

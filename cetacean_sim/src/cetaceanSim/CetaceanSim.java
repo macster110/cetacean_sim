@@ -26,7 +26,7 @@ public class CetaceanSim extends Application {
         
         root.getChildren().add(new CetSimView(csControl));
         
-        primaryStage.setScene(new Scene(root, 300, 250));
+        primaryStage.setScene(new Scene(root, 1200, 800));
         primaryStage.show();
     }
 }

@@ -22,6 +22,18 @@ public interface BathymetryModel {
 	public float[][] getDepthSurface();
 	
 	/**
+	 * The size of the x grid. 
+	 * @return
+	 */
+	public float getGridXSize();
+	
+	/**
+	 * The size of the Y grid. 
+	 * @return
+	 */
+	public float getGridYSize();
+	
+	/**
 	 * Get a the depth at a certain point
 	 * @param x the x point
 	 * @param y the y point 
