@@ -41,12 +41,12 @@ public class TableButtonPane extends Pane {
 	 */
 	Button deleteButton; 
 	
-	public Text addIcon=GlyphsDude.createIcon(MaterialIcon.ADD);
+	public Text addIcon=GlyphsDude.createIcon(MaterialIcon.ADD, "25");
 
 	
-	public 	Text settingsIcon=GlyphsDude.createIcon(MaterialIcon.SETTINGS);
+	public 	Text settingsIcon=GlyphsDude.createIcon(MaterialIcon.SETTINGS, "25");
 
-	public 	Text deleteIcon=GlyphsDude.createIcon(MaterialIcon.DELETE);
+	public 	Text deleteIcon=GlyphsDude.createIcon(MaterialIcon.DELETE, "25");
 
 	
 	public TableButtonPane(Orientation orientation){

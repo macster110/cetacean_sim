@@ -1,5 +1,7 @@
 package layout.utils;
 
+import javafx.geometry.Point3D;
+
 /*
  * Copyright (C) 2013-2015 F(X)yz, 
  * Sean Phillips, Jason Pollastrini and Jose Pereda
@@ -75,6 +77,12 @@ public class SurfacePlot extends Group {
 		//Create a viewable MeshView to be added to the scene
 		//To add a TriangleMesh to a 3D scene you need a MeshView container object
 		meshView = new MeshView(mesh);
+		
+//		//quick hack to get into another co-ordinate space....
+//		meshView.setRotationAxis(new Point3D(1,0,0));
+//		meshView.setRotate(-90);
+		
+		
 		//The MeshView allows you to control how the TriangleMesh is rendered
 		if(fill) { 
 			meshView.setDrawMode(DrawMode.FILL);
@@ -136,12 +144,12 @@ public class SurfacePlot extends Group {
 
 				int index = y * numDivX * pointSize + (x * pointSize);
 				points[index] = (float) fx * scale;   // x
-				points[index + 1] = (float) fy * scale;  // y
+				points[index + 2] = (float) fy * scale;  // y
 				// color value for pixel at point
 				//System.out.println(" x: "+ x +  " y: "+y +  " subDivX: "+subDivX+ " subDivY "+subDivY);
 				
-				if (x==arrayY.length || y==arrayY[0].length) points[index + 2]=0; //BUG- dinnae understand but stops weird lines on graph 
-				else points[index + 2] = arrayY[x][y];
+				if (x==arrayY.length || y==arrayY[0].length) points[index + 1]=0; //BUG- dinnae understand but stops weird lines on graph 
+				else points[index + 1] = arrayY[x][y];
 
 				index = y * numDivX * texCoordSize + (x * texCoordSize);
 				texCoords[index] = currX;
@@ -164,17 +172,17 @@ public class SurfacePlot extends Group {
 				int index = (y * subDivX * faceSize + (x * faceSize)) * 2;
 				faces[index + 0] = p00;
 				faces[index + 1] = tc00;
-				faces[index + 2] = p10;
+				faces[index + 4] = p10;
 				faces[index + 3] = tc10;
-				faces[index + 4] = p11;
+				faces[index + 2] = p11;
 				faces[index + 5] = tc11;
 
 				index += faceSize;
 				faces[index + 0] = p11;
 				faces[index + 1] = tc11;
-				faces[index + 2] = p01;
+				faces[index + 4] = p01;
 				faces[index + 3] = tc01;
-				faces[index + 4] = p00;
+				faces[index + 2] = p00;
 				faces[index + 5] = tc00;
 			}
 		}

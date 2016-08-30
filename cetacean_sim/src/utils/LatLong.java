@@ -70,7 +70,7 @@ public class LatLong implements Serializable, Cloneable, Transferable {
 	}
 	private static DataFlavor createDataFlavor(){
 		String latLongType = DataFlavor.javaJVMLocalObjectMimeType +
-                "; class=PamUtils.LatLong";
+                "; class=utils.LatLong";
 		
 //		DataFlavor latLongFlavor=new 
 //				DataFlavor(LatLong.class, "LatLong");

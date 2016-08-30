@@ -62,6 +62,7 @@ public class BathymetryPane extends BorderPane {
 		this.bathyList=FXCollections.observableArrayList(bathyList); 
 		/////////////////
 		
+		this.setMaxWidth(Double.MAX_VALUE);
 		//create the main pane. 
 		createBathyPane(); 
 		
@@ -94,20 +95,25 @@ public class BathymetryPane extends BorderPane {
 				return null;
 			}
 		});
+		comboBathy.setMaxWidth(Double.MAX_VALUE);
+		
 		//when the type is changed change the GUI underneath
 		comboBathy.setOnAction((action)->{
 			if (comboBathy.getValue().getSettingsPane()!=null) holder.setCenter(comboBathy.getValue().getSettingsPane().getContentNode());
 			else holder.setCenter(null); 
+			cetSimView.getCetSimControl().setBathymetry(comboBathy.getValue());
+			
+			cetSimView.notifyUpdate(CetSimControl.SIM_DATA_CHANGED);
+
 		});
 		
 		
-        Text graphic = GlyphsDude.createIcon(MaterialIcon.ARROW_DOWNLOAD);
+        Text graphic = GlyphsDude.createIcon(MaterialIcon.ARROW_DOWNLOAD,"25");
         Button buttonLoad=new Button();
         comboBathy.prefHeightProperty().bind(buttonLoad.heightProperty());
         buttonLoad.setGraphic(graphic);
         
         buttonLoad.setOnAction(action->{
-        	//
         	comboBathy.getValue().loadBathy();
         	cetSimView.notifyUpdate(CetSimControl.BATHY_LOADED);
         });

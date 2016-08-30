@@ -20,11 +20,13 @@ public class CetaceanSim extends Application {
         primaryStage.setTitle("Cetacean Sim");
     
         //intialise the control class. 
-        CetSimControl csControl=new CetSimControl(); 
+        CetSimControl.create(); 
         
         StackPane root = new StackPane();
         
-        root.getChildren().add(new CetSimView(csControl));
+        CetSimView view = null; 
+        root.getChildren().add(view= new CetSimView(CetSimControl.getInstance()));
+        CetSimControl.getInstance().setView(view);
         
         primaryStage.setScene(new Scene(root, 1200, 800));
         primaryStage.show();

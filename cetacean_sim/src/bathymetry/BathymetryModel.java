@@ -1,5 +1,6 @@
 package bathymetry;
 
+import cetaceanSim.SimUnit;
 import layout.utils.SettingsPane;
 
 /**
@@ -7,7 +8,7 @@ import layout.utils.SettingsPane;
  * @author Jamie Macaulay
  *
  */
-public interface BathymetryModel {
+public interface BathymetryModel extends SimUnit {
 	
 	/**
 	 * Called to chnage settings. May open a dialog. 
@@ -19,19 +20,7 @@ public interface BathymetryModel {
 	 * Get the bathymetry surface
 	 * @return
 	 */
-	public float[][] getDepthSurface();
-	
-	/**
-	 * The size of the x grid. 
-	 * @return
-	 */
-	public float getGridXSize();
-	
-	/**
-	 * The size of the Y grid. 
-	 * @return
-	 */
-	public float getGridYSize();
+	public BathyData getDepthSurface();
 	
 	/**
 	 * Get a the depth at a certain point

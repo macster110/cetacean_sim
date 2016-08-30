@@ -1,9 +1,10 @@
-package layout;
+package layout.animal;
 
 import animal.AnimalModel;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.TableColumn;
 import javafx.scene.layout.BorderPane;
+import layout.CetSimView;
 import layout.utils.TablePane;
 
 public class AnimalPane extends BorderPane {
@@ -52,8 +53,8 @@ public class AnimalPane extends BorderPane {
 
 		@Override
 		public Dialog<AnimalModel> createSettingsDialog(AnimalModel data) {
-			// TODO Auto-generated method stub
 			return null;
+			
 		}
 		
 	}

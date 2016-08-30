@@ -1,4 +1,4 @@
-package reciver;
+package reciever;
 
 public interface RecieverModel {
 

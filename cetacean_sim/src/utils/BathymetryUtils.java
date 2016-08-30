@@ -1,26 +1,43 @@
 package utils;
 
+import java.util.Arrays;
+
+import bathymetry.BathyData;
 import edu.mines.jtk.dsp.Sampling;
+import edu.mines.jtk.interp.SibsonGridder2;
 import edu.mines.jtk.interp.SibsonInterpolator2;
 import edu.mines.jtk.interp.SimpleGridder2;
 import edu.mines.jtk.interp.SplinesGridder2;
 
+/**
+ * A set of useful functions for calculating bathymetry surfaces. 
+ * @author Jamie Macaulay
+ *
+ */
 public class BathymetryUtils {
 	
 	
 	/**
 	 * Generate a bathymetry surface from  scatterred LatLong POINTS. The grid is returned in the cartesian Co-Ordinate frame; 
-	 * @param points
-	 * @param zExaggeration
-	 * @return
+	 * @param points - non unifrom latitude and longitude points. 
+	 * @param zExaggeration - the z exaggeration
+	 * @return a surface in cartesian co-ordinates. 
 	 */
-	public static float[][] generateSurface(LatLong[] points, float zExaggeration, boolean aspectRatio){
+	public static BathyData generateSurface(LatLong[] points, float zExaggeration, boolean aspectRatio){
 		
-		double[][] array= latLong2Cart(points);
+		//calc the reference latitude and longitude. 
+		LatLong refLatLong = calcRefLatLong(points);
+	
+		//convert to cartesian
+		double[][] array= latLong2Cart(points, refLatLong);
 
-		float[][] surface= generateSurface(array,  zExaggeration,  aspectRatio);
+		//create the surface
+		BathyData surfaceData  =generateSurface(array,  zExaggeration,  aspectRatio);
 		
-		return surface;
+		//set the reference lat long. 
+		surfaceData.setRefLatLong(refLatLong);
+
+		return surfaceData;
 	}
 	
 	/**
@@ -36,39 +53,13 @@ public class BathymetryUtils {
 	 * Convert latitude and longitude to cartesian. 
 	 * @param points an array of latitude longitude points. 
 	 * @param ref - the reference lat lon. Can be null to use a ref in the middle of the grid. 
-	 * @return points converted to cartesian co-ordinate frame with (0,0,0) the reference latitude and longitude. 
+	 * @return points converted to cartesian co-ordinate frame with (0,0,0) the reference latitude and longitude. Null values are removed.
 	 */
 	public static double[][] latLong2Cart(LatLong[] points, LatLong ref){
 		LatLong refLatLong;
-		
-		//make the ref the middle of the grid. 
 		if (ref==null){
-			//use min lat as the reference point. 
-			double minLat=Double.MAX_VALUE;  
-			double minLon=Double.MAX_VALUE;  
-			double maxLat=-Double.MAX_VALUE;  
-			double maxLon=-Double.MAX_VALUE;  
-			int index=0; 
-			for (int i=0; i<points.length; i++){
-				
-				
-				if (points[i].getLatitude()<minLat){
-					minLat=points[i].getLatitude(); 
-				}
-				if (points[i].getLongitude()<minLon){
-					minLon=points[i].getLongitude(); 
-				}
-				if (points[i].getLatitude()>maxLat){
-					maxLat=points[i].getLatitude(); 
-				}
-				if (points[i].getLongitude()>maxLon){
-					maxLon=points[i].getLongitude(); 
-				}
-			}
-
-			refLatLong=new LatLong((maxLat-minLat)/2, (maxLon-minLon)/2, 0); 
+			refLatLong=calcRefLatLong(points);
 		}
-		
 		else refLatLong= ref.clone();
 
 		double[][] array = new double[points.length][3];
@@ -76,15 +67,66 @@ public class BathymetryUtils {
 		//now convert to cartesian
 		double x; 
 		double y;
+		int n=0; 
 		for (int i=0; i<points.length; i++){
+			if (points[i]==null) continue; 
 			x=points[i].distanceToMetresX(refLatLong);
 			y=points[i].distanceToMetresY(refLatLong);
-			array[i][0]=x;
-			array[i][1]=y;
-			array[i][2]=points[i].getHeight();
+			//System.out.println("distance x "+ x + " dsstance y: " +y);
+			array[n][0]=x;
+			array[n][1]=y;
+			array[n][2]=points[i].getHeight();
+			n++; 
 
 		}
-		return array;
+		
+		//return only the non null elements
+		return Arrays.copyOf(array, n);
+	}
+	
+	
+	/**
+	 * Calculate a referernce LatLong form an array of non uniform points. The reference is in the middle of the data. i.e. where 
+	 * the middle an interpolated grid of data would be. 
+	 * @param points - set of latitude and longitude points, can be non uniform. 
+	 * @return the reference LatLong. 
+	 */
+	public static LatLong calcRefLatLong(LatLong[] points){
+		
+		LatLong refLatLong;
+
+		//make the ref the middle of the grid. 
+		int index=0; 
+
+		//use min lat as the reference point. Also a  bit of data validation to handle nuyll values;l 
+		double minLat=Double.MAX_VALUE;  
+		double minLon=Double.MAX_VALUE;  
+		double maxLat=-Double.MAX_VALUE;  
+		double maxLon=-Double.MAX_VALUE;  
+
+		for (int i=0; i<points.length; i++){
+
+			if (points[i]==null) continue; 
+
+			if (points[i].getLatitude()<minLat){
+				minLat=points[i].getLatitude(); 
+			}
+			if (points[i].getLongitude()<minLon){
+				minLon=points[i].getLongitude(); 
+			}
+			if (points[i].getLatitude()>maxLat){
+				maxLat=points[i].getLatitude(); 
+			}
+			if (points[i].getLongitude()>maxLon){
+				maxLon=points[i].getLongitude(); 
+			}
+
+			index++; 
+
+		}
+		refLatLong=new LatLong(((maxLat-minLat)/2)+minLat, ((maxLon-minLon)/2)+minLon, 0); 
+		System.out.println("Ref lat long: minLat "+ minLat+ " maxLat "+maxLat +  " minLon: "+minLon + " maxLon "+maxLon );
+		return refLatLong;
 	}
 
 	
@@ -95,7 +137,7 @@ public class BathymetryUtils {
 	 * @param aspectRatio - maintatin aspect ratio.
 	 * @return the grid. 
 	 */
-	public static float[][] generateSurface(double[][] points, float zExaggeration, boolean aspectRatio){
+	public static BathyData generateSurface(double[][] points, float zExaggeration, boolean aspectRatio){
 		
 		//get data into the correct format and find min values. 
 		float[] f =new float[(int) Math.floor(points.length)];
@@ -116,26 +158,28 @@ public class BathymetryUtils {
 			if (points[i] == null || n>=((int) Math.floor(points.length))) continue;
 			
 			//create co-ordinate
-			x1[n]=(float) points[i][2]; 
+			x1[n]=(float) points[i][0]; 
 			x2[n]=(float) points[i][1]; 
-			f[n]=(float) -points[i][0]*zExaggeration; 
+			f[n]=(float) points[i][2]*zExaggeration; 
 			if (f[n]==0.) f[n]=(float) Math.random();
 			
 			//work out m in max
 			if (x1[n]>maxX) maxX=x1[n]; 
 			if (x1[n]<minX) minX=x1[n]; 
-			if (x2[n]>maxY)maxY=x2[n]; 
+			if (x2[n]>maxY)	maxY=x2[n]; 
 			if (x2[n]<minY) minY=x2[n]; 
 			
 			n++;
 			
 		}
 		
+		System.out.println("Min max values for grid: " + minX + " "+  maxX + " " + minY + " "+ maxY); 
 		
-		SimpleGridder2 simpleGridder2= new SimpleGridder2(f, x1,  x2);
+		
+		SibsonGridder2 simpleGridder2= new SibsonGridder2(f, x1,  x2);
 	
 		//now create the grid. 
-		int samplesCount=500; 
+		int samplesCount=300; 
 		double binx1=(maxX-minX)/samplesCount; 
 
 		//System.out.println("x1: ");
@@ -144,7 +188,6 @@ public class BathymetryUtils {
 			samplesx1[i]=minX+i*binx1; 
 			//System.out.println(samplesx1[i]+ " ");
 		}
-		
 		
 		
 		double[] samplesx2;
@@ -164,13 +207,16 @@ public class BathymetryUtils {
 			samplesx2[i]=minY+i*binx2; 
 		}
 		
-		System.out.println("Computing surface start: " + f.length+ " " + samplesx2.length +  " "+samplesx1.length);
-
-		float[][] surface=simpleGridder2.grid(new Sampling(samplesx1), new Sampling(samplesx2));
+		BathyData bathyData=new BathyData(); 
+		bathyData.setSamplesX(new Sampling(samplesx1));
+		bathyData.setSamplesY(new Sampling(samplesx2));
+		bathyData.setInterpSurface(simpleGridder2);
+		bathyData.setGridXsize(binx1);
+		bathyData.setGridYsize(binx2);
+		//generate a surface
+		bathyData.setInterpSurface(simpleGridder2.grid(bathyData.getSamplesX(), bathyData.getSamplesY()));
 		
-		System.out.println("Computing surface finsished");
-		
-		
+	
 //		//TEMP print a surface
 //		for (int i=0; i<surface.length; i++){
 //			System.out.println(""); 
@@ -180,9 +226,8 @@ public class BathymetryUtils {
 //		}
 //		//TEMP
 		
-		return surface; 
+		return bathyData; 
 		
-	    
 	}
 
 	

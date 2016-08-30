@@ -7,6 +7,8 @@ import org.controlsfx.glyphfont.Glyph;
 
 import bathymetry.BathymetryFile;
 import bathymetry.BathymetryFileSettings;
+import de.jensd.fx.glyphs.GlyphsDude;
+import de.jensd.fx.glyphs.materialicons.MaterialIcon;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -85,7 +87,7 @@ public class BathyFilePane extends BorderPane implements SettingsPane<Bathymetry
 		HBox.setHgrow(openFilePath, Priority.ALWAYS);
 
 		
-		Button browseButton =new Button("", Glyph.create("FontAwesome|FOLDER"));
+		Button browseButton =new Button("", GlyphsDude.createIcon(MaterialIcon.FOLDER,"25"));
 		browseButton.setOnAction((action)->{
 			configureFileChooser(
 					bathyFileChooser, "Open Bathymetry Files") ;
@@ -102,7 +104,9 @@ public class BathyFilePane extends BorderPane implements SettingsPane<Bathymetry
 	    			filePath.setTooltip(new Tooltip("No folder set"));
 	    		}
 	    		
-		});
+		});		
+		filePath.prefHeightProperty().bind(browseButton.heightProperty());
+
 		
 		openFilePath.getChildren().addAll(filePath, browseButton); 
 

@@ -30,11 +30,20 @@ public class CSVReader {
 			//count the number of lines 
 			while((line = br.readLine()) != null)
 			{
+				dataline = line.split(cvsSplitBy);
 				if (row==0) {
-					dataline = line.split(cvsSplitBy);
 					column=dataline.length; 
 				}
+				for (int i=0; i<dataline.length; i++){
+					if (isStringNumeric(dataline[i])){
+					}
+					else{
+						System.err.println("Not numeric:" + " index: "+ row+ " value: "+dataline[i]+"b");
+						continue; 
+					}
+				}
 				row++;
+
 			}
 
 
@@ -56,9 +65,13 @@ public class CSVReader {
 					if (isStringNumeric(dataline[i])){
 						data[n][i]=Double.valueOf(dataline[i]);
 					}
-					else System.err.println("Not numeric:" + dataline[i]+"b");
+					else{
+						System.err.println("Not numeric:" + dataline[i]+"b");
+						continue; 
+					}
 				}
 				n++; 
+				
 			}
 			return data;
 

@@ -1,5 +1,6 @@
 package bathymetry;
 
+import layout.MapShapeProvider;
 import layout.utils.SettingsPane;
 
 /**
@@ -15,21 +16,6 @@ public class BasthymetrySimple implements BathymetryModel {
 		
 	}
 
-	@Override
-	public float[][] getDepthSurface() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	@Override
-	public float getGridXSize(){
-		return 0; 
-	}
-	
-	@Override
-	public float getGridYSize(){
-		return 0; 
-	}
 
 	@Override
 	public double getDepth(double x, double y) {
@@ -45,6 +31,19 @@ public class BasthymetrySimple implements BathymetryModel {
 
 	@Override
 	public SettingsPane getSettingsPane() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public MapShapeProvider getMapShapeProvider() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public BathyData getDepthSurface() {
 		// TODO Auto-generated method stub
 		return null;
 	}

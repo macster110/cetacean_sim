@@ -1,5 +1,7 @@
 package tide;
 
-public interface TideModel {
+import cetaceanSim.SimUnit;
+
+public interface TideModel extends SimUnit {
 
 }

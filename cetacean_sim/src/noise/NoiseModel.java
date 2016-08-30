@@ -1,5 +1,7 @@
 package noise;
 
-public class NoiseModel {
+import cetaceanSim.SimUnit;
+
+public interface NoiseModel extends SimUnit{
 
 }
