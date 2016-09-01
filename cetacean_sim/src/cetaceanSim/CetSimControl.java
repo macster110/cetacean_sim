@@ -2,6 +2,7 @@ package cetaceanSim;
 
 import java.util.ArrayList;
 
+import animal.AnimalManager;
 import animal.AnimalModel;
 import bathymetry.BathymetryModel;
 import javafx.collections.FXCollections;
@@ -22,17 +23,12 @@ public class CetSimControl {
 	/**
 	 * Static reference to the ArrayModelControl. 
 	 */
-	private static CetSimControl arrayControlInstance; 
+	private static CetSimControl cetSimControlInstance; 
 
 	/**
 	 * The bathymetry
 	 */
 	private BathymetryModel bathymetry; 
-	
-	/**
-	 * A list of animal types. 
-	 */
-	private ObservableList<AnimalModel> animals;  
 	
 	/**
 	 * The current tide model for the simulation
@@ -64,6 +60,11 @@ public class CetSimControl {
 	 */
 	private CetSimView cetSimView;
 
+	/**
+	 * Animal manager
+	 */
+	private AnimalManager animals;
+
 	
 	public static final int BATHY_LOADED = 0;
 
@@ -94,7 +95,7 @@ public class CetSimControl {
 	 */
 	public CetSimControl(){
 		//create defualt instances of each model
-		animals=FXCollections.observableArrayList();
+		animals=new AnimalManager(this);
 		recievers=FXCollections.observableArrayList();
 		
 		//create an array of simualtion components. 
@@ -122,24 +123,6 @@ public class CetSimControl {
 		simModels.remove(this.bathymetry);
 		this.bathymetry = bathymetry;
 		simModels.add(bathymetry);
-	}
-
-
-	/**
-	 * Get the animals in the simulation. 
-	 * @return the animals in the simulation
-	 */
-	public ObservableList<AnimalModel> getAnimals() {
-		return animals;
-	}
-
-
-	/**
-	 * Set a list of animals for the simulation. 
-	 * @param animals
-	 */
-	public void setAnimals(ObservableList<AnimalModel> animals) {
-		this.animals = animals;
 	}
 
 
@@ -227,14 +210,22 @@ public class CetSimControl {
 	}
 	
 	public static CetSimControl getInstance(){
-		return arrayControlInstance; 
+		return cetSimControlInstance; 
 	}
 
 	public static void create() {
-		if (arrayControlInstance==null){
-			new  CetSimControl(); 
+		if (cetSimControlInstance==null){
+			cetSimControlInstance = new  CetSimControl(); 
 		}
 		
+	}
+
+	/**
+	 * Get the animal manager whihc handles animals in the simulation. 
+	 * @return the animal manager
+	 */
+	public AnimalManager getAnimalManager() {
+		return animals;
 	}
 
 

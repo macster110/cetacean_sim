@@ -13,5 +13,6 @@
 	<classpathentry kind="lib" path="src/jars/controlsfx-8.40.11.jar"/>
 	<classpathentry kind="lib" path="src/jars/fontawesomefx-8.9.jar"/>
 	<classpathentry kind="lib" path="src/jars/fontawesomefx-materialicons-2.1-2.jar"/>
+	<classpathentry kind="lib" path="src/jars/flanagan.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

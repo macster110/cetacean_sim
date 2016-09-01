@@ -1,6 +1,8 @@
 package layout.animal;
 
+import animal.AnimalManager.AnimalTypeEnum;
 import animal.AnimalModel;
+import cetaceanSim.CetSimControl;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.TableColumn;
 import javafx.scene.layout.BorderPane;
@@ -31,9 +33,8 @@ public class AnimalPane extends BorderPane {
 	
 	
 	class AnimalTable extends TablePane<AnimalModel> {
-
 		public AnimalTable() {
-			super(cetSimView.getCetSimControl().getAnimals());
+			super(cetSimView.getCetSimControl().getAnimalManager().getAnimalList());
 		
 			TableColumn<AnimalModel,String>  animalName = new TableColumn<AnimalModel,String>("Animal Type");
 			animalName.setCellValueFactory(cellData -> cellData.getValue().sensorNameProperty());
@@ -47,14 +48,19 @@ public class AnimalPane extends BorderPane {
 
 		@Override
 		public void dialogClosed(AnimalModel data) {
-			// TODO Auto-generated method stub
+			//TODO- add some notifications. 
 			
 		}
 
 		@Override
 		public Dialog<AnimalModel> createSettingsDialog(AnimalModel data) {
-			return null;
-			
+			System.out.println("Animal data "+data); 
+			if (data==null) {
+				//create a new open tag sensor as a default. 
+				AnimalModel movementSensor=CetSimControl.getInstance().getAnimalManager().createNewAnimal(AnimalTypeEnum.CLICKING_ODONTOCETE);
+				return AnimalSelectionDialog.createDialog(movementSensor);
+			}
+			else return AnimalSelectionDialog.createDialog(data);			
 		}
 		
 	}

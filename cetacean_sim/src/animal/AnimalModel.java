@@ -2,9 +2,10 @@ package animal;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.StringProperty;
+import layout.utils.SettingsPane;
 
 /**
- * Defines a animal in the simulation
+ * Defines an animal in the simulation
  * @author Jamie Macaulay 
  *
  */
@@ -52,6 +53,13 @@ public interface AnimalModel {
 		 * @return an array of vocalisation starts times and amplitude in dB re 1uPa
 		 */
 		double[][] getVocSeries(long timeStart, long longTimeEnd);
+		
+		
+		/**
+		 * The settings pane. Pane to allow settings for the animal to be changedd
+		 * @return the settings pane for the animal. 
+		 */
+		public SettingsPane<AnimalModel> getSettingsPane();
 
 		
 	

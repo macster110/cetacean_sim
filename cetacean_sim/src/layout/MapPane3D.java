@@ -2,6 +2,7 @@ package layout;
 
 import javafx.animation.Timeline;
 import javafx.event.EventHandler;
+import javafx.scene.CacheHint;
 import javafx.scene.DepthTest;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -21,6 +22,7 @@ import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.util.Duration;
 import layout.utils.SurfacePlot;
+import layout.utils.Utils3D;
 import layout.utils.Xform;
 
 /**
@@ -136,72 +138,16 @@ public class MapPane3D extends BorderPane {
 		handleMouse(subScene, simWorld);
 		subScene.setCamera(camera);
 
+		//render text properly
+		this.setCache(true);
+		this.setCacheHint(CacheHint.SCALE_AND_ROTATE);
+		
 		this.setCenter(subScene);
 	}
 	
-	/**
-	 * Create a 3D axis. 
-	 * @param- size of the axis
-	 */
-	public static Group buildAxes(double axisSize, Color xAxisDiffuse, Color xAxisSpectacular,
-			Color yAxisDiffuse, Color yAxisSpectacular,
-			Color zAxisDiffuse, Color zAxisSpectacular,
-			Color textColour) {
-		Group axisGroup=new Group(); 
-        double length = 2d*axisSize;
-        double width = axisSize/100d;
-        double radius = 2d*axisSize/100d;
-        final PhongMaterial redMaterial = new PhongMaterial();
-        redMaterial.setDiffuseColor(xAxisDiffuse);
-        redMaterial.setSpecularColor(xAxisSpectacular);
-        final PhongMaterial greenMaterial = new PhongMaterial();
-        greenMaterial.setDiffuseColor(yAxisDiffuse);
-        greenMaterial.setSpecularColor( yAxisSpectacular);
-        final PhongMaterial blueMaterial = new PhongMaterial();
-        blueMaterial.setDiffuseColor(zAxisDiffuse);
-        blueMaterial.setSpecularColor(zAxisSpectacular);
-        
-        Text xText=new Text("x"); 
-        xText.setStyle("-fx-font: 20px Tahoma;");
-        xText.setFill(textColour);
-        Text yText=new Text("z"); 
-        yText.setStyle("-fx-font: 20px Tahoma; ");
-        yText.setFill(textColour);
-        Text zText=new Text("y"); 
-        zText.setStyle("-fx-font: 20px Tahoma; ");
-        zText.setFill(textColour);
-
-        xText.setTranslateX(axisSize+5);
-        yText.setTranslateY(-(axisSize+5));
-        zText.setTranslateZ(axisSize+5);
-
-        Sphere xSphere = new Sphere(radius);
-        Sphere ySphere = new Sphere(radius);
-        Sphere zSphere = new Sphere(radius);
-        xSphere.setMaterial(redMaterial);
-        ySphere.setMaterial(greenMaterial);
-        zSphere.setMaterial(blueMaterial);
-         
-        xSphere.setTranslateX(axisSize);
-        ySphere.setTranslateY(-axisSize);
-        zSphere.setTranslateZ(axisSize);
-         
-        Box xAxis = new Box(length, width, width);
-        Box yAxis = new Box(width, length, width);
-        Box zAxis = new Box(width, width, length);
-        xAxis.setMaterial(redMaterial);
-        yAxis.setMaterial(greenMaterial);
-        zAxis.setMaterial(blueMaterial);
-         
-        axisGroup.getChildren().addAll(xAxis, yAxis, zAxis);
-        axisGroup.getChildren().addAll(xText, yText, zText);
-        axisGroup.getChildren().addAll(xSphere, ySphere, zSphere);
-        return axisGroup;
-    }
-	
 
 	private void createAxes(Group sceneRoot) {
-		 Group axis = buildAxes(300.,Color.DARKRED, Color.RED,
+		 Group axis = Utils3D.buildAxes(300.,Color.DARKRED, Color.RED,
 				 Color.DARKGREEN, Color.GREEN,
 				 Color.CYAN, Color.BLUE,
 				 Color.WHITE); 

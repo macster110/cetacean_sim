@@ -1,6 +1,8 @@
 package layout.animal;
 
 
+import animal.AnimalManager;
+import animal.AnimalManager.AnimalTypeEnum;
 import animal.AnimalModel;
 import cetaceanSim.CetSimControl;
 import javafx.collections.FXCollections;
@@ -19,39 +21,42 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+/**
+ * Allows user to select an animal. 
+ * @author Jamie Macaulay
+ *
+ */
 public class AnimalSelectionDialog extends Dialog<AnimalModel>{
 	
+	/**
+	 * Static reference ot the dialog. 
+	 */
 	private static AnimalSelectionDialog singleInstance;
 	
 	/**
 	 * TextField to set name of sensor. 
 	 */
-	TextField nameField; 
+	private TextField nameField; 
 
 	/**
 	 * The current movement sensor the dialog is showing. 
 	 */
-	private AnimalModel movementSensor; 
+	private AnimalModel animalModel; 
 	
 	/**
 	 * The pane shows custom controls for specific types of sensor. 
 	 */
-	BorderPane customSensorPane= new BorderPane();
+	private BorderPane customAnimalPane= new BorderPane();
 	
 	/**
 	 * Reference to the sensor manager. 
 	 */
-	AnimalManager sensorManager=CetSimControl.getInstance().getSensorManager();
-
-	/**
-	 * Combo box to xhoose the parent array the sensor belongs to. 
-	 */
-	private ParentArrayComboBox parentArrayComboBox;
+	private AnimalManager animalManager=CetSimControl.getInstance().getAnimalManager();
 	
 	/**
 	 * Combo box to allow users to change sensor type. 
 	 */
-	private ComboBox<AnimalType> sensorBox;
+	private ComboBox<AnimalTypeEnum> animalTypeBox;
 
 	/**
 	 * Reference to the main pane for the dialog. 
@@ -59,16 +64,16 @@ public class AnimalSelectionDialog extends Dialog<AnimalModel>{
 	private BorderPane mainPane; 
 
 	
-	public SensorDialog(){
+	public AnimalSelectionDialog(){
 		//FIXME- this appears to cause an error in CSS? 
 		//this.initOwner(HArrayModelControl.getInstance().getPrimaryStage());
 		
-		this.setTitle("Sensor Dialog");
+		this.setTitle("Animal Dialog");
 		this.getDialogPane().setContent(createDialogPane());
 		this.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 		this.setResultConverter(dialogButton -> {
 			if (dialogButton == ButtonType.OK) {
-				return movementSensor;
+				return animalModel;
 			}
 			return null;
 		});
@@ -86,9 +91,9 @@ public class AnimalSelectionDialog extends Dialog<AnimalModel>{
 		
 	}
 
-	public static Dialog<MovementSensor> createDialog(MovementSensor sensor){
+	public static Dialog<AnimalModel> createDialog(AnimalModel sensor){
 		if (singleInstance==null) {
-			singleInstance=new SensorDialog();
+			singleInstance=new AnimalSelectionDialog();
 		}
 	
 		singleInstance.setParams(sensor);
@@ -98,34 +103,12 @@ public class AnimalSelectionDialog extends Dialog<AnimalModel>{
 	
 	@SuppressWarnings("unchecked")
 	private boolean getParams(){
-	 
-		movementSensor.sensorNameProperty().setValue(nameField.getText());
-		movementSensor.parentArrayProperty().setValue(parentArrayComboBox.getValue());
-		if (movementSensor instanceof AbstractMovementSensor){
-			int error=((AbstractMovementSensor) movementSensor).getSettingsPane().getParams(movementSensor);
-			if (error==0) return true; 	
-			else {
-				return ((AbstractMovementSensor) movementSensor).getSettingsPane().showErrorWarning(error);
-			}
-			
-		}
-		return true; 
-		
+		return false;
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void setParams(MovementSensor movementSensor){
-		
-		this.movementSensor=movementSensor;		
-		
-		nameField.setText(movementSensor.sensorNameProperty().get());
-		parentArrayComboBox.setValue(movementSensor.parentArrayProperty().getValue());
-		sensorBox.setValue(movementSensor.sensorTypeProperty().get());
-		
-		if (movementSensor instanceof AbstractMovementSensor){
-			createSensorPane(movementSensor);
-			((AbstractMovementSensor) movementSensor).getSettingsPane().setParams(movementSensor);
-		}
+	private void setParams(AnimalModel movementSensor){
+	
 		
 	}; 
 	
@@ -134,36 +117,29 @@ public class AnimalSelectionDialog extends Dialog<AnimalModel>{
 	 * @return the main pane which sits inside dialog. 
 	 */
 	private Pane createDialogPane(){
+				
+		mainPane=new BorderPane();
 		
-		double sectionPadding=10;
-		
-		 mainPane=new BorderPane();
-		
-		Label nameLabel=new Label("Sensor Name"); 
+		Label nameLabel=new Label("Animal Name"); 
 		nameLabel.setPadding(new Insets(5,0,0,0));
 		nameField=new TextField();
 		
-		Label parentArrayLabel=new Label("Parent Array");
-		parentArrayLabel.setPadding(new Insets(sectionPadding,0,0,0));
-		parentArrayComboBox = new ParentArrayComboBox();
-		//FIXME - weird- only by adding a listener does the combo box update properly when arrays are renamed? Mayb actually be a bug in JavaFX source code? 
-		parentArrayComboBox.valueProperty().addListener((obs, t, t1)->{
-		}); 
 		
-		Label sensorLabel=new Label("Select Sensor");
-		sensorBox=new ComboBox<SensorType>();
+		Label sensorLabel=new Label("Select Animal");
+		animalTypeBox=new ComboBox<AnimalTypeEnum>();
 		
-		sensorBox.setItems(FXCollections.observableArrayList(SensorType.values()));
+		animalTypeBox.setItems(FXCollections.observableArrayList(AnimalManager.AnimalTypeEnum.values()));
+		
+		
 		/**
-		 * Unlike arrays and hydrophones, sensors are very different from each other and made
-		 * up of multiple sub classes. Therefore when a new sensor type is selected, that sensor 
+		 * Unlike arrays and hydrophones, animals are very different from each other and made
+		 * up of multiple sub classes. Therefore when a new animal type is selected, that animaltype 
 		 * requires a specific pane and a new instance of the subclass to be created. 
 		 */
-		sensorBox.valueProperty().addListener((obs, t, t1)->{
-			if (this.movementSensor.sensorTypeProperty().get()!=t1){
-				this.movementSensor=sensorManager.createNewSensor(obs.getValue());
-				setParams(movementSensor); 
-			}
+		animalTypeBox.valueProperty().addListener((obs, t, t1)->{
+				this.animalModel=animalManager.createNewAnimal(obs.getValue());
+				setParams(animalModel); 
+				createAnimalPane(animalModel);
 		}); 
 		
 
@@ -185,14 +161,14 @@ public class AnimalSelectionDialog extends Dialog<AnimalModel>{
 //		});
 		
 		
-		sensorBox.setMaxWidth(Double.MAX_VALUE);
-		HBox.setHgrow(sensorBox, Priority.ALWAYS);
+		animalTypeBox.setMaxWidth(Double.MAX_VALUE);
+		HBox.setHgrow(animalTypeBox, Priority.ALWAYS);
 		
 		VBox selectSensor=new VBox();
-		selectSensor.getChildren().addAll(nameLabel, nameField, parentArrayLabel, parentArrayComboBox,sensorLabel, sensorBox);
+		selectSensor.getChildren().addAll(nameLabel, nameField ,sensorLabel, animalTypeBox);
 		
 		mainPane.setTop(selectSensor);
-		mainPane.setBottom(customSensorPane); 
+		mainPane.setRight(customAnimalPane); 
 
 		return mainPane; 
 		
@@ -201,13 +177,16 @@ public class AnimalSelectionDialog extends Dialog<AnimalModel>{
 	/**
 	 * Create the specific pane in the dialog for the selected sensor. 
 	 */
-	public void createSensorPane(MovementSensor sensor){
-		customSensorPane.setCenter(null); 
-		if (sensor instanceof AbstractMovementSensor){
-			System.out.println("Set new sensor pane...");
-			customSensorPane.setCenter(	((AbstractMovementSensor) sensor).getSettingsPane());
-			((AbstractMovementSensor) sensor).getSettingsPane().setParams(sensor);
-		}
+	public void createAnimalPane(AnimalModel animal){
+		customAnimalPane.setCenter(null); 
+		customAnimalPane.setCenter(animal.getSettingsPane().getContentNode());
+		
+		animal.getSettingsPane().setParams(animal, false);
+//		if (sensor instanceof AbstractMovementSensor){
+//			System.out.println("Set new sensor pane...");
+//			customSensorPane.setCenter(	((AbstractMovementSensor) sensor).getSettingsPane());
+//			((AbstractMovementSensor) sensor).getSettingsPane().setParams(sensor);
+//		}
 		//TODO- this is a bit CUMBERSOME and maybe fixed in new version of JavaFX
 		//need to get stage and resize because new controls will have been added. 
 		Stage stage = (Stage) this.getDialogPane().getScene().getWindow();
