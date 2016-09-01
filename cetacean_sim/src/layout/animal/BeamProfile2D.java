@@ -1,5 +1,7 @@
 package layout.animal;
 
+
+import javafx.scene.canvas.Canvas;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.BorderPane;
 
@@ -11,10 +13,17 @@ import javafx.scene.layout.BorderPane;
  */
 public class BeamProfile2D extends BorderPane  {
 	
-	WritableImage curreentBeamProfile; 
+	private WritableImage curreentBeamProfile; 
+	
+	private Canvas canvas; 
 		
 	public BeamProfile2D(){
-		
+		BorderPane holder = new BorderPane(); 
+	
+		Canvas canvas= new Canvas(); 
+		canvas.widthProperty().bind(holder.widthProperty());
+		canvas.heightProperty().bind(holder.heightProperty());
+
 	}
 	
 	
