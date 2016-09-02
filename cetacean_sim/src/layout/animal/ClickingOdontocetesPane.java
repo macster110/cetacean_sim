@@ -57,6 +57,8 @@ public class ClickingOdontocetesPane extends BorderPane implements SettingsPane<
 	/*********Beam Profile***********/
 	
     private BeamProfile3D beamProfile3D;
+    
+	private BeamProfile2D beamProfile2D;
 
 	
 
@@ -183,8 +185,12 @@ public class ClickingOdontocetesPane extends BorderPane implements SettingsPane<
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
-        
-		return holder;
+		
+		HBox hbox=new HBox(); 
+		hbox.setSpacing(5);
+		hbox.getChildren().addAll(holder, beamProfile2D = new BeamProfile2D());
+		        
+		return hbox;
  
 	}
 	
@@ -201,6 +207,8 @@ public class ClickingOdontocetesPane extends BorderPane implements SettingsPane<
 	@Override
 	public void setParams(ClickingOdontocete settingsData, boolean clone) {
 		beamProfile3D.setSurface(settingsData.getBeamProfile()); 
+		beamProfile2D.setSurface(settingsData.getBeamProfile()); 
+
 		
 	}
 

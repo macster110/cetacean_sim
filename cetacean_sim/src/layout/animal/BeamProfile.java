@@ -2,6 +2,8 @@ package layout.animal;
 
 import org.apache.commons.math3.analysis.interpolation.PiecewiseBicubicSplineInterpolatingFunction;
 import org.apache.commons.math3.analysis.interpolation.PiecewiseBicubicSplineInterpolator;
+import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
+
 import edu.mines.jtk.dsp.Sampling;
 import edu.mines.jtk.interp.Gridder2;
 import edu.mines.jtk.interp.SibsonGridder2;
@@ -116,6 +118,45 @@ public class BeamProfile {
 		return beamProfileSurface;
 	}
 	
+	/**
+	 * Get the beam tranmission loss at a specified position for an animal at a specified position and orientation. 
+	 * @param position - the position of the reciever. 
+	 * @param animalPosition - the animla position in cartesian co-ordinates. 
+	 * @param animalOrientation - unit vector of animal orientation. 
+	 * @return the beam transmission loss (does NOT include propogation loss)
+	 */
+	public double getBeamTL(double[] recieverPosition, double[] animalPosition, double[] animalOrientatiol){
+		
+		Vector3D receiverPos= new Vector3D(recieverPosition);
+		Vector3D animalPos= new Vector3D(animalPosition);
+		Vector3D animalOrient= new Vector3D(animalOrientatiol);
+		
+		//horizontal angle. 
+		double x= recieverPosition[0]-animalPosition[0];
+		double y= recieverPosition[1]-animalPosition[1];
+		
+		double horz=Math.atan2(x, y); 
+
+		//verticalangle 
+		double vert;
+		if (recieverPosition[2]==animalPosition[2]) vert=0; //quick calc. 
+		else{
+			double z= recieverPosition[2]-animalPosition[1];
+			double r=receiverPos.distance(animalPos);
+			vert=Math.asin(z/r); 
+		}
+		
+		//now need to add animla orientation;
+		//TODO; 
+		
+		return getTL(horz, vert); 
+	} 
+	
+	/**
+	 * Convert 2D float array to 2D double array.
+	 * @param input - the input
+	 * @return 2D double array. 
+	 */
 	private static double[][] convertFloatsToDoubles(float[][] input)
 	{
 	    if (input == null)
