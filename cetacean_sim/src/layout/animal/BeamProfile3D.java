@@ -228,7 +228,6 @@ public class BeamProfile3D extends BorderPane {
 			
 			//System.out.println(" p.x: "+p.x+ " p.y: "+p.y+ " p.z: "+ p.z);
 		
-			
 			return (bp.getTL(horz, vert));
 			//return 1; //p.x*p.y*p.z;
 //			double t=10; 

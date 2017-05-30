@@ -45,8 +45,8 @@ public class BeamProfile {
 		float[] tl=new float[beamProfile.length];
 
 		for (int i=0; i<beamProfile.length ;i++){
-			horzAngle[i]=(float) Math.toRadians(beamProfile[i][0]);
-			vertAngle[i]=(float) Math.toRadians(beamProfile[i][1]);
+			horzAngle[i]=(float) beamProfile[i][0];
+			vertAngle[i]=(float) beamProfile[i][1];
 			tl[i]=-(float) beamProfile[i][2];
 			System.out.println("TL input: "+tl[i]);
 		}

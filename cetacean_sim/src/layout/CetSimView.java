@@ -56,11 +56,16 @@ public class CetSimView extends BorderPane {
 	 */
 	private CetStatusPane loadPane;
 	
-	
+	/**
+	 * Default font size ofr titles. 
+	 */
+	public final static int titleFontSize=16;   
+
 
 	public CetSimView(CetSimControl csControl) {
 		this.cSControl= csControl;
 		
+		//this.setStyle("-fx-font: 12px Ubuntu;");
 		
 		//initilize all the various panes. 
 		bathyPane=new BathymetryPane(this);
@@ -73,12 +78,12 @@ public class CetSimView extends BorderPane {
 	
 		//Bathymetry
 		Label bathyTitle=new Label("Bathymetry Data");
-		bathyTitle.setFont(new Font("Ubuntu",16));
+		bathyTitle.setFont(new Font("Ubuntu",titleFontSize));
 		holder.getChildren().addAll(bathyTitle,bathyPane= new BathymetryPane(this) ); 
 
 		//Animals
 		Label animalTitle=new Label("Animal Model");
-		animalTitle.setFont(new Font("Ubuntu",16));
+		animalTitle.setFont(new Font("Ubuntu",titleFontSize));
 		holder.getChildren().addAll(animalTitle,animalPane= new AnimalPane(this) ); 
 		
 		

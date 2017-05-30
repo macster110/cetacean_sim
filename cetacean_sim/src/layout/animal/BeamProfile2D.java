@@ -3,11 +3,14 @@ package layout.animal;
 import org.fxyz.utils.Palette;
 import org.fxyz.utils.Palette.ColorPalette;
 
+import javafx.geometry.Side;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
+import javafx.scene.chart.NumberAxis;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
 import javafx.scene.paint.Color;
 
 
@@ -110,14 +113,41 @@ public class BeamProfile2D extends BorderPane  {
 		holder.setCenter(canvas);
 		holder.setPrefWidth(300);
 		
+		NumberAxis yAxis = new NumberAxis(); 
+		yAxis.setLowerBound(yMin);
+		yAxis.setUpperBound(yMax);
+		yAxis.setTickUnit(50);
+		yAxis.setLabel("y(m)");
+		yAxis.setAutoRanging(false);
+
+		yAxis.setSide(Side.LEFT);
 		
+		NumberAxis xAxis = new NumberAxis(); 
+		xAxis.setLowerBound(xMin);
+		xAxis.setUpperBound(xMax);
+		xAxis.setSide(Side.BOTTOM);
+		xAxis.setTickUnit(50);
+		xAxis.setLabel("y(m)");
+		xAxis.setAutoRanging(false);
+		
+		//have to ave x Axis holder becuas eof the way Border Pane works out.  
+		Pane corner = new Pane(); 
+		corner.prefWidthProperty().bind(yAxis.widthProperty());
+		HBox.setHgrow(xAxis, Priority.ALWAYS);
+		HBox hbox=new HBox(corner, xAxis);
+		hbox.prefWidthProperty().bind(holder.widthProperty());
+		
+		this.setLeft(yAxis);
+		this.setBottom(hbox);
+
+
 		this.setCenter(holder);
 		
-		Button test = new Button("Hello"); 
-		test.setOnAction((action)->{
-			repaint();
-		});
-		this.setBottom(test);
+//		Button test = new Button("Hello"); 
+//		test.setOnAction((action)->{
+//			repaint();
+//		});
+//		this.setBottom(test);
 
 	}
 	
@@ -178,10 +208,10 @@ public class BeamProfile2D extends BorderPane  {
 				double sl=191-tl;
 				if (sl<100 || sl>191) sl=100; 
 				
-				System.out.println(" x(m) " + x+ " y(m) "+ y+" sl: "+sl + " color: "+(int) (255*(191/sl))+ " "+(imageHeight-j));
+//				System.out.println(" x(m) " + x+ " y(m) "+ y+" sl: "+sl + " color: "+(int) (255*(191/sl))+ " "+(imageHeight-j));
 				
-//				currentBeamImage.getPixelWriter().setColor(i, imageHeight-j-1, Color.rgb(0, (int) (255*((sl-100)/91)), 0));
-				currentBeamImage.getPixelWriter().setColor(i, imageHeight-j-1, colourArray.getColor(i));
+				currentBeamImage.getPixelWriter().setColor(i, imageHeight-j-1, Color.rgb(0, (int) (255*((sl-100)/91)), 0));
+//				currentBeamImage.getPixelWriter().setColor(i, imageHeight-j-1, colourArray.getColor(i));
 
 			}
 		}

@@ -3,6 +3,7 @@ package layout.animal;
 import animal.AnimalManager.AnimalTypeEnum;
 import animal.AnimalModel;
 import cetaceanSim.CetSimControl;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.TableColumn;
 import javafx.scene.layout.BorderPane;
@@ -35,23 +36,28 @@ public class AnimalPane extends BorderPane {
 	class AnimalTable extends TablePane<AnimalModel> {
 		public AnimalTable() {
 			super(cetSimView.getCetSimControl().getAnimalManager().getAnimalList());
-		
-			TableColumn<AnimalModel,String>  animalName = new TableColumn<AnimalModel,String>("Animal Type");
-			animalName.setCellValueFactory(cellData -> cellData.getValue().sensorNameProperty());
 			
-			TableColumn<AnimalModel,Number>  nAnimals = new TableColumn<AnimalModel,Number>("Number");
-			nAnimals.setCellValueFactory(cellData -> cellData.getValue().numberAnimalsameProperty());
+			TableColumn<AnimalModel,String>  animalName = new TableColumn<AnimalModel,String>("Name");
+			animalName.setCellValueFactory(cellData -> cellData.getValue().sensorNameProperty());
+		
+			TableColumn<AnimalModel,String>  animalModel = new TableColumn<AnimalModel,String>("Animal Type");
+			animalModel.setCellValueFactory(cellData -> {
+				return  new ReadOnlyObjectWrapper<String>(cellData.getValue().getAnimalType().toString());
+			});
 
-			getTableView().getColumns().addAll(animalName, nAnimals);
+			TableColumn<AnimalModel,Number>  nAnimals = new TableColumn<AnimalModel,Number>("Number");
+			nAnimals.setCellValueFactory(cellData -> cellData.getValue().numberAnimalsProperty());
+
+			getTableView().getColumns().addAll(animalName, animalModel, nAnimals);
 			
 		}
 
 		@Override
 		public void dialogClosed(AnimalModel data) {
-			//TODO- add some notifications. 
 			
 		}
 
+		
 		@Override
 		public Dialog<AnimalModel> createSettingsDialog(AnimalModel data) {
 			System.out.println("Animal data "+data); 

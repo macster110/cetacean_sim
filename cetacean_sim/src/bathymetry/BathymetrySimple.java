@@ -8,7 +8,7 @@ import layout.utils.SettingsPane;
  * @author Jamie Macaulay
  *
  */
-public class BasthymetrySimple implements BathymetryModel {
+public class BathymetrySimple implements BathymetryModel {
 
 	@Override
 	public void loadBathy() {

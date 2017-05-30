@@ -1,6 +1,9 @@
 package animal;
 
+import animal.AnimalManager.AnimalTypeEnum;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import layout.animal.BeamProfile;
 import layout.animal.ClickingOdontocetesPane;
@@ -11,7 +14,7 @@ import layout.utils.SettingsPane;
  * @author Jamie Macaulay
  *
  */
-public class ClickingOdontocete implements AnimalModel {
+public class ClickingOdontocete implements AnimalModel, Cloneable {
 	
 	/**
 	 * Settings whihc can be serialised. 
@@ -28,6 +31,18 @@ public class ClickingOdontocete implements AnimalModel {
 	 */
 	private BeamProfile beamProfile= new BeamProfile(); 
 	
+	/**
+	 * Inetger property for the number of animals in the simulation. 
+	 */
+	private IntegerProperty nAnimals= new SimpleIntegerProperty( 50); 
+	
+	
+	/**
+	 * String property for the name of the animal
+	 */
+	private StringProperty nameProperty= new SimpleStringProperty("My clicking odontocetes"); 
+
+	
 	public ClickingOdontocete(){
 		newSettings();
 	}
@@ -35,8 +50,7 @@ public class ClickingOdontocete implements AnimalModel {
 	
 	@Override
 	public StringProperty sensorNameProperty() {
-		// TODO Auto-generated method stub
-		return null;
+		return nameProperty;
 	}
 	
 	/**
@@ -50,9 +64,8 @@ public class ClickingOdontocete implements AnimalModel {
 	
 
 	@Override
-	public IntegerProperty numberAnimalsameProperty() {
-		// TODO Auto-generated method stub
-		return null;
+	public IntegerProperty numberAnimalsProperty() {
+		return nAnimals;
 	}
 
 	@Override
@@ -89,10 +102,31 @@ public class ClickingOdontocete implements AnimalModel {
 		}
 		return settingsPane; 
 	}
+	
+	public ClickingOdontocetesSettings getSettings() {
+		return settings;
+	}
 
 
 	public BeamProfile getBeamProfile() {
 		return beamProfile;
+	}
+	
+	@Override
+	public ClickingOdontocete clone()  {
+
+		try {
+			return (ClickingOdontocete) super.clone();
+		}
+		catch (CloneNotSupportedException e) {
+			return null;
+		}
+	}
+
+
+	@Override
+	public AnimalTypeEnum getAnimalType() {
+		return AnimalTypeEnum.CLICKING_ODONTOCETE;
 	}
 
 }

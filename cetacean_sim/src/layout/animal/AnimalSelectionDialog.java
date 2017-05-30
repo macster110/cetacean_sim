@@ -8,6 +8,8 @@ import cetaceanSim.CetSimControl;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
@@ -19,7 +21,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import layout.CetSimView;
 
 /**
  * Allows user to select an animal. 
@@ -71,6 +75,8 @@ public class AnimalSelectionDialog extends Dialog<AnimalModel>{
 		this.setTitle("Animal Dialog");
 		this.getDialogPane().setContent(createDialogPane());
 		this.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+		
+		
 		this.setResultConverter(dialogButton -> {
 			if (dialogButton == ButtonType.OK) {
 				return animalModel;
@@ -103,14 +109,35 @@ public class AnimalSelectionDialog extends Dialog<AnimalModel>{
 	
 	@SuppressWarnings("unchecked")
 	private boolean getParams(){
-		return false;
+		
+		if (nameField.getText()==null){
+			Alert alert = new Alert(AlertType.ERROR);
+			alert.setTitle("Error Dialog");
+			alert.setHeaderText("No animal name");
+			alert.setContentText("You need to name the animal(s) for the simulation!");
+			alert.showAndWait();
+			return false;
+		}
+		else animalModel.sensorNameProperty().set(nameField.getText());
+		
+	
+		if (animalModel!=null){
+			if (animalModel.getSettingsPane().getParams()!=null) return true;
+			else return false; 
+		}
+		else return false;
+
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void setParams(AnimalModel movementSensor){
-	
-		
+	private void setParams(AnimalModel animalModel){
+		animalTypeBox.setValue(animalModel.getAnimalType());
+		//create the pane
+		createAnimalPane(animalModel);
 	}; 
+	
+	
+	private final int maxWidth=300; 
 	
 	/**
 	 * Create the dialog pane. 
@@ -120,19 +147,22 @@ public class AnimalSelectionDialog extends Dialog<AnimalModel>{
 				
 		mainPane=new BorderPane();
 		
+		Label titleLabel=new Label("Basic Info"); 
+		titleLabel.setFont(new Font("Ubuntu", CetSimView.titleFontSize));
+		
 		Label nameLabel=new Label("Animal Name"); 
 		nameLabel.setPadding(new Insets(5,0,0,0));
 		nameField=new TextField();
-		
+		nameField.setMaxWidth(maxWidth);
+
 		
 		Label sensorLabel=new Label("Select Animal");
 		animalTypeBox=new ComboBox<AnimalTypeEnum>();
-		
 		animalTypeBox.setItems(FXCollections.observableArrayList(AnimalManager.AnimalTypeEnum.values()));
-		
+		animalTypeBox.setMaxWidth(maxWidth);
 		
 		/**
-		 * Unlike arrays and hydrophones, animals are very different from each other and made
+		 * Animals are very different from each other and made
 		 * up of multiple sub classes. Therefore when a new animal type is selected, that animaltype 
 		 * requires a specific pane and a new instance of the subclass to be created. 
 		 */
@@ -142,30 +172,11 @@ public class AnimalSelectionDialog extends Dialog<AnimalModel>{
 				createAnimalPane(animalModel);
 		}); 
 		
-
-		
-//		sensorBox.setConverter(new StringConverter<SensorType>() {
-//            @Override
-//            public String toString(SensorType user) {
-//              if (user == null){
-//                return null;
-//              } else {
-//                return user.sensorNameProperty().get();
-//              }
-//            }
-//
-//          @Override
-//          public MovementSensor fromString(String userId) {
-//              return null;
-//          }
-//		});
-		
-		
-		animalTypeBox.setMaxWidth(Double.MAX_VALUE);
+		animalTypeBox.setMaxWidth(maxWidth);
 		HBox.setHgrow(animalTypeBox, Priority.ALWAYS);
 		
 		VBox selectSensor=new VBox();
-		selectSensor.getChildren().addAll(nameLabel, nameField ,sensorLabel, animalTypeBox);
+		selectSensor.getChildren().addAll(titleLabel, nameLabel, nameField ,sensorLabel, animalTypeBox);
 		
 		mainPane.setTop(selectSensor);
 		mainPane.setRight(customAnimalPane); 
@@ -187,10 +198,12 @@ public class AnimalSelectionDialog extends Dialog<AnimalModel>{
 //			customSensorPane.setCenter(	((AbstractMovementSensor) sensor).getSettingsPane());
 //			((AbstractMovementSensor) sensor).getSettingsPane().setParams(sensor);
 //		}
+		
 		//TODO- this is a bit CUMBERSOME and maybe fixed in new version of JavaFX
 		//need to get stage and resize because new controls will have been added. 
 		Stage stage = (Stage) this.getDialogPane().getScene().getWindow();
 		stage.sizeToScene();
+		
 	}
 
 	

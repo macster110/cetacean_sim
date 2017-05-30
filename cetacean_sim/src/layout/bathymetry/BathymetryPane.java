@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import org.controlsfx.glyphfont.Glyph;
 
-import bathymetry.BasthymetrySimple;
+import bathymetry.BathymetrySimple;
 import bathymetry.BathymetryFile;
 import bathymetry.BathymetryModel;
 import cetaceanSim.CetSimControl;
@@ -57,7 +57,7 @@ public class BathymetryPane extends BorderPane {
 		
 		//Bathymetry List//
 		ArrayList<BathymetryModel> bathyList= new ArrayList<BathymetryModel>(); 
-		bathyList.add(new BasthymetrySimple());
+		bathyList.add(new BathymetrySimple());
 		bathyList.add(new BathymetryFile(cetSimView.getCetSimControl()));
 		this.bathyList=FXCollections.observableArrayList(bathyList); 
 		/////////////////

@@ -1,5 +1,6 @@
 package animal;
 
+import animal.AnimalManager.AnimalTypeEnum;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.StringProperty;
 import layout.utils.SettingsPane;
@@ -21,7 +22,7 @@ public interface AnimalModel {
 		 * The number of these animals in the simulation
 		 * @return the number property for the nu,ber of animals in the simulations
 		 */
-		public IntegerProperty numberAnimalsameProperty();
+		public IntegerProperty numberAnimalsProperty();
 		
 		/**
 		 * Get the track of the animal. 
@@ -60,6 +61,12 @@ public interface AnimalModel {
 		 * @return the settings pane for the animal. 
 		 */
 		public SettingsPane<AnimalModel> getSettingsPane();
+
+		/**
+		 * Get the type of animal this is 
+		 * @return the tytpe of animal. 
+		 */
+		public AnimalTypeEnum getAnimalType();
 
 		
 	
