@@ -118,7 +118,7 @@ public class AnimalSelectionDialog extends Dialog<AnimalModel>{
 			alert.showAndWait();
 			return false;
 		}
-		else animalModel.sensorNameProperty().set(nameField.getText());
+		else animalModel.getSensorName().set(nameField.getText());
 		
 	
 		if (animalModel!=null){

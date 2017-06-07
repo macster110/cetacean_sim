@@ -49,9 +49,10 @@ public class ClickingOdontocete implements AnimalModel, Cloneable {
 
 	
 	@Override
-	public StringProperty sensorNameProperty() {
+	public StringProperty getSensorName() {
 		return nameProperty;
 	}
+	
 	
 	/**
 	 * Called wehenever settings are changed. 
@@ -64,7 +65,7 @@ public class ClickingOdontocete implements AnimalModel, Cloneable {
 	
 
 	@Override
-	public IntegerProperty numberAnimalsProperty() {
+	public IntegerProperty getNumberOfAnimals() {
 		return nAnimals;
 	}
 

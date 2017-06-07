@@ -10,6 +10,7 @@ import javafx.collections.ObservableList;
 import layout.CetSimView;
 import layout.MapProjector3D;
 import noise.NoiseModel;
+import reciever.RecieverManager;
 import reciever.RecieverModel;
 import tide.TideModel;
 
@@ -65,6 +66,11 @@ public class CetSimControl {
 	 */
 	private AnimalManager animals;
 
+	/**
+	 * The reciever manager
+	 */
+	private RecieverManager recieverManager;
+
 	
 	public static final int BATHY_LOADED = 0;
 
@@ -96,7 +102,7 @@ public class CetSimControl {
 	public CetSimControl(){
 		//create defualt instances of each model
 		animals=new AnimalManager(this);
-		recievers=FXCollections.observableArrayList();
+		recieverManager=new RecieverManager(this);
 		
 		//create an array of simualtion components. 
 		simModels=new ArrayList<SimUnit>(); 
@@ -226,6 +232,15 @@ public class CetSimControl {
 	 */
 	public AnimalManager getAnimalManager() {
 		return animals;
+	}
+
+	/**
+	 * Get the reciever manager. Handles all acoustic recievers.
+	 * @return the reciever manager 
+	 */
+	public RecieverManager getRecieverManager() {
+		// TODO Auto-generated method stub
+		return this.recieverManager;
 	}
 
 

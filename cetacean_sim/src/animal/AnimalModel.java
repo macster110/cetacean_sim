@@ -13,16 +13,16 @@ import layout.utils.SettingsPane;
 public interface AnimalModel {
 	
 		/**
-		 * The name fo the animal type
+		 * The name for the animal type
 		 * @return the 
 		 */
-		public StringProperty sensorNameProperty();
+		public StringProperty getSensorName();
 		
 		/**
 		 * The number of these animals in the simulation
-		 * @return the number property for the nu,ber of animals in the simulations
+		 * @return the number property for the number of animals in the simulations
 		 */
-		public IntegerProperty numberAnimalsProperty();
+		public IntegerProperty getNumberOfAnimals();
 		
 		/**
 		 * Get the track of the animal. 

@@ -35,13 +35,13 @@ public class SimpleCetacean implements AnimalModel, Cloneable {
 	}
 
 	@Override
-	public StringProperty sensorNameProperty() {
+	public StringProperty getSensorName() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public IntegerProperty numberAnimalsProperty() {
+	public IntegerProperty getNumberOfAnimals() {
 		// TODO Auto-generated method stub
 		return null;
 	}

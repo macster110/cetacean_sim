@@ -13,7 +13,7 @@ import layout.utils.TablePane;
 public class AnimalPane extends BorderPane {
 	
 	/**
-	 * REeference to the view. 
+	 * Reeference to the view. 
 	 */
 	private CetSimView cetSimView;
 	
@@ -38,7 +38,7 @@ public class AnimalPane extends BorderPane {
 			super(cetSimView.getCetSimControl().getAnimalManager().getAnimalList());
 			
 			TableColumn<AnimalModel,String>  animalName = new TableColumn<AnimalModel,String>("Name");
-			animalName.setCellValueFactory(cellData -> cellData.getValue().sensorNameProperty());
+			animalName.setCellValueFactory(cellData -> cellData.getValue().getSensorName());
 		
 			TableColumn<AnimalModel,String>  animalModel = new TableColumn<AnimalModel,String>("Animal Type");
 			animalModel.setCellValueFactory(cellData -> {
@@ -46,7 +46,7 @@ public class AnimalPane extends BorderPane {
 			});
 
 			TableColumn<AnimalModel,Number>  nAnimals = new TableColumn<AnimalModel,Number>("Number");
-			nAnimals.setCellValueFactory(cellData -> cellData.getValue().numberAnimalsProperty());
+			nAnimals.setCellValueFactory(cellData -> cellData.getValue().getNumberOfAnimals());
 
 			getTableView().getColumns().addAll(animalName, animalModel, nAnimals);
 			
