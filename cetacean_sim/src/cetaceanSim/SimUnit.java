@@ -4,7 +4,7 @@ import layout.MapShapeProvider;
 
 /**
  * All simulation components must satisfy this mode. 
- * @author jamie
+ * @author Jamie Macaulay
  *
  */
 public interface SimUnit {

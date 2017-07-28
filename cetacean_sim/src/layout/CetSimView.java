@@ -7,10 +7,12 @@ import cetaceanSim.SimUnit;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.materialicons.MaterialIcon;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
+import javafx.scene.control.Separator;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
@@ -18,6 +20,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import layout.animal.AnimalPane;
 import layout.bathymetry.BathymetryPane;
+import simulation.SimulationType;
 
 /**
  * The GUI for the CetSimView. 
@@ -25,36 +28,19 @@ import layout.bathymetry.BathymetryPane;
  *
  */
 public class CetSimView extends BorderPane {
-
-	/**
-	 * Reference to the control
-	 */
-	private CetSimControl cSControl;
 	
-	/**
-	 * Pane which control abthymetry data. 
-	 */
-	private BathymetryPane bathyPane;
-	
-	/**
-	 * Shows a 3D view of the MAP. 
-	 */
-	private MapPane3D mapPane;
-
-	/**
-	 * Pane which allows users to select animal models to add to simulation. 
-	 */
-	private AnimalPane animalPane;
-
-	/**
-	 * Hanldes groups/shapes etc. being to to the mpa from different partys of the simulation.
-	 	 */
-	private Map3DManager mapManager;
-
 	/**
 	 * Shows progress. 
 	 */
 	private CetStatusPane loadPane;
+
+	private CetSimControl cSControl;
+
+	private VBox sidePane;
+
+	private StackPane centerHolder;
+
+	private VBox sideHolder;
 	
 	/**
 	 * Default font size ofr titles. 
@@ -63,52 +49,40 @@ public class CetSimView extends BorderPane {
 
 
 	public CetSimView(CetSimControl csControl) {
+		
 		this.cSControl= csControl;
 		
-		//this.setStyle("-fx-font: 12px Ubuntu;");
-		
-		//initilize all the various panes. 
-		bathyPane=new BathymetryPane(this);
-		
-		VBox holder=new VBox();
-		holder.setSpacing(5);
-		holder.setPadding(new Insets(10,0,0,10)); 
-		holder.setPrefWidth(300);
-		holder.setMinWidth(300);
-	
-		//Bathymetry
-		Label bathyTitle=new Label("Bathymetry Data");
-		bathyTitle.setFont(new Font("Ubuntu",titleFontSize));
-		holder.getChildren().addAll(bathyTitle,bathyPane= new BathymetryPane(this) ); 
-
-		//Animals
-		Label animalTitle=new Label("Animal Model");
-		animalTitle.setFont(new Font("Ubuntu",titleFontSize));
-		holder.getChildren().addAll(animalTitle,animalPane= new AnimalPane(this) ); 
-		
-		
 		//finally add the map pane. 
-		StackPane stackPane=new StackPane(); 
-		//stackPane.setMouseTransparent(true);
-		stackPane.getChildren().add(mapPane=new MapPane3D(this));
-		mapManager= new Map3DManager(this, mapPane); 
+		centerHolder=new StackPane(); 
 		
+		//holds the side panes
+		sidePane= new VBox(); 
+		sidePane.setPadding(new Insets(10,0,0,10)); 
+		sidePane.setSpacing(5);
 		
-		/**Extra Panes**/
-		//create load panel 
-		addStausPane(stackPane);
-		//add simulation buttons. 
-		addProcessButtons(stackPane);
+		Label simSelectLabel = new Label("Select Simultation");
+		simSelectLabel.setFont(new Font(titleFontSize));; 
+		
+		ComboBox<String> simulationSelect= new ComboBox<String>(); 
+		for (int i=0; i<csControl.getSimulationTypes().size(); i++) {
+			simulationSelect.getItems().add(csControl.getSimulationTypes().get(i).getName()); 
+		}
+		simulationSelect.setOnAction((action)->{
+			csControl.setSimulation(simulationSelect.getSelectionModel().getSelectedIndex()); 
+		});
+		
+		//holds the GUI from the simulation
+		sideHolder= new VBox();
+		
+		sidePane.getChildren().addAll(simSelectLabel, simulationSelect, new Separator(Orientation.HORIZONTAL), sideHolder); 
 
-		
-		
+	
 		SplitPane sp = new SplitPane();
-		sp.getItems().add(holder);
-		sp.getItems().add(stackPane);
+		sp.getItems().add(sidePane);
+		sp.getItems().add(centerHolder);
 		sp.setDividerPositions(0.2f, 0.8f);
 		 
 		this.setCenter(sp);
-		
 		
 	}
 	
@@ -120,16 +94,6 @@ public class CetSimView extends BorderPane {
 	public CetSimControl getCetSimControl() {
 		return cSControl;
 	}
-	
-	/**
-	 * Get all the current simulation models. 
-	 * @return the current simualtion models. 
-	 */
-	public ArrayList<SimUnit> getSimUnits(){
-		return cSControl.getSimModels();
-	}
-
-
 
 	/**
 	 * Updates from other panes are sent here. 
@@ -140,7 +104,6 @@ public class CetSimView extends BorderPane {
 		case CetSimControl.BATHY_LOADED:
 			break; 
 		case CetSimControl.SIM_DATA_CHANGED:
-			mapManager.updateProviders();
 			break; 
 		case CetSimControl.LOAD_DATA_START:
 			loadPane.setProgress(-1);
@@ -156,14 +119,14 @@ public class CetSimView extends BorderPane {
 			loadPane.setMessage(cSControl.getCurrentMessage());
 			break; 
 		}
-
+		this.cSControl.getCurrentSimulation().getSimView().notifyUpdate(flag); 
 	}
 	
 	/**
 	 * Add a stus pane; 
 	 * @param stackPane
 	 */
-	private void addStausPane(StackPane stackPane){
+	private void addStatusPane(StackPane stackPane){
 		loadPane =new CetStatusPane();
 		StackPane.setAlignment(loadPane, Pos.TOP_RIGHT);
 	    StackPane.setMargin(loadPane, new Insets(10,10,0,0));
@@ -194,6 +157,28 @@ public class CetSimView extends BorderPane {
 	
 
 		stackPane.getChildren().addAll(batchProcess, stopProcess);
+		
+	}
+
+
+	public void setSimMessage(String string) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/**
+	 * Set the current simulation. This changes the GUI to the current simulation
+	 * @param simulationType - the current simulation to set. 
+	 */
+	public void setSimulation(SimulationType simulationType) {
+		this.centerHolder.getChildren().clear();
+		this.sideHolder.getChildren().clear();
+
+		if (simulationType.getSimView()!=null) {
+			this.centerHolder.getChildren().add(simulationType.getSimView().getCenterPane());
+			this.sideHolder.getChildren().add(simulationType.getSimView().getSidePane());
+
+		}
 		
 	}
 

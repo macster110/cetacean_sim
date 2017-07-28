@@ -1,6 +1,5 @@
 package reciever;
 
-import cetaceanSim.CetSimControl;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -10,15 +9,9 @@ public class RecieverManager {
 	 * Holds a list of animals. 
 	 */
 	ObservableList<RecieverModel> animals = FXCollections.observableArrayList();
+
 	
-	/**
-	 * Reference ot the control 
-	 */
-	private CetSimControl cetSimControl;
-	
-	
-	public RecieverManager(CetSimControl cetSimControl) {
-		this.cetSimControl=cetSimControl; 
+	public RecieverManager() {
 	}
 
 	/**
@@ -34,7 +27,7 @@ public class RecieverManager {
 	 * Create a new sensor. 
 	 * @return the new sensor. 
 	 */
-	public RecieverModel createNewAnimal(RecieverTypeEnum type){
+	public static RecieverModel createNewReciever(RecieverTypeEnum type){
 		switch(type){
 		case SIMPLE_DRIFTER:
 			return new DriftingReciever(); 

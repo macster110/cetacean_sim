@@ -16,7 +16,7 @@ public interface AnimalModel {
 		 * The name for the animal type
 		 * @return the 
 		 */
-		public StringProperty getSensorName();
+		public StringProperty getAnimalName();
 		
 		/**
 		 * The number of these animals in the simulation
@@ -64,7 +64,7 @@ public interface AnimalModel {
 
 		/**
 		 * Get the type of animal this is 
-		 * @return the tytpe of animal. 
+		 * @return the type of animal. 
 		 */
 		public AnimalTypeEnum getAnimalType();
 

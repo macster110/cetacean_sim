@@ -72,7 +72,7 @@ public class BathymetryFile implements BathymetryModel {
 	public void loadBathyData(Task<Integer> task){
 		
 		Platform.runLater(() ->{
-			cetSimControl.setSimMessage("Loading bathymetry from file"); 
+			cetSimControl.getCetSimView().setSimMessage("Loading bathymetry from file"); 
 			cetSimControl.notifyUpdate(CetSimControl.LOAD_DATA_START);
 		});
 
@@ -92,7 +92,7 @@ public class BathymetryFile implements BathymetryModel {
 			if (extension.equalsIgnoreCase("csv")){
 				try{
 					Platform.runLater(() ->{
-						cetSimControl.setSimMessage("Importing bathymetry from csv file"); 
+						cetSimControl.getCetSimView().setSimMessage("Importing bathymetry from csv file"); 
 					});
 					double[][] bathyData=CSVReader.readCSV(bathFileSettings.filePaths.get(0).getAbsolutePath()); 
 					//now figure out what kind of file it is 
@@ -106,7 +106,7 @@ public class BathymetryFile implements BathymetryModel {
 							//System.out.println(latLon[j].getLatitude()+ " "+latLon[j].getLongitude());
 						}
 						Platform.runLater(() ->{
-							cetSimControl.setSimMessage("Interpolating bathymetry surface"); 
+							cetSimControl.getCetSimView().setSimMessage("Interpolating bathymetry surface"); 
 						});
 						bathySurface = BathymetryUtils.generateSurface(latLon, 1f, true);
 					}
@@ -119,7 +119,7 @@ public class BathymetryFile implements BathymetryModel {
 		}
 
 		Platform.runLater(() ->{
-			cetSimControl.setSimMessage("Generating 3D shapes");
+			cetSimControl.getCetSimView().setSimMessage("Generating 3D shapes");
 			bathy3DSurface.newBathySurface(bathySurface);
 			cetSimControl.notifyUpdate(CetSimControl.BATHY_LOADED);
 			cetSimControl.notifyUpdate(CetSimControl.LOAD_DATA_END);

@@ -40,7 +40,7 @@ public class ClickingOdontocete implements AnimalModel, Cloneable {
 	/**
 	 * String property for the name of the animal
 	 */
-	private StringProperty nameProperty= new SimpleStringProperty("My clicking odontocetes"); 
+	private StringProperty nameProperty= new SimpleStringProperty("My clicking odontocete"); 
 
 	
 	public ClickingOdontocete(){
@@ -49,7 +49,7 @@ public class ClickingOdontocete implements AnimalModel, Cloneable {
 
 	
 	@Override
-	public StringProperty getSensorName() {
+	public StringProperty getAnimalName() {
 		return nameProperty;
 	}
 	

@@ -39,33 +39,10 @@ public class ClickingOdontocetesSettings  implements Cloneable {
 	 * Order of each elements {horizontal angle (degrees), vertical angle (degrees), transmission loss dB}
 	 *  
 	 */
-	public double[][] beamProfile={
-			{Math.toRadians(-180), 	Math.toRadians(-90),	 -50},
-			{Math.toRadians(180),	Math.toRadians(90),		-50},
-			{Math.toRadians(-180),	Math.toRadians(90),		-50},
-			{Math.toRadians(180),	Math.toRadians(-90),	-50},
-			{Math.toRadians(0),		Math.toRadians(-90)	,	-35},
-			{Math.toRadians(0),		Math.toRadians(90),		-35},
-			{Math.toRadians(-180),	Math.toRadians(0),		-50},
-			{Math.toRadians(-90),	Math.toRadians(0),		-35},
-			{Math.toRadians(-15),	Math.toRadians(0),		-13.2},
-			{Math.toRadians(-10),	Math.toRadians(0),		-7.5},
-			{Math.toRadians(10),	Math.toRadians(0),		-6},
-			{Math.toRadians(22),	Math.toRadians(0),		-20},
-			{Math.toRadians(90),	Math.toRadians(0),		-35},
-			{Math.toRadians(180),	Math.toRadians(0),		-50},
-			{Math.toRadians(0),		Math.toRadians(5),		-3},
-			{Math.toRadians(0),		Math.toRadians(10),		-12},
-			{Math.toRadians(0),		Math.toRadians(-10),	-9},
-			{Math.toRadians(0),		Math.toRadians(-3),		-1.5},
-			{Math.toRadians(0),		Math.toRadians(0),		0}};
+	public double[][] beamProfile = DefaultBeamProfiles.porpBeam1; 
 	
-	
-
 	
 	/***************Acoustic Behaviour******************/
-	
-	
 	/***
 	 * The source level in dB re 1uPa pp; 
 	 */

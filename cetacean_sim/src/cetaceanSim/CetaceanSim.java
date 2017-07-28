@@ -28,7 +28,12 @@ public class CetaceanSim extends Application {
         root.getChildren().add(view= new CetSimView(CetSimControl.getInstance()));
         CetSimControl.getInstance().setView(view);
         
-        primaryStage.setScene(new Scene(root, 1200, 800));
+        Scene scene=new Scene(root, 1200, 800); 
+		//lets go dark 
+        scene.getStylesheets().add("resources/darktheme.css");
+        
+        primaryStage.setScene(scene);
+    	
         primaryStage.show();
     }
 }

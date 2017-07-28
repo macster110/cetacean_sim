@@ -1,5 +1,6 @@
 package layout.animal;
 
+import animal.AnimalManager;
 import animal.AnimalManager.AnimalTypeEnum;
 import animal.AnimalModel;
 import cetaceanSim.CetSimControl;
@@ -23,10 +24,16 @@ public class AnimalPane extends BorderPane {
 	private AnimalTable animalTable;
 
 	/**
+	 * The animal manager. 
+	 */
+	private AnimalManager animalManager;
+
+	/**
 	 * Constructor for animal pane.
 	 * @param cetSimView reference to the view
 	 */
-	public AnimalPane(CetSimView cetSimView){
+	public AnimalPane(AnimalManager animalManager, CetSimView cetSimView){
+		this.animalManager=animalManager;
 		this.cetSimView=cetSimView;
 		animalTable = new AnimalTable(); 
 		this.setCenter(animalTable);
@@ -35,10 +42,10 @@ public class AnimalPane extends BorderPane {
 	
 	class AnimalTable extends TablePane<AnimalModel> {
 		public AnimalTable() {
-			super(cetSimView.getCetSimControl().getAnimalManager().getAnimalList());
+			super(animalManager.getAnimalList());
 			
 			TableColumn<AnimalModel,String>  animalName = new TableColumn<AnimalModel,String>("Name");
-			animalName.setCellValueFactory(cellData -> cellData.getValue().getSensorName());
+			animalName.setCellValueFactory(cellData -> cellData.getValue().getAnimalName());
 		
 			TableColumn<AnimalModel,String>  animalModel = new TableColumn<AnimalModel,String>("Animal Type");
 			animalModel.setCellValueFactory(cellData -> {
@@ -63,8 +70,8 @@ public class AnimalPane extends BorderPane {
 			System.out.println("Animal data "+data); 
 			if (data==null) {
 				//create a new open tag sensor as a default. 
-				AnimalModel movementSensor=CetSimControl.getInstance().getAnimalManager().createNewAnimal(AnimalTypeEnum.CLICKING_ODONTOCETE);
-				return AnimalSelectionDialog.createDialog(movementSensor);
+				AnimalModel animalModel=AnimalManager.createNewAnimal(AnimalTypeEnum.CLICKING_ODONTOCETE);
+				return AnimalSelectionDialog.createDialog(animalModel);
 			}
 			else return AnimalSelectionDialog.createDialog(data);			
 		}

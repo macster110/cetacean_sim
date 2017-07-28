@@ -12,6 +12,9 @@ import layout.MapProjector3D;
 import noise.NoiseModel;
 import reciever.RecieverManager;
 import reciever.RecieverModel;
+import simulation.ProbDetSim;
+import simulation.SimulationType;
+import simulation.SurveySim;
 import tide.TideModel;
 
 /**
@@ -22,56 +25,8 @@ import tide.TideModel;
 public class CetSimControl {
 	
 	/**
-	 * Static reference to the ArrayModelControl. 
+	 * Bathymetry file has finished loading. 
 	 */
-	private static CetSimControl cetSimControlInstance; 
-
-	/**
-	 * The bathymetry
-	 */
-	private BathymetryModel bathymetry; 
-	
-	/**
-	 * The current tide model for the simulation
-	 */
-	private TideModel tide; 
-	
-	/**
-	 * The current noise model for the simulation
-	 */
-	private NoiseModel noise; 
-
-	/**
-	 * Holds a list of recievers
-	 */
-	private ObservableList<RecieverModel> recievers;
-
-	/**
-	 * List of all simulation models. 
-	 */
-	private ArrayList<SimUnit> simModels;
-
-	/**
-	 * The current status message. 
-	 */
-	private String currentMessage;
-
-	/**
-	 * Reference ot the view. Can be null if there is no view. 
-	 */
-	private CetSimView cetSimView;
-
-	/**
-	 * Animal manager
-	 */
-	private AnimalManager animals;
-
-	/**
-	 * The reciever manager
-	 */
-	private RecieverManager recieverManager;
-
-	
 	public static final int BATHY_LOADED = 0;
 
 	/**
@@ -94,154 +49,124 @@ public class CetSimControl {
 	 */
 	public static final int PROGRESS_UPDATE = 4;
 
+	/**
+	 * 
+	 * Animal array has chnaged 
+	 */
 	public static final int ANIMAL_ARRAY_CHANGED = 5;
 
+	
 	/**
-	 * Constructor to initialize the simulation. 
+	 * Static reference to the ArrayModelControl. 
+	 */
+	private static CetSimControl cetSimControlInstance; 
+	
+	/**
+	 * List of the possible types of simulation
+	 */
+	ArrayList<SimulationType> simulationTypes= new ArrayList<SimulationType>();
+	
+	/*
+	 * The current index of the simulation. 
+	 */
+	int currentSimIndex=0; 
+
+	/**
+	 * reference to the view which handles the GUI
+	 */
+	private CetSimView cetSimView; 
+
+	/**
+	 * Constructor to initialise the simulation. 
 	 */
 	public CetSimControl(){
-		//create defualt instances of each model
-		animals=new AnimalManager(this);
-		recieverManager=new RecieverManager(this);
-		
-		//create an array of simualtion components. 
-		simModels=new ArrayList<SimUnit>(); 
-		//some model refernces always exist...others have to be dynamically added to the list. 
-		simModels.add(bathymetry);
-		simModels.add(tide);
-		simModels.add(noise);
+		simulationTypes.add(new SurveySim(this)); 
+		simulationTypes.add(new ProbDetSim(this)); 
 	}
+
+	/**
+	 * Create the controller. 
+	 */
+	public static void create() {
+		if (cetSimControlInstance==null) {
+			cetSimControlInstance= new CetSimControl(); 
+		}
+	}
+
+	/**
+	 * Get the current instance of the control 
+	 * @return
+	 */
+	public static CetSimControl getInstance() {
+		return cetSimControlInstance;
+	}
+
 	
 	/**
-	 * Get the bathymtry model for the simualtion
-	 * @return the bathymetry model 
+	 * Set the current view. 
+	 * @param view
 	 */
-	public BathymetryModel getBathymetry() {
-		return bathymetry;
-	}
-
-
-	/**
-	 * Set the bathymetry model 
-	 * @param bathymetry the bathymtry model
-	 */
-	public void setBathymetry(BathymetryModel bathymetry) {
-		simModels.remove(this.bathymetry);
-		this.bathymetry = bathymetry;
-		simModels.add(bathymetry);
-	}
-
-
-	/**
-	 * Get the tide model for the simualtion. 
-	 * @return the tide model. 
-	 */
-	public TideModel getTide() {
-		return tide;
-	}
-
-
-	/**
-	 * Set the tide for the simualtion
-	 * @param tide the tide ofr the simualtion. 
-	 */
-	public void setTide(TideModel tide) {
-		this.tide = tide;
-	}
-
-
-	/**
-	 * Get the noise model for the simulation
-	 * @return the noise model
-	 */
-	public NoiseModel getNoise() {
-		return noise;
-	}
-
-
-	/**
-	 * Set the noise model for the simulation
-	 * @param noise the noise model to set for the simulation.
-	 */
-	public void setNoise(NoiseModel noise) {
-		this.noise = noise;
-	}
-	
-
-	/**
-	 * Notification that an update has occured. 
-	 * @param flag the update flag. 
-	 */
-	public void notifyUpdate(int flag) {
-		cetSimView.notifyUpdate(flag);
-	}
-	
-	public ArrayList<SimUnit> getSimModels(){
-		return simModels;
-	}
-
-	/**
-	 * Set the current progress messsage, 
-	 * @param string - the prggreess message. 
-	 */
-	public void setSimMessage(String string) {
-		this.currentMessage=string; 
-		cetSimView.notifyUpdate(PROGRESS_UPDATE);
+	public void setView(CetSimView view) {
+		this.cetSimView=view; 
 		
 	}
+	
 
+	public void setSimulation(int selectedIndex) {
+		this.currentSimIndex=selectedIndex; 
+		cetSimView.setSimulation(simulationTypes.get(selectedIndex)); 	
+	}
+
+	/**
+	 * Start the simulation
+	 */
 	public void startSimulation() {
 		// TODO Auto-generated method stub
 		
 	}
 
+	/**
+	 * Stop the simulation 
+	 */
 	public void stopSimulation() {
 		// TODO Auto-generated method stub
 		
 	}
 
 	/**
-	 * Set the view in the control. 
-	 * @param view - the view. 
+	 * Get the Cet sim view. 
+	 * @return the cet sim view. 
 	 */
-	public void setView(CetSimView view) {
-		this.cetSimView=view; 
-		
+	public CetSimView getCetSimView() {
+		return cetSimView;
 	}
-
 
 	public String getCurrentMessage() {
 		// TODO Auto-generated method stub
-		return currentMessage;
-	}
-	
-	public static CetSimControl getInstance(){
-		return cetSimControlInstance; 
+		return null;
 	}
 
-	public static void create() {
-		if (cetSimControlInstance==null){
-			cetSimControlInstance = new  CetSimControl(); 
-		}
+	public void notifyUpdate(int loadDataStart) {
+		// TODO Auto-generated method stub
 		
 	}
 
 	/**
-	 * Get the animal manager whihc handles animals in the simulation. 
-	 * @return the animal manager
+	 * List of the simulation types. 
+	 * @return all possible simulations. 
 	 */
-	public AnimalManager getAnimalManager() {
-		return animals;
+	public ArrayList<SimulationType> getSimulationTypes() {
+		return simulationTypes; 
 	}
 
 	/**
-	 * Get the reciever manager. Handles all acoustic recievers.
-	 * @return the reciever manager 
+	 * Get the currently selected simulation. 
+	 * @return the current simulation type. 
 	 */
-	public RecieverManager getRecieverManager() {
-		// TODO Auto-generated method stub
-		return this.recieverManager;
+	public SimulationType getCurrentSimulation() {
+		return simulationTypes.get(this.currentSimIndex);
 	}
+	
 
 
 }

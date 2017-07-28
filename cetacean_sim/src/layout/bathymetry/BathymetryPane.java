@@ -6,6 +6,7 @@ import org.controlsfx.glyphfont.Glyph;
 
 import bathymetry.BathymetrySimple;
 import bathymetry.BathymetryFile;
+import bathymetry.BathymetryManager;
 import bathymetry.BathymetryModel;
 import cetaceanSim.CetSimControl;
 import de.jensd.fx.glyphs.GlyphsDude;
@@ -23,7 +24,7 @@ import layout.CetSimView;
 
 /**
  * Holds various types of bathymetry. 
- * @author jamie
+ * @author Jamie Macaulay 
  *
  */
 public class BathymetryPane extends BorderPane {
@@ -47,13 +48,19 @@ public class BathymetryPane extends BorderPane {
 	/**
 	 * The main holder 
 	 */
-	private BorderPane holder;  
+	private BorderPane holder;
+
+	/*8
+	 * The bathymetry manager associated with the pane. 
+	 */
+	private BathymetryManager bathyManager;  
 
 	/**
 	 * Constructor for the bathymetry pane
 	 */
-	public BathymetryPane(CetSimView cetSimView){
+	public BathymetryPane(BathymetryManager bathyManager, CetSimView cetSimView){
 		this.cetSimView=cetSimView; 
+		this.bathyManager=bathyManager; 
 		
 		//Bathymetry List//
 		ArrayList<BathymetryModel> bathyList= new ArrayList<BathymetryModel>(); 
@@ -101,7 +108,8 @@ public class BathymetryPane extends BorderPane {
 		comboBathy.setOnAction((action)->{
 			if (comboBathy.getValue().getSettingsPane()!=null) holder.setCenter(comboBathy.getValue().getSettingsPane().getContentNode());
 			else holder.setCenter(null); 
-			cetSimView.getCetSimControl().setBathymetry(comboBathy.getValue());
+			
+			bathyManager.setBathymetryModel(comboBathy.getValue());
 			
 			cetSimView.notifyUpdate(CetSimControl.SIM_DATA_CHANGED);
 

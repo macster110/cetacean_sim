@@ -4,7 +4,6 @@ package layout.animal;
 import animal.AnimalManager;
 import animal.AnimalManager.AnimalTypeEnum;
 import animal.AnimalModel;
-import cetaceanSim.CetSimControl;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
@@ -22,7 +21,6 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
-import javafx.stage.Stage;
 import layout.CetSimView;
 
 /**
@@ -51,11 +49,6 @@ public class AnimalSelectionDialog extends Dialog<AnimalModel>{
 	 * The pane shows custom controls for specific types of sensor. 
 	 */
 	private BorderPane customAnimalPane= new BorderPane();
-	
-	/**
-	 * Reference to the sensor manager. 
-	 */
-	private AnimalManager animalManager=CetSimControl.getInstance().getAnimalManager();
 	
 	/**
 	 * Combo box to allow users to change sensor type. 
@@ -110,7 +103,7 @@ public class AnimalSelectionDialog extends Dialog<AnimalModel>{
 	@SuppressWarnings("unchecked")
 	private boolean getParams(){
 		
-		if (nameField.getText()==null){
+		if (nameField.getText()==null  || nameField.getText()=="" ){
 			Alert alert = new Alert(AlertType.ERROR);
 			alert.setTitle("Error Dialog");
 			alert.setHeaderText("No animal name");
@@ -118,7 +111,7 @@ public class AnimalSelectionDialog extends Dialog<AnimalModel>{
 			alert.showAndWait();
 			return false;
 		}
-		else animalModel.getSensorName().set(nameField.getText());
+		else animalModel.getAnimalName().set(nameField.getText());
 		
 	
 		if (animalModel!=null){
@@ -167,7 +160,7 @@ public class AnimalSelectionDialog extends Dialog<AnimalModel>{
 		 * requires a specific pane and a new instance of the subclass to be created. 
 		 */
 		animalTypeBox.valueProperty().addListener((obs, t, t1)->{
-				this.animalModel=animalManager.createNewAnimal(obs.getValue());
+				this.animalModel=AnimalManager.createNewAnimal(obs.getValue());
 				setParams(animalModel); 
 				createAnimalPane(animalModel);
 		}); 
@@ -201,8 +194,8 @@ public class AnimalSelectionDialog extends Dialog<AnimalModel>{
 		
 		//TODO- this is a bit CUMBERSOME and maybe fixed in new version of JavaFX
 		//need to get stage and resize because new controls will have been added. 
-		Stage stage = (Stage) this.getDialogPane().getScene().getWindow();
-		stage.sizeToScene();
+//		Stage stage = (Stage) this.getDialogPane().getScene().getWindow();
+//		stage.sizeToScene();
 		
 	}
 
