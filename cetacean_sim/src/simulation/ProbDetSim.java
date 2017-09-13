@@ -12,19 +12,19 @@ public class ProbDetSim  implements SimulationType {
 	
 	private ProbDetSimView probDetView;
 	
-	private ProbDetSimSettings probDetSettings = new ProbDetSimSettings(); 
+	private ProbDetSimSettings probDetSettings = new ProbDetSimSettings();
 
-	public ProbDetSim() {
-		
-	}
+	/**
+	 * The simulation control. 
+	 */
+	private CetSimControl cetSimControl; 
 
-	
 	/**
 	 * Constructor for the simulation./ 
 	 * @param cetSimControl
 	 */
 	public ProbDetSim(CetSimControl cetSimControl) {
-		// TODO Auto-generated constructor stub
+		this.cetSimControl=cetSimControl; 
 	}
 
 	@Override

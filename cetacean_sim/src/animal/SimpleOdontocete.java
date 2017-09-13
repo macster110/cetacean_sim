@@ -1,72 +1,32 @@
 package animal;
 
-import animal.AnimalManager.AnimalTypeEnum;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.StringProperty;
-import layout.utils.SettingsPane;
-
 /**
- * Simple Odontocete is used for calculating the probability of detection. 
- * @author Jamie Macaulay 
+ * Very simple clicking odontocete for probability of detection simulations 
+ * @author Jamie Macaulay
  *
  */
-public class SimpleOdontocete implements AnimalModel, Cloneable {
-	
+public class SimpleOdontocete {
 	
 	/**
-	 * Settings. 
+	 * Animal Parameters. 
 	 */
-	SimpleOdontoceteSettings simpleOdontoceteSettings = new SimpleOdontoceteSettings(); 
 	
-	public SimpleOdontocete() {
-		
-	}
+	public double verticalAngleMean=Math.toRadians(3.29);
+	public double verticalAngleStd=Math.toRadians(27.524);
+	
+	public double horizontalAngleMean=Math.toRadians(0);
+	public double horizontalAngleatd=Math.toRadians(50);
 
-	@Override
-	public StringProperty getAnimalName() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	public double sourceLevelMean=180; //dB re 1 uPa
+	public double sourceLevelStd=10;
 
-	@Override
-	public IntegerProperty getNumberOfAnimals() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	/****************The beam profile********************/
 
-	@Override
-	public double[][] getTrack(long timeStart, long longTimeEnd, double[][] bathySurface, double[][] tide) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public double getBeamProfileTL(double horzAngle, double vertAngle) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public double[] getVocWav(double horzAngle, double vertAngle, int sR) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public double[][] getVocSeries(long timeStart, long longTimeEnd) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public SettingsPane<AnimalModel> getSettingsPane() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public AnimalTypeEnum getAnimalType() {
-		return AnimalTypeEnum.SIMPLE_ODONTOCETE;
-	}
+	/**
+	 * The beam profile. Non uniform points on the beam profile surface.
+	 * Order of each elements {horizontal angle (degrees), vertical angle (degrees), transmission loss dB}
+	 *  
+	 */
+	public double[][] beamProfile = DefaultBeamProfiles.porpBeam1; 
 
 }

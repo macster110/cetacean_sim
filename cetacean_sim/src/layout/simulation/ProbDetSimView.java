@@ -208,6 +208,10 @@ public class ProbDetSimView implements SimulationView {
 
 		row++; 
 		Button animals = new Button("Animal"); 		
+		animals.setOnAction((action)->{
+			//open the animal pane. 
+			
+		});
 		animals.setGraphic(GlyphsDude.createIcon(MaterialIcon.SETTINGS, "25")); 
 		animals.prefWidthProperty().bind(mainPane.widthProperty());
 		animals.setMaxWidth(500);

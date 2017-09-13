@@ -139,44 +139,13 @@ public class BathymetryUtils {
 	 */
 	public static BathyData generateSurface(double[][] points, float zExaggeration, boolean aspectRatio){
 		
-		//get data into the correct format and find min values. 
-		float[] f =new float[(int) Math.floor(points.length)];
-		float[] x1 =new float[(int) Math.floor(points.length)];
-		float[] x2 =new float[(int) Math.floor(points.length)];
-
-		double minX=Double.MAX_VALUE;  
-		double maxX=-Double.MAX_VALUE;
-		double minY=Double.MAX_VALUE;  
-		double maxY=-Double.MAX_VALUE;
+		SurfaceData surfaceData = SurfaceUtils.generateSurface(points, zExaggeration);
 		
-		int n=0;
-		for (int i=1; i<points.length; i++){
-			
-			//System.out.println(" i: "+ i+ " points.length: "+points.length);
-
-			
-			if (points[i] == null || n>=((int) Math.floor(points.length))) continue;
-			
-			//create co-ordinate
-			x1[n]=(float) points[i][0]; 
-			x2[n]=(float) points[i][1]; 
-			f[n]=(float) points[i][2]*zExaggeration; 
-			if (f[n]==0.) f[n]=(float) Math.random();
-			
-			//work out m in max
-			if (x1[n]>maxX) maxX=x1[n]; 
-			if (x1[n]<minX) minX=x1[n]; 
-			if (x2[n]>maxY)	maxY=x2[n]; 
-			if (x2[n]<minY) minY=x2[n]; 
-			
-			n++;
-			
-		}
-		
-		System.out.println("Min max values for grid: " + minX + " "+  maxX + " " + minY + " "+ maxY); 
-		
-		
-		SibsonGridder2 simpleGridder2= new SibsonGridder2(f, x1,  x2);
+		SibsonGridder2 simpleGridder2=surfaceData.grid; 
+		double minX=surfaceData.minX; 
+		double maxX=surfaceData.maxX; 
+		double minY=surfaceData.minY; 
+		double maxY=surfaceData.maxY; 
 	
 		//now create the grid. 
 		int samplesCount=300; 

@@ -7,6 +7,7 @@ import layout.animal.ClickingOdontocetesPane;
 import layout.animal.SimpleAnimalPane;
 import layout.utils.SettingsPane;
 
+
 public class SimpleCetacean implements AnimalModel, Cloneable {
 
 	private SimpleAnimalPane settingsPane;

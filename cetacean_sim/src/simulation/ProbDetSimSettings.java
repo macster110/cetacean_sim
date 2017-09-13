@@ -3,6 +3,7 @@ package simulation;
 import java.util.ArrayList;
 
 import animal.AnimalModel;
+import animal.SimpleOdontocete;
 import reciever.RecieverModel;
 
 /**
@@ -48,7 +49,7 @@ public class ProbDetSimSettings {
 	
 	/********Recovers********/
 	
-	ArrayList<RecieverModel> recieverModel = new ArrayList<RecieverModel>(); 
+	double[][] hydrophonePositions; 
 	
 	
 	/******Propagation********/
@@ -73,7 +74,27 @@ public class ProbDetSimSettings {
 	/**
 	 * The animal model
 	 */
-	public AnimalModel animal; 
+	public SimpleOdontocete simpleOdontocete =new SimpleOdontocete(); 
+	
+	/**
+	 * Random horizontal angle
+	 */
+	public boolean randomHorz=true;
+	
+	/****Depth Distribution****/
+	
+	/**
+	 * Use the a depth distribution in the simulation. 
+	 */
+	public boolean useDepthDist= false; 
+	
+	/**
+	 * The depth distribution
+	 */
+	public double[][] depthDistribution; 
+	
+	
+
 
 	
 }
