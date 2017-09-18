@@ -1,13 +1,16 @@
 package simulation;
 
-import java.util.ArrayList;
+import java.util.Random;
 
-import animal.AnimalModel;
 import animal.SimpleOdontocete;
-import reciever.RecieverModel;
+import propogation.Propogation;
+import propogation.SimplePropogation;
+import reciever.DefaultHydrophoneArrays;
+import sun.java2d.SurfaceData;
+import utils.SurfaceUtils;
 
 /**
- * Probability of detection settings. 
+ * Probability of detection settings which can be serialized and saved 
  * @author Jamie Macaulay	
  *
  */
@@ -49,24 +52,22 @@ public class ProbDetSimSettings {
 	
 	/********Recovers********/
 	
-	double[][] hydrophonePositions; 
+	double[][] hydrophonePositions = DefaultHydrophoneArrays.PLABuoyLong; 
+	
+	/**
+	 * The minimum number of receivers to detect a sound on. 
+	 */
+	public int minRecievers = 0; 
 	
 	
 	/******Propagation********/
 	
-	public double spreading=20;
-	
-	
-	public double absorption=0.04; 
-	
+	public Propogation propogation = new SimplePropogation(20, 0.04);
+
 	
 	/****Noise to test****/
 	
-	public double minNoise=85; 
-	
-	public double noiseBin=1; 
-	
-	public double noiseMax=150; //dB re 1uPa pp. 
+	public double noiseThreshold = 100; //dB
 	
 	
 	/****The animal*****/
@@ -76,25 +77,6 @@ public class ProbDetSimSettings {
 	 */
 	public SimpleOdontocete simpleOdontocete =new SimpleOdontocete(); 
 	
-	/**
-	 * Random horizontal angle
-	 */
-	public boolean randomHorz=true;
-	
-	/****Depth Distribution****/
-	
-	/**
-	 * Use the a depth distribution in the simulation. 
-	 */
-	public boolean useDepthDist= false; 
-	
-	/**
-	 * The depth distribution
-	 */
-	public double[][] depthDistribution; 
-	
-	
-
 
 	
 }

@@ -14,6 +14,6 @@ public interface SimulationView {
 
 	public Node getCenterPane();
 	
-	public void notifyUpdate(int updateType); 
+	public void notifyUpdate(int updateType);
 
 }

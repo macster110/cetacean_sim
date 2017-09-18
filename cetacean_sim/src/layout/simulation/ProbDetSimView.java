@@ -3,18 +3,22 @@ package layout.simulation;
 
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.materialicons.MaterialIcon;
+import javafx.application.Platform;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.Spinner;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
-import layout.CetSimView;
 import simulation.ProbDetSim;
 import simulation.ProbDetSimSettings;
+import simulation.StatusListener;
 
 /**
  * View for probability of detection simualtion views. 
@@ -23,246 +27,212 @@ import simulation.ProbDetSimSettings;
  */
 public class ProbDetSimView implements SimulationView {
 
-	private Spinner<Integer> nRunnerSpinner;
-
-
-	private Spinner<Integer> nBootSpinner;
-
-
-	private Spinner<Double> maxRange;
-
-
-	private Spinner<Double> maxDepth;
-
-
-	private Spinner<Double> rangeBin;
-
-
-	private Spinner<Double> depthBin;
 
 	/**
-	 * The side pane. 
+	 * Main holder pane.
 	 */
-	private VBox sidePane;
+	private StackPane centerPane;
 
+	/**
+	 * Start the simulation
+	 */
+	private Button play;
 
-	private Spinner<Double> minNoise;
+	/**
+	 * Export the simulation results to a file
+	 */
+	private Button export;
 
+	/**
+	 * The pane which holds the probability simulation. 
+	 */
+	private BorderPane map;
 
-	private Spinner<Double> noiseBin;
+	/**
+	 * Reference to the simulation. 
+	 */
+	private ProbDetSim probDetSim;
 
-
-	private Spinner<Double> maxNoise;
-
-
-	private Spinner<Double> spreading;
-
-
-	private Spinner<Double> absorbption;
-
-
-	private BorderPane centerPane;
 	
-	public static int spinnerWidth=60; 
+	private ProbDetSettingsPane settingsPane;
 
-	public ProbDetSimView(ProbDetSim cetSimView) {
-		createSidePane() ; 
+	/**
+	 * Progress bar 2
+	 */
+	private ProgressBar progressBar1;
+
+	/**
+	 * Progress bar 1
+	 */
+	private ProgressBar progressBar2;
+
+	/**
+	 * Pane which sits at the top of the center display and shows to progress bars. 
+	 */
+	private VBox progressVBox;
+
+	private Label progressLabel1;
+
+	private Label progressLabel2;
+
+	/**
+	 * Constructor for the probability of detection view. 
+	 * @param probDetSim - reference to the ProbDetSim. 
+	 */
+	public ProbDetSimView(ProbDetSim probDetSim) {
+		this.probDetSim=probDetSim; 
+		this.settingsPane = new ProbDetSettingsPane(); 
 		createCenterPane(); 
 	}
-
+	
 	/**
-	 * Create the side pane. 
+	 * Create pane to start and stop the simulation. 
+	 * @return control pane. 
 	 */
-	private void createSidePane() {
-
-
-		int row=0; 
-
-		GridPane  mainPane = new GridPane(); 
-		mainPane.setHgap(5);
-		mainPane.setVgap(5);
-
-
-		Label simLabel = new Label("Simulation Runs"); 
-		simLabel.setFont(new Font(CetSimView.titleFontSize));
-		GridPane.setColumnSpan(simLabel, 4);
-		mainPane.add(simLabel, 0, row);
-
-		row++; 
-		mainPane.add(new Label("No. Runs"), 0, row);
-		nRunnerSpinner= new Spinner<Integer>(10,50000000,50000,10000); 
-		GridPane.setColumnSpan(nRunnerSpinner, 2);
-		styleSpinner(nRunnerSpinner);
-		nRunnerSpinner.setPrefWidth(170);
-		mainPane.add(nRunnerSpinner, 1, row);
-
-		row++; 
-		mainPane.add(new Label("No. Boot"), 0, row);
-		nBootSpinner= new Spinner<Integer>(10,50000000,100,25); 
-		GridPane.setColumnSpan(nBootSpinner, 2);
-		styleSpinner(nBootSpinner);
-		nBootSpinner.setPrefWidth(170);
-		mainPane.add(nBootSpinner, 1, row);
+	private Pane createSimControlPane() {
+		HBox hBox= new HBox();
+		hBox.setSpacing(5); 
 		
-		/******Sim Dimensions*****/
-
-		row++; 
-		Label coOrds = new Label("Dimensions"); 
-		coOrds.setFont(new Font(CetSimView.titleFontSize));
-		GridPane.setColumnSpan(coOrds, 4);
-		mainPane.add(coOrds, 0, row);
-
-		row++; 
-		mainPane.add(new Label("Range: Max"), 0, row);
-		maxRange = new Spinner<Double>(0.,50000000.,700.,10.); 
-		styleSpinner(maxRange);
-		mainPane.add(maxRange, 1, row);
-		mainPane.add(new Label("bin"), 2, row);
-		rangeBin = new Spinner<Double>(0.,50000000.,25.,2.); 
-		styleSpinner(rangeBin);
-		mainPane.add(rangeBin, 3, row);
-
-		row++;
-		mainPane.add(new Label("Depth: Max"), 0, row);
-		maxDepth= new Spinner<Double>(-50000000.,50000000.,-200.,10.); 
-		styleSpinner(maxDepth);
-		mainPane.add(maxDepth, 1, row);
-		mainPane.add(new Label("bin"), 2, row);
-		depthBin= new Spinner<Double>(0.,50000000.,10.,2.); 
-		styleSpinner(depthBin);
-		mainPane.add(depthBin, 3, row);
-		
-		/****Receiver****/
-
-		row++;
-		Label recieverLabel = new Label("Receivers"); 
-		recieverLabel.setFont(new Font(CetSimView.titleFontSize));
-		GridPane.setColumnSpan(coOrds, 6);
-		mainPane.add(recieverLabel, 0, row); 
-		
-		row++; 
-		Button recievers = new Button("Recievers"); 	
-		recievers.prefWidthProperty().bind(mainPane.widthProperty());
-		recievers.setMaxWidth(500);
-		recievers.setGraphic(GlyphsDude.createIcon(MaterialIcon.SETTINGS, "25")); 
-		GridPane.setColumnSpan(recievers, 6);
-		mainPane.add(recievers, 0, row);
-
-
-		/******Propagation*****/
-		row++;		
-		Label propogationLabel = new Label("Propogation"); 
-		propogationLabel.setFont(new Font(CetSimView.titleFontSize));
-		GridPane.setColumnSpan(propogationLabel, 4);
-		mainPane.add(propogationLabel, 0, row);
-
-		row++;
-		HBox propogationHolder = new HBox();
-		propogationHolder.setSpacing(5); 
-//		mainPane.add(new Label(" Spreading = "), 0, row);
-		spreading = new Spinner<Double>(0.,20.,20.,0.5); 
-		styleSpinner(spreading);
-//		mainPane.add(spreading, 1, row);
-//		mainPane.add(new Label("*log10(R) +"), 2, row);
-		absorbption= new Spinner<Double>(0.000000001,300.,0.04,0.01); 
-		styleSpinner(absorbption);
-//		mainPane.add(absorbption, 3, row);
-//		mainPane.add(new Label("*R"), 4, row);
-		
-		propogationHolder.getChildren().addAll(new Label(" Spreading = "), spreading, new Label("*log10(R) +"),
-				absorbption, new Label("*R")); 
-		
-		GridPane.setColumnSpan(propogationHolder, 6);
-		mainPane.add(propogationHolder, 0, row);
-
-		/*******Noise*******/
-		row++; 
-		Label noiseLabel = new Label("Noise"); 
-		noiseLabel.setFont(new Font(CetSimView.titleFontSize));
-		GridPane.setColumnSpan(noiseLabel, 4);
-		mainPane.add(noiseLabel, 0, row);
-
-		row++; 
-		mainPane.add(new Label("Noise: min"), 0, row);
-
-		minNoise = new Spinner<Double>(0.,300.,85.,1.); 
-		mainPane.add(minNoise, 1, row);
-		styleSpinner(minNoise);
-
-		mainPane.add(new Label("bin"), 2, row);
-		noiseBin= new Spinner<Double>(0.0001,300.,1.,0.5); 
-		styleSpinner(noiseBin);
-		mainPane.add(noiseBin, 3, row);
-
-		mainPane.add(new Label("max"), 4, row);
-		maxNoise = new Spinner<Double>(0.,300,150.,1.); 
-		styleSpinner(maxNoise);
-		mainPane.add(maxNoise, 5, row);
-
-		/*******Animal*******/
-		row++; 
-		Label animalLabel = new Label("Animal"); 
-		animalLabel.setFont(new Font(CetSimView.titleFontSize));
-		GridPane.setColumnSpan(animalLabel, 6);
-		mainPane.add(animalLabel, 0, row);
-
-		row++; 
-		Button animals = new Button("Animal"); 		
-		animals.setOnAction((action)->{
-			//open the animal pane. 
+		//button to start thge simualtion 
+		play = new Button(); 
+		setPlayButtonGraphic(false);
+		play.setOnAction((action)->{
+			if (this.probDetSim.isRunning()) {
+				probDetSim.run(false); 
+			}
+			else {
+				probDetSim.run(true); 
+			}
+		});
+	
+		export = new Button(); 
+		export.setGraphic(GlyphsDude.createIcon(MaterialIcon.SAVE, "25"));
+		export.setOnAction((action)->{
 			
 		});
-		animals.setGraphic(GlyphsDude.createIcon(MaterialIcon.SETTINGS, "25")); 
-		animals.prefWidthProperty().bind(mainPane.widthProperty());
-		animals.setMaxWidth(500);
-		GridPane.setColumnSpan(animals, 6);
-		mainPane.add(animals, 0, row);
+		
+		//progress bars for the simualtion.
+		progressBar1= new ProgressBar(); 
+		progressBar2= new ProgressBar(); 
+		
+		progressVBox = new VBox(); 
+		progressVBox.setSpacing(5);
+		progressVBox.getChildren().addAll(progressLabel1= new Label("No. Boostraps"),  progressBar1,
+				progressLabel2= new Label("Sim. Progress"),  progressBar2); 
+		HBox.setHgrow(progressVBox, Priority.ALWAYS);
+		progressVBox.setVisible(false); 
+		
+		progressBar1.prefWidthProperty().bind(progressVBox.widthProperty());
+		progressBar2.prefWidthProperty().bind(progressVBox.widthProperty());
 
-		sidePane = new VBox(); 
-		sidePane.setSpacing(5);
-		sidePane.getChildren().add(mainPane); 
 
+		
+		hBox.getChildren().addAll(play, export, progressVBox);
+		
+		return hBox; 
 	}
 	
-	private void styleSpinner(Spinner spinner) {
-		spinner.setEditable(true);
-		spinner.setPrefWidth(spinnerWidth);
-	}
+	
 
-
-
-	private void setParams(ProbDetSimSettings settings) {
-
-
-	}
-
-	private ProbDetSimSettings getParams(ProbDetSimSettings settings) {
-		return null; 
-
-	}
-
+	
 	/**
 	 * Center pane shows the current graph. 
 	 */
 	private void createCenterPane() {
-		this.centerPane= new BorderPane(new Label("Hello Center Pane")); 
+		StackPane pane = new StackPane(); 
+		
+		map = new BorderPane(); 
+		
+		Pane controlPane = createSimControlPane(); 
+		controlPane.setPadding(new Insets(10,10,10,10));
+		controlPane.prefWidthProperty().bind(map.widthProperty());
+		//controlPane.setPrefWidth(200);
+		StackPane.setAlignment(controlPane, Pos.TOP_LEFT);
+		
+		pane.getChildren().addAll(map, controlPane);
+
+		this.centerPane = pane;
 	}
 
 	@Override
 	public Node getSidePane() {
-		return sidePane;
+		return settingsPane;
 	}
 
 	@Override
 	public Node getCenterPane() {
-		// TODO Auto-generated method stub
 		return centerPane;
+	}
+	
+
+	/**
+	 * Set the play button graphic.
+	 */
+	private void setPlayButtonGraphic(boolean running) {
+		Platform.runLater(()->{
+			if (running) {
+				play.setGraphic(GlyphsDude.createIcon(MaterialIcon.PAUSE, "25"));
+			}
+			else {
+				play.setGraphic(GlyphsDude.createIcon(MaterialIcon.PLAY_ARROW, "25"));
+			}
+		});
+	}
+	
+	
+	/**
+	 * Called whenever the simualtion starts or starts running.
+	 */
+	private void setSimControls(boolean running) {
+		setPlayButtonGraphic(running);  
+		progressVBox.setVisible(running);
 	}
 
 	@Override
 	public void notifyUpdate(int updateType) {
-		// TODO Auto-generated method stub
+		switch (updateType) {
+		case StatusListener.SIM_STARTED:
+			setSimControls(true); 
+			break;
+		case StatusListener.SIM_FINIHSED:
+			setSimControls(false); 
+			break;
+		}
 
 	}
+	
+	/**
+	 * Set all paramter in the view. 
+	 * @param settings - the parameter class to set.
+	 */
+	public void setParams(ProbDetSimSettings settings) {
+		settingsPane.setParams(settings); 
+
+	}
+	
+	/**
+	 * Get all params in the view before the simulation is run. 
+	 * @param settings - the paramter calss to change. 
+	 */
+	public ProbDetSimSettings getParams(ProbDetSimSettings settings) {
+		
+		return settingsPane.getParams(settings); 
+
+	}
+
+	/**
+	 * Set the progress of the progress bar.s
+	 * @param bootstraps - the number of bootstraps completed
+	 * @param simProb - the progress of the current simulation. 
+	 */
+	public void setProgress(int bootstraps, double simProg) {
+		this.progressLabel1.setText("No. Bootstraps: " + bootstraps + " of " +  probDetSim.getNBootstraps());
+		this.progressBar1.setProgress( bootstraps/(double) this.probDetSim.getNBootstraps());
+		this.progressLabel2.setText("Sim. Progress: " + 100*simProg + "%");
+		this.progressBar2.setProgress(simProg); ;
+
+	}
+	
+
 
 }
