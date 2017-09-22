@@ -32,6 +32,58 @@ public class Utils3D {
 	}
 	
 	/**
+	 * Convert and array of the doubles to an array of floats
+	 * @param array - the double array 
+	 * @return float array with equivalent values 
+	 */
+	public static float[][] double2float(double[][] array) {
+		
+		if (array==null || array.length==0) return null; 
+		
+		float[][] floatArray = new float[array.length][array[0].length];
+		
+		for (int i=0; i<array.length; i++) {
+			for (int j=0; j<array[0].length; j++) {
+				floatArray[i][j]=(float) array[i][j]; 
+			}
+		}
+		
+		return floatArray; 
+	}
+	
+	
+	/**
+	 * Get the minimum and maximum of a surface. 
+	 * @param data - a surface 
+	 * @return the minimum and maximum values. 
+	 */
+	public static float[] getMinMax(float[][] data) {      
+
+		int width = (int) data.length;
+		int height = (int) data[0].length; 
+
+		float minValue= Float.MAX_VALUE;
+		float maxValue = -Float.MAX_VALUE;
+
+
+		for (int x = 0; x < width; x++) {
+			for (int y = 0; y < height; y++) {
+				if ( data[x][y]<minValue) {
+					minValue=data[x][y]; 
+				}
+				if ( data[x][y]>maxValue) {
+					maxValue=data[x][y]; 
+				}
+			}
+		}
+
+		float[] minMax= new float[2];
+		minMax[0]=minValue;
+		minMax[1]=maxValue;
+		return minMax; 
+	}
+
+	/**
 	 * Create a 3D axis. 
 	 * @param- size of the axis
 	 */
@@ -67,7 +119,7 @@ public class Utils3D {
         zText.setFill(textColour);
 
         xText.setTranslateX(axisSize*1.1);
-        yText.setTranslateY(-(axisSize*1.1));
+        yText.setTranslateY((axisSize*1.1));
         zText.setTranslateZ((axisSize*1.1));
         zText.getTransforms().add(new Rotate(90, new Point3D(0,1,0)));
         
@@ -79,7 +131,7 @@ public class Utils3D {
         zSphere.setMaterial(blueMaterial);
          
         xSphere.setTranslateX(axisSize);
-        ySphere.setTranslateY(-axisSize);
+        ySphere.setTranslateY(axisSize);
         zSphere.setTranslateZ(axisSize);
          
         Box xAxis = new Box(length, width, width);

@@ -1,9 +1,6 @@
 package layout;
 
-import java.util.ArrayList;
-
 import cetaceanSim.CetSimControl;
-import cetaceanSim.SimUnit;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.materialicons.MaterialIcon;
 import javafx.geometry.Insets;
@@ -18,8 +15,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
-import layout.animal.AnimalPane;
-import layout.bathymetry.BathymetryPane;
 import simulation.SimulationType;
 
 /**

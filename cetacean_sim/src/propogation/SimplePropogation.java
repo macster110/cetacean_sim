@@ -5,9 +5,14 @@ package propogation;
  */
 public class SimplePropogation implements Propogation {
 	
-	
+	/**
+	 * The spreading coefficient
+	 */
 	public double spreading=20; 
 	
+	/**
+	 * The absorption coefficient. 
+	 */
 	public double absorption=0.04; 
 	
 	public SimplePropogation(double spreadingCoef, double absorptionCoeff) {

@@ -16,6 +16,11 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
+import layout.Pane3D;
+import layout.utils.Utils3D;
+import simulation.ProbDetMonteCarlo.ProbDetResult;
 import simulation.ProbDetSim;
 import simulation.ProbDetSimSettings;
 import simulation.StatusListener;
@@ -43,10 +48,6 @@ public class ProbDetSimView implements SimulationView {
 	 */
 	private Button export;
 
-	/**
-	 * The pane which holds the probability simulation. 
-	 */
-	private BorderPane map;
 
 	/**
 	 * Reference to the simulation. 
@@ -71,9 +72,20 @@ public class ProbDetSimView implements SimulationView {
 	 */
 	private VBox progressVBox;
 
+	/**
+	 * Label which shows progress information on total number of bootstraps for the simualtion
+	 */
 	private Label progressLabel1;
 
+	/**
+	 * Label which shows progress information on simulation
+	 */
 	private Label progressLabel2;
+
+	/**
+	 * 3D pane which shows graphs. 
+	 */
+	private Pane3D pane3D;
 
 	/**
 	 * Constructor for the probability of detection view. 
@@ -96,6 +108,7 @@ public class ProbDetSimView implements SimulationView {
 		//button to start thge simualtion 
 		play = new Button(); 
 		setPlayButtonGraphic(false);
+		
 		play.setOnAction((action)->{
 			if (this.probDetSim.isRunning()) {
 				probDetSim.run(false); 
@@ -111,7 +124,7 @@ public class ProbDetSimView implements SimulationView {
 			
 		});
 		
-		//progress bars for the simualtion.
+		//progress bars for the simulation.
 		progressBar1= new ProgressBar(); 
 		progressBar2= new ProgressBar(); 
 		
@@ -124,8 +137,6 @@ public class ProbDetSimView implements SimulationView {
 		
 		progressBar1.prefWidthProperty().bind(progressVBox.widthProperty());
 		progressBar2.prefWidthProperty().bind(progressVBox.widthProperty());
-
-
 		
 		hBox.getChildren().addAll(play, export, progressVBox);
 		
@@ -136,20 +147,34 @@ public class ProbDetSimView implements SimulationView {
 
 	
 	/**
-	 * Center pane shows the current graph. 
+	 * Centre pane shows the current graph. 
 	 */
 	private void createCenterPane() {
 		StackPane pane = new StackPane(); 
 		
-		map = new BorderPane(); 
+		BorderPane plotPane = new BorderPane(); 
+		
+		pane3D = new Pane3D(); 
+		plotPane.setCenter(pane3D);
+		
+		////TEMP////
+		pane3D.getDynamicGroup().getChildren().add(Utils3D.buildAxes(100, Color.RED, "x", "y", "z", Color.WHITE)); 
+		ColouredSurfacePlot surfacePlot = new ColouredSurfacePlot(null, null, ColouredSurfacePlot.createTestData(400, 100.)); 
+		pane3D.getDynamicGroup().getChildren().add(surfacePlot);
+		Line line = new Line(0,0,100,100); 
+		pane3D.getRootGroup().getChildren().add(line); 
+		//pane3D.getRootGroup().getChildren().add(Utils3D.buildAxes(100, Color.CYAN, "x", "y", "z", Color.WHITE)); 
+		///////////
 		
 		Pane controlPane = createSimControlPane(); 
 		controlPane.setPadding(new Insets(10,10,10,10));
-		controlPane.prefWidthProperty().bind(map.widthProperty());
+		controlPane.prefWidthProperty().bind(plotPane.widthProperty());
 		//controlPane.setPrefWidth(200);
 		StackPane.setAlignment(controlPane, Pos.TOP_LEFT);
+		controlPane.setMaxHeight(50);
+		//controlPane.setStyle("-fx-background-color: cornsilk;");
 		
-		pane.getChildren().addAll(map, controlPane);
+		pane.getChildren().addAll(plotPane, controlPane);
 
 		this.centerPane = pane;
 	}
@@ -196,13 +221,32 @@ public class ProbDetSimView implements SimulationView {
 			break;
 		case StatusListener.SIM_FINIHSED:
 			setSimControls(false); 
+			displaySimResults(probDetSim.getProbDetResults()); 
 			break;
 		}
 
 	}
 	
+	
 	/**
-	 * Set all paramter in the view. 
+	 * Display the results of the simualtion
+	 * @param probDetResults - the results for the simulation
+	 */
+	private void displaySimResults(ProbDetResult probDetResults) {
+		pane3D.getDynamicGroup().getChildren().clear();
+		
+		float[][] surface = Utils3D.double2float(probDetResults.probSurfaceMean.getHistogram()); 
+		
+		ColouredSurfacePlot surfacePlot = new ColouredSurfacePlot(null, null, surface); 
+		
+		pane3D.getDynamicGroup().getChildren().add(surfacePlot); 
+		
+	}
+	
+	
+
+	/**
+	 * Set all parameter in the view. 
 	 * @param settings - the parameter class to set.
 	 */
 	public void setParams(ProbDetSimSettings settings) {
@@ -211,8 +255,8 @@ public class ProbDetSimView implements SimulationView {
 	}
 	
 	/**
-	 * Get all params in the view before the simulation is run. 
-	 * @param settings - the paramter calss to change. 
+	 * Get all parameters in the view before the simulation is run. 
+	 * @param settings - the parameter class to change. 
 	 */
 	public ProbDetSimSettings getParams(ProbDetSimSettings settings) {
 		
@@ -228,7 +272,7 @@ public class ProbDetSimView implements SimulationView {
 	public void setProgress(int bootstraps, double simProg) {
 		this.progressLabel1.setText("No. Bootstraps: " + bootstraps + " of " +  probDetSim.getNBootstraps());
 		this.progressBar1.setProgress( bootstraps/(double) this.probDetSim.getNBootstraps());
-		this.progressLabel2.setText("Sim. Progress: " + 100*simProg + "%");
+		this.progressLabel2.setText("Sim. Progress: " + String.format("%.1f",100*simProg) + "%");
 		this.progressBar2.setProgress(simProg); ;
 
 	}

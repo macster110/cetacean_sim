@@ -2,11 +2,10 @@ package simulation;
 
 
 import java.util.ArrayList;
-import java.util.Random;
+import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 
 import utils.CetSimUtils;
-import utils.SurfaceData;
-import utils.SurfaceUtils;
+import utils.Hist3;
 
 /**
  * Run a single Monte Carlo simulation for a probability of detection 
@@ -39,7 +38,22 @@ public class ProbDetMonteCarlo {
 	/**
 	 * List of status listeners for updates to the Monte Carlo Simulation. 
 	 */
-	private ArrayList<StatusListener> statusListeners = new ArrayList<StatusListener>(); 
+	private ArrayList<StatusListener> statusListeners = new ArrayList<StatusListener>();
+
+	/**
+	 * The y edges of the histogram 
+	 */
+	private double[] yBinEdges;
+
+	/**
+	 * The x edges of the histogram. 
+	 */
+	private double[] xBinEdges;
+
+	/**
+	 * The results of the simualtion. 
+	 */
+	private ProbDetResult result; 
 	
 	
 	/**
@@ -48,8 +62,7 @@ public class ProbDetMonteCarlo {
 	public ProbDetMonteCarlo() {
 
 	}
-	
-	
+
 
 	/**
 	 * Get the simulation ready to run
@@ -57,21 +70,27 @@ public class ProbDetMonteCarlo {
 	public void setUpMonteCarlo(ProbDetSimSettings simSettings) {
 		//create 
 		this.cancel=false; 
+		this.isRunning=false; 
 		simProgress=0;
 		bootStrapProgress=0; 
+		this.yBinEdges=Hist3.binEdges(0, simSettings.maxRange, simSettings.rangeBin);
+		this.xBinEdges=Hist3.binEdges(0, simSettings.maxDepth, simSettings.depthBin);
 	}
+	
 	
 	/** 
 	 * Run the simulation
 	 */
-	public int runMonteCarlo(ProbDetSimSettings simSettings) {
+	private int runMonteCarlo(ProbDetSimSettings simSettings) {
+		
+		System.out.println("Is this cancelled? " + this.cancel); 
 		
 		notifyStatusListeners(StatusListener.SIM_STARTED, 0, 0 ); 
 
 		isRunning=true;
 		
 		//all simualtion results are stored here 
-		ArrayList<ProbDetResult> results = new ArrayList<ProbDetResult>(); 
+		ArrayList<Hist3> results = new ArrayList<Hist3>(); 
 	
 		double x, y; //cartesian co-ordinates of animal
 		double bearing, range, depth; //cylindrical co-ordinates of animal (depth is used in both cylindrical and cartesian)
@@ -81,7 +100,7 @@ public class ProbDetMonteCarlo {
 		double[] animalPos; 
 		double[] animalAngle;
 		
-		int nRecievers = simSettings.hydrophonePositions.length; 
+		int nRecievers = simSettings.recievers.length; 
 		double[] recievedLevels = new double[nRecievers]; 
 		int aboveThresh = 0; 
 		
@@ -93,6 +112,7 @@ public class ProbDetMonteCarlo {
 			for (int j=0; j<simSettings.nRuns; j++) {
 				
 				if (cancel) {
+					isRunning=false;
 					notifyStatusListeners(StatusListener.SIM_CANCELLED, 0, 0 ); 
 					return -1; 
 				}
@@ -126,7 +146,7 @@ public class ProbDetMonteCarlo {
 					//beam profile and the transmission loss in general. 
 
 					//the 
-					recievedLevels[k] = sourceLevel+CetSimUtils.tranmissionTotalLoss(simSettings.hydrophonePositions[k], 
+					recievedLevels[k] = sourceLevel+CetSimUtils.tranmissionTotalLoss(simSettings.recievers[k], 
 							animalPos, animalAngle, simSettings.simpleOdontocete.beamSurface, simSettings.propogation); 
 					if (recievedLevels[k]> simSettings.noiseThreshold) aboveThresh++;
 				}
@@ -146,17 +166,95 @@ public class ProbDetMonteCarlo {
 				if (j%1000==0) {
 					notifyStatusListeners(StatusListener.SIM_RUNNING, i, (j/(double) simSettings.nRuns) ); 
 					System.out.println("Progress: Sim: " + i + " of "  + simSettings.nBootStraps 
-							+"   " + (100.*j/(double) simSettings.nRuns) + "%" ); 
+							+"   " + String.format("%.1f", (100.*j/(double) simSettings.nRuns)) + "%" ); 
 				}
 			}
 			
 			//now must split these results into a 3D chart. 
-			ProbDetResult result = new ProbDetResult(); 
+			results.add(new Hist3(simResults, this.xBinEdges, this.yBinEdges, new Double(1))); 
+			
 		}
 		
+
+		//now create an average histogram. 
+		Hist3[] histResults = averageHistograms(results); 
+		
+		//create the result object
+		this.result = new ProbDetResult(histResults, simSettings); 
+		
+		//set the running flag to false. 
 		isRunning=false;
+		
+		//notify status listeners that the simulation has indeed finished. 
+		notifyStatusListeners(StatusListener.SIM_FINIHSED, simSettings.nBootStraps, 1. ); 
 
 		return 1; 
+	}
+	
+	
+	
+	/**
+	 * Average the histograms to give a histogram of average values and a histogram of standard deviation
+	 * @return a histogram of mean values for all simulations and histogram of standard deviation. 
+	 */
+	private Hist3[] averageHistograms(ArrayList<Hist3> results) {
+		
+		if (results==null) return null; 
+		
+		int histWidth=results.get(0).getHistogram().length; 
+		int histHeight=results.get(0).getHistogram()[0].length; 
+		
+		double[] xbinEdges= results.get(0).getXbinEdges(); 
+		double[] ybinEdges= results.get(0).getYbinEdges(); 
+
+		StandardDeviation stdCalculator = new StandardDeviation(); 
+
+		double[][] averageHist = new double[histWidth][histHeight]; 
+		double[][] stdHist = new double[histWidth][histHeight]; 
+		
+		double[] meanArray; 
+		double mean; 
+		
+		for (int i=0; i<histWidth; i++) {
+			for (int j=0; j<histHeight; j++) {
+				meanArray = new double[results.size()];
+				mean=0; 
+				for (int n=0; n<results.size(); n++) {
+					meanArray[n]=results.get(n).getHistogram()[i][j];
+					mean+=meanArray[n]; 
+				}		
+				//calc mean
+				mean=mean/results.size();
+				averageHist[i][j]=mean; 
+				//calc std;
+				stdHist[i][j]=stdCalculator.evaluate(meanArray, mean); 
+			}
+		}
+		
+		Hist3 histMean = new Hist3(xbinEdges, yBinEdges, averageHist); 
+		Hist3 histStd = new Hist3(xbinEdges, yBinEdges, stdHist); 
+
+		Hist3[] hist3Results= new Hist3[2];  
+		hist3Results[0]=histMean; 
+		hist3Results[1]=histStd; 
+		
+		return hist3Results;
+	}
+	
+	/**
+	 * Get the mean of all the probability of detection simulations from the last run. 
+	 * @return the mean histogram surface of the simulation
+	 */
+	public Hist3 getMeanProbDet() {
+		return this.result.probSurfaceMean; 
+	}
+	
+	/**
+	 * Get the standard deviation surface of the probability of detection simulation. 
+	 * @return the standard deviation histogram surface of the simualtion. 
+	 */
+	public Hist3 getStdProbDet() {
+		return this.result.probSurfaceStd; 
 	}
 	
 	
@@ -198,16 +296,6 @@ public class ProbDetMonteCarlo {
 	 */
 	public double getBootStrapProgress() {
 		return bootStrapProgress;
-	}
-	
-	
-	/**
-	 * Holds simulation  result. 
-	 * @author Jamie Macaulay
-	 *
-	 */
-	public class ProbDetResult {
-		
 	}
 	
 	
@@ -292,6 +380,51 @@ public class ProbDetMonteCarlo {
 	public void addStatusListener(StatusListener status) {
 		this.statusListeners.add(status);
 		
+	}
+	
+	
+	/**
+	 * Holds the results of the simulation
+	 * @author Jamie Macaulay 
+	 *
+	 */
+	public class ProbDetResult {
+	
+		/**
+		 * Results object.  
+		 * @param result - the results. 
+		 * @param simSettings - the sim settings for the histogram.
+		 */
+		public ProbDetResult(Hist3[] result, ProbDetSimSettings simSettings) {
+			this.probSurfaceMean=result[0];
+			this.probSurfaceStd=result[1];
+			this.simSettings=simSettings; 
+		}
+		
+		/**
+		 * The mean probability surface
+		 */
+		public Hist3 probSurfaceStd; 
+		
+		/**
+		 * The standard deviation surface
+		 */
+		public Hist3 probSurfaceMean;
+		
+		//TODO clone. 
+		/**
+		 * The settings used in this simulation. 
+		 */
+		public ProbDetSimSettings simSettings; 
+	}
+
+
+	/**
+	 * Get the result object for the last successfully run simualtion. 
+	 * @return the prob det results. 
+	 */
+	public ProbDetResult getResult() {
+		return result; 
 	}
 	
  

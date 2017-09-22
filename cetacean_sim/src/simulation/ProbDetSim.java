@@ -5,6 +5,7 @@ import javafx.application.Platform;
 import javafx.concurrent.Task;
 import layout.simulation.ProbDetSimView;
 import layout.simulation.SimulationView;
+import simulation.ProbDetMonteCarlo.ProbDetResult;
 
 /**
  * Simulates a 2D probability of detection
@@ -30,6 +31,7 @@ public class ProbDetSim  implements SimulationType {
 	/**
 	 * Reference to the simulation control. 
 	 */
+	@SuppressWarnings("unused")
 	private CetSimControl cetSimControl;
 
 	/**
@@ -55,7 +57,7 @@ public class ProbDetSim  implements SimulationType {
 
 	@Override
 	public boolean run() {
-		probDetMonteCarlo.runMonteCarlo(this.probDetSettings); 
+		probDetMonteCarlo.run(this.probDetSettings); 
 		return true;
 	}
 
@@ -70,7 +72,7 @@ public class ProbDetSim  implements SimulationType {
 	@Override
 	public boolean stop() {
 		probDetMonteCarlo.stop(); 
-		return false;
+		return true;
 	}
 	
 	@Override
@@ -110,7 +112,7 @@ public class ProbDetSim  implements SimulationType {
 		@Override
 		protected Integer call() throws Exception {
 			try {
-				probDetMonteCarlo.runMonteCarlo(probDetSettings);
+				probDetMonteCarlo.run(probDetSettings);
 			}
 			catch (Exception e) {
 				e.printStackTrace();
@@ -121,7 +123,7 @@ public class ProbDetSim  implements SimulationType {
 		@Override 
 		protected void cancelled() {
             super.cancelled();
-            monteCarloTask.cancel(); 
+            probDetMonteCarlo.stop();
         }
 		
 		@Override
@@ -146,6 +148,16 @@ public class ProbDetSim  implements SimulationType {
 	 */
 	public int getNBootstraps() {
 		return this.probDetSettings.nBootStraps;
+	}
+
+	
+	/**
+	 * Get the results from the last simualtion
+	 * @return the result 
+	 */
+	public ProbDetResult getProbDetResults() {
+		// TODO Auto-generated method stub
+		return this.probDetMonteCarlo.getResult();
 	}
 
 }

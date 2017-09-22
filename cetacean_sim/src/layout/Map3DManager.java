@@ -37,7 +37,7 @@ public class Map3DManager  {
 	public void addMapProvider(MapShapeProvider mapProvider){
 		if (mapProvider==null) return; 
 		mapProviders.add(mapProvider);
-		mapPane3D.getProviderGroup().getChildren().add(mapProvider.getMapShapes());
+		mapPane3D.getDynamicGroup().getChildren().add(mapProvider.getMapShapes());
 	}
 	
 	/**
@@ -46,7 +46,7 @@ public class Map3DManager  {
 	 */
 	public boolean removeMapProvider(MapShapeProvider mapProvider){
 		if (mapProvider==null) return false; 
-		mapPane3D.getProviderGroup().getChildren().remove(mapProvider.getMapShapes());
+		mapPane3D.getDynamicGroup().getChildren().remove(mapProvider.getMapShapes());
 		return mapProviders.remove(mapProvider);
 	}
 	

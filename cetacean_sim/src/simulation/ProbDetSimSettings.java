@@ -1,20 +1,16 @@
 package simulation;
 
-import java.util.Random;
-
 import animal.SimpleOdontocete;
 import propogation.Propogation;
 import propogation.SimplePropogation;
 import reciever.DefaultHydrophoneArrays;
-import sun.java2d.SurfaceData;
-import utils.SurfaceUtils;
 
 /**
  * Probability of detection settings which can be serialized and saved 
  * @author Jamie Macaulay	
  *
  */
-public class ProbDetSimSettings {
+public class ProbDetSimSettings implements Cloneable {
 	
 	/**
 	 * The number of runs
@@ -24,7 +20,7 @@ public class ProbDetSimSettings {
 	/**
 	 * The number of bootstraps 
 	 */
-	public int nBootStraps=100;
+	public int nBootStraps=25;
 	
 	
 	/************Dimensions*************/
@@ -42,17 +38,17 @@ public class ProbDetSimSettings {
 	/**
 	 * The range bin
 	 */
-	public double rangeBin=25; 
+	public int rangeBin=25; 
 	
 	/**
 	 * The depth bin
 	 */
-	public double depthBin=10;
+	public int depthBin=10;
 	
 	
 	/********Recovers********/
 	
-	double[][] hydrophonePositions = DefaultHydrophoneArrays.PLABuoyLong; 
+	double[][] recievers = DefaultHydrophoneArrays.PLABuoyLong; 
 	
 	/**
 	 * The minimum number of receivers to detect a sound on. 

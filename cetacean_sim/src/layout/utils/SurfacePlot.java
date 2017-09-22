@@ -1,6 +1,6 @@
 package layout.utils;
 
-import javafx.geometry.Point3D;
+
 
 /*
  * Copyright (C) 2013-2015 F(X)yz, 
@@ -24,8 +24,8 @@ import javafx.geometry.Point3D;
 import javafx.scene.AmbientLight;
 import javafx.scene.DepthTest;
 import javafx.scene.Group;
-import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Material;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.CullFace;
 import javafx.scene.shape.DrawMode;
@@ -66,23 +66,43 @@ public class SurfacePlot extends Group {
 		setDepthTest(DepthTest.ENABLE);
 	}
 
+	/**
+	 * Set the height data and create the triangle mesh, material and lighting. 
+	 * @param arrayY - na array if 
+	 * @param spacing
+	 * @param spectacular
+	 * @param diffuse
+	 * @param ambient
+	 * @param fill
+	 */
 	public void setHeightData(float[][] arrayY, int spacing, Color spectacular, Color diffuse, boolean ambient, boolean fill) {
 		material = new PhongMaterial();
 		material.setSpecularColor(spectacular);
 		material.setDiffuseColor(diffuse);
+		setHeightData(arrayY,  spacing,  material,  ambient, true) ;
+	}
 
+	/**
+	 * Set the height data and create the triangle mesh, material and lighting. 
+	 * @param arrayY
+	 * @param spacing
+	 * @param material
+	 * @param ambient
+	 * @param fill
+	 */
+	public void setHeightData(float[][] arrayY, int spacing, Material material, boolean ambient, boolean fill) {
 
 		mesh=createHeightMap( arrayY, 1,  1);
 
 		//Create a viewable MeshView to be added to the scene
 		//To add a TriangleMesh to a 3D scene you need a MeshView container object
 		meshView = new MeshView(mesh);
-		
-//		//quick hack to get into another co-ordinate space....
-//		meshView.setRotationAxis(new Point3D(1,0,0));
-//		meshView.setRotate(-90);
-		
-		
+
+		//		//quick hack to get into another co-ordinate space....
+		//		meshView.setRotationAxis(new Point3D(1,0,0));
+		//		meshView.setRotate(-90);
+
+
 		//The MeshView allows you to control how the TriangleMesh is rendered
 		if(fill) { 
 			meshView.setDrawMode(DrawMode.FILL);
@@ -144,12 +164,12 @@ public class SurfacePlot extends Group {
 
 				int index = y * numDivX * pointSize + (x * pointSize);
 				points[index] = (float) fx * scale;   // x
-				points[index + 2] = (float) fy * scale;  // y
+				points[index + 1] = (float) fy * scale;  // y
 				// color value for pixel at point
 				//System.out.println(" x: "+ x +  " y: "+y +  " subDivX: "+subDivX+ " subDivY "+subDivY);
-				
-				if (x==arrayY.length || y==arrayY[0].length) points[index + 1]=0; //BUG- dinnae understand but stops weird lines on graph 
-				else points[index + 1] = arrayY[x][y];
+
+				if (x==arrayY.length || y==arrayY[0].length) points[index + 2]=0; //BUG- dinnae understand but stops weird lines on graph 
+				else points[index + 2] = arrayY[x][y];
 
 				index = y * numDivX * texCoordSize + (x * texCoordSize);
 				texCoords[index] = currX;
