@@ -20,6 +20,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import layout.Pane3D;
 import layout.utils.Utils3D;
+import simulation.ProbDetMonteCarlo;
 import simulation.ProbDetMonteCarlo.ProbDetResult;
 import simulation.ProbDetSim;
 import simulation.ProbDetSimSettings;
@@ -215,16 +216,17 @@ public class ProbDetSimView implements SimulationView {
 
 	@Override
 	public void notifyUpdate(int updateType) {
-		switch (updateType) {
-		case StatusListener.SIM_STARTED:
-			setSimControls(true); 
-			break;
-		case StatusListener.SIM_FINIHSED:
-			setSimControls(false); 
-			displaySimResults(probDetSim.getProbDetResults()); 
-			break;
-		}
-
+		Platform.runLater(()->{
+			switch (updateType) {
+			case StatusListener.SIM_STARTED:
+				setSimControls(true); 
+				break;
+			case StatusListener.SIM_FINIHSED:
+				setSimControls(false); 
+				displaySimResults(probDetSim.getProbDetResults()); 
+				break;
+			}
+		});
 	}
 	
 	
@@ -235,12 +237,14 @@ public class ProbDetSimView implements SimulationView {
 	private void displaySimResults(ProbDetResult probDetResults) {
 		pane3D.getDynamicGroup().getChildren().clear();
 		
+		ProbDetMonteCarlo.printResult(probDetResults.probSurfaceMean.getHistogram()); 
+
 		float[][] surface = Utils3D.double2float(probDetResults.probSurfaceMean.getHistogram()); 
 		
 		ColouredSurfacePlot surfacePlot = new ColouredSurfacePlot(null, null, surface); 
 		
 		pane3D.getDynamicGroup().getChildren().add(surfacePlot); 
-		
+				
 	}
 	
 	

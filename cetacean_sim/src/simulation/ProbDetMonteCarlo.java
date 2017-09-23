@@ -161,7 +161,7 @@ public class ProbDetMonteCarlo {
 				else {
 					simResults[i][2]=0; 
 				}
-				
+								
 				//print out some of the progress. 
 				if (j%1000==0) {
 					notifyStatusListeners(StatusListener.SIM_RUNNING, i, (j/(double) simSettings.nRuns) ); 
@@ -172,7 +172,8 @@ public class ProbDetMonteCarlo {
 			
 			//now must split these results into a 3D chart. 
 			results.add(new Hist3(simResults, this.xBinEdges, this.yBinEdges, new Double(1))); 
-			
+			printResult(results.get(i).getHistogram());
+
 		}
 		
 
@@ -420,14 +421,29 @@ public class ProbDetMonteCarlo {
 
 
 	/**
-	 * Get the result object for the last successfully run simualtion. 
+	 * Get the result object for the last successfully run simulation. 
 	 * @return the prob det results. 
 	 */
 	public ProbDetResult getResult() {
 		return result; 
 	}
 	
- 
+	/**
+	 * Print results form the simulation 
+	 * @param results. The results to print. 
+	 */
+	public static void printResult(double[][] reuslt) {
+		
+		int histWidth=reuslt.length; 
+		int histHeight=reuslt[0].length; 
+		
+		for (int i=0; i<histWidth; i++) {
+			System.out.println("");
+			for (int j=0; j<histHeight; j++) {
+				System.out.print(reuslt[i][j]+" ");
+			}
+		}
+	}
 	
 }
 
