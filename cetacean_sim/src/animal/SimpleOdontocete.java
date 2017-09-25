@@ -91,7 +91,7 @@ public class SimpleOdontocete {
 
 			horzAngle= new RandomSimVariable("Horizontal Angle", -Math.PI, Math.PI); 
 
-			depthDistribution =  new RandomSimVariable("Horizontal Angle", 0, settings.maxDepth); 
+			depthDistribution =  new RandomSimVariable("Horizontal Angle", settings.minHeight, 0); 
 			break;
 		default:
 			setUpAnimal(SIM_UNIFORM_DEPTH_HORZ,  settings);  

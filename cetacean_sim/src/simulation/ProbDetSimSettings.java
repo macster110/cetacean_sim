@@ -20,7 +20,7 @@ public class ProbDetSimSettings implements Cloneable {
 	/**
 	 * The number of bootstraps 
 	 */
-	public int nBootStraps=25;
+	public int nBootStraps=1;
 	
 	
 	/************Dimensions*************/
@@ -33,7 +33,7 @@ public class ProbDetSimSettings implements Cloneable {
 	/**
 	 * The maximum possible depth
 	 */
-	public double maxDepth=180;
+	public double minHeight=-180;
 	
 	/**
 	 * The range bin

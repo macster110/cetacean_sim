@@ -77,15 +77,15 @@ public class Hist3 {
 				histcount=0;
 				for (int n=0; n<simResults.length; n++) {
 					if (simResults[n][0]>xbinEdges[i] && simResults[n][0]<=xbinEdges[i+1] &&
-							simResults[n][1]>ybinEdges[i] && simResults[n][1]<=ybinEdges[i+1])
+							simResults[n][1]>ybinEdges[j] && simResults[n][1]<=ybinEdges[j+1])
 						histcount++;
 						if (findValue!=null && findValue.doubleValue()==simResults[i][2]) {
 							histvalue++; 
 						}
 				}
-				
+				System.out.println("Hist: " + i + " "+ j + " value n: " + histvalue + " total n: " + histcount);
 				if (findValue==null) histogram[i][j]=histcount; //just standard histogram 
-				else  histogram[i][j]=histvalue/histcount; //the percentage of values which equal findValue;
+				else  histogram[i][j]=histvalue/ (double) histcount; //the percentage of values which equal findValue;
 			}
 		}
 		return histogram; 

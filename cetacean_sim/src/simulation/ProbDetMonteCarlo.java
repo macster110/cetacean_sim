@@ -73,8 +73,8 @@ public class ProbDetMonteCarlo {
 		this.isRunning=false; 
 		simProgress=0;
 		bootStrapProgress=0; 
-		this.yBinEdges=Hist3.binEdges(0, simSettings.maxRange, simSettings.rangeBin);
-		this.xBinEdges=Hist3.binEdges(0, simSettings.maxDepth, simSettings.depthBin);
+		this.xBinEdges=Hist3.binEdges(0, simSettings.maxRange, simSettings.rangeBin);
+		this.yBinEdges=Hist3.binEdges(simSettings.minHeight, 0, simSettings.depthBin);
 	}
 	
 	
@@ -148,7 +148,9 @@ public class ProbDetMonteCarlo {
 					//the 
 					recievedLevels[k] = sourceLevel+CetSimUtils.tranmissionTotalLoss(simSettings.recievers[k], 
 							animalPos, animalAngle, simSettings.simpleOdontocete.beamSurface, simSettings.propogation); 
-					if (recievedLevels[k]> simSettings.noiseThreshold) aboveThresh++;
+					if (recievedLevels[k]> simSettings.noiseThreshold){
+						aboveThresh++;
+					}
 				}
 				
 				//now count the number of receiver levels that are above the 
@@ -166,10 +168,19 @@ public class ProbDetMonteCarlo {
 				if (j%1000==0) {
 					notifyStatusListeners(StatusListener.SIM_RUNNING, i, (j/(double) simSettings.nRuns) ); 
 					System.out.println("Progress: Sim: " + i + " of "  + simSettings.nBootStraps 
-							+"   " + String.format("%.1f", (100.*j/(double) simSettings.nRuns)) + "%" ); 
+							+"   " + String.format("%.1f", (100.*j/(double) simSettings.nRuns)) + "%" +  
+							" Result sample: " + simResults[i][0] + " "+ simResults[i][1] + " "
+							+ simResults[i][2]); 
 				}
 			}
 			
+			System.out.println("Bin edges");
+			System.out.print("X bin edges: ");
+			printResult(xBinEdges);
+			System.out.println("");
+			System.out.print("Y bin edges: ");
+			printResult(yBinEdges);
+
 			//now must split these results into a 3D chart. 
 			results.add(new Hist3(simResults, this.xBinEdges, this.yBinEdges, new Double(1))); 
 			printResult(results.get(i).getHistogram());
@@ -232,8 +243,8 @@ public class ProbDetMonteCarlo {
 			}
 		}
 		
-		Hist3 histMean = new Hist3(xbinEdges, yBinEdges, averageHist); 
-		Hist3 histStd = new Hist3(xbinEdges, yBinEdges, stdHist); 
+		Hist3 histMean = new Hist3(xbinEdges, ybinEdges, averageHist); 
+		Hist3 histStd = new Hist3(xbinEdges, ybinEdges, stdHist); 
 
 		Hist3[] hist3Results= new Hist3[2];  
 		hist3Results[0]=histMean; 
@@ -428,19 +439,32 @@ public class ProbDetMonteCarlo {
 		return result; 
 	}
 	
+	
+	/**
+	 * Print the result. 
+	 * @param result - the results.
+	 */
+	public static void printResult(double[] result){
+		System.out.println("");
+		for (int i=0; i<result.length; i++) {
+			System.out.print(result[i]+" ");
+		}
+	}
+	
+	
 	/**
 	 * Print results form the simulation 
 	 * @param results. The results to print. 
 	 */
-	public static void printResult(double[][] reuslt) {
+	public static void printResult(double[][] result) {
 		
-		int histWidth=reuslt.length; 
-		int histHeight=reuslt[0].length; 
+		int histWidth=result.length; 
+		int histHeight=result[0].length; 
 		
 		for (int i=0; i<histWidth; i++) {
 			System.out.println("");
 			for (int j=0; j<histHeight; j++) {
-				System.out.print(reuslt[i][j]+" ");
+				System.out.print(result[i][j]+" ");
 			}
 		}
 	}
