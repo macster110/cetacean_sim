@@ -25,6 +25,7 @@ import simulation.ProbDetMonteCarlo.ProbDetResult;
 import simulation.ProbDetSim;
 import simulation.ProbDetSimSettings;
 import simulation.StatusListener;
+import utils.Hist3;
 
 /**
  * View for probability of detection simualtion views. 
@@ -158,14 +159,14 @@ public class ProbDetSimView implements SimulationView {
 		pane3D = new Pane3D(); 
 		plotPane.setCenter(pane3D);
 		
-		////TEMP////
-		pane3D.getDynamicGroup().getChildren().add(Utils3D.buildAxes(100, Color.RED, "x", "y", "z", Color.WHITE)); 
-		ColouredSurfacePlot surfacePlot = new ColouredSurfacePlot(null, null, ColouredSurfacePlot.createTestData(400, 100.)); 
-		pane3D.getDynamicGroup().getChildren().add(surfacePlot);
-		Line line = new Line(0,0,100,100); 
-		pane3D.getRootGroup().getChildren().add(line); 
-		//pane3D.getRootGroup().getChildren().add(Utils3D.buildAxes(100, Color.CYAN, "x", "y", "z", Color.WHITE)); 
-		///////////
+//		////TEMP////
+//		pane3D.getDynamicGroup().getChildren().add(Utils3D.buildAxes(100, Color.RED, "x", "y", "z", Color.WHITE)); 
+//		ColouredSurfacePlot surfacePlot = new ColouredSurfacePlot(null, null, ColouredSurfacePlot.createTestData(400, 100.)); 
+//		pane3D.getDynamicGroup().getChildren().add(surfacePlot);
+//		Line line = new Line(0,0,100,100); 
+//		pane3D.getRootGroup().getChildren().add(line); 
+//		//pane3D.getRootGroup().getChildren().add(Utils3D.buildAxes(100, Color.CYAN, "x", "y", "z", Color.WHITE)); 
+//		///////////
 		
 		Pane controlPane = createSimControlPane(); 
 		controlPane.setPadding(new Insets(10,10,10,10));
@@ -240,13 +241,14 @@ public class ProbDetSimView implements SimulationView {
 		ProbDetMonteCarlo.printResult(probDetResults.probSurfaceMean.getHistogram()); 
 
 		float[][] surface = Utils3D.double2float(probDetResults.probSurfaceMean.getHistogram()); 
-		
-		ColouredSurfacePlot surfacePlot = new ColouredSurfacePlot(null, null, surface); 
+		float[][] Xq=Hist3.getXYSurface(probDetResults.probSurfaceMean.getXbinEdges(), probDetResults.probSurfaceMean.getYbinEdges(), true); 
+		float[][] Yq=Hist3.getXYSurface(probDetResults.probSurfaceMean.getXbinEdges(), probDetResults.probSurfaceMean.getYbinEdges(), false); 
+
+		ColouredSurfacePlot surfacePlot = new ColouredSurfacePlot(Xq, Yq, surface); 
 		
 		pane3D.getDynamicGroup().getChildren().add(surfacePlot); 
 				
 	}
-	
 	
 
 	/**

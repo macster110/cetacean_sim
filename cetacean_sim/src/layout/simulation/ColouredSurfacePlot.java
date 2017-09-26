@@ -10,7 +10,13 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.transform.Rotate;
+import layout.utils.ColourArray;
+import layout.utils.ColourArray.ColourArrayType;
 import layout.utils.SurfacePlot;
+import layout.utils.Utils3D;
+import simulation.ProbDetMonteCarlo;
+import utils.SurfaceData;
+import utils.SurfaceUtils;
 
 /**
  * Plots a 3D surface with a colour gradient. 
@@ -20,19 +26,104 @@ import layout.utils.SurfacePlot;
 public class ColouredSurfacePlot extends SurfacePlot {
 
 	private NumberAxis yAxis;
-	private ValueAxis<Number> xAxis;
+	private NumberAxis xAxis;
 	private NumberAxis zAxis;
-
+	
+	
+	ColourArray colourArray = ColourArray.createStandardColourArray(100, ColourArrayType.HOT); 
+	
 	/**
 	 * Create a coloured surface plot
 	 */
 	public ColouredSurfacePlot(float[][] Xq, float[][] Yq, float[][] Zq) {
-		super(false);		
-		createSurface(Xq, Yq, Zq); 
+		this(Xq, Yq, Zq, true); 
+	}
+		
+	
+	/**
+	 * Create a coloured surface plot
+	 */
+	public ColouredSurfacePlot(float[][] Xq, float[][] Yq, float[][] Zq, boolean interp) {
+		super(true);		
+		System.out.println("Surface without interp: " + Zq.length +  " by " + Zq[0].length);
 		createAxis();
-		setAxisPosition(Zq.length, Zq[0].length) ; 
+		if (interp) {
+			 float[][] interpZ =interpSurfaces(Xq, Yq, Zq);
+			 System.out.println("Surface is interp: " + interpZ.length +  " by " + interpZ[0].length);
+			 createSurface(interpZ); 	
+			 setAxisPosition(interpZ.length, interpZ[0].length); 
+
+		}
+		else {
+			createSurface(Zq); 
+			setAxisPosition(Zq.length, Zq[0].length); 
+
+		}
+		setAxisValues(Xq, Yq); 
 	}
 	
+	
+	/**
+	 * Interpolate the surface so it's a t least 1000 units across for 3D drawing. 
+	 * @param Xq - the X surface 
+	 * @param Yq - the Y surface 
+	 * @param Zq - the Z surface 
+	 * @param - true to interoplate the surface to be at least 1500 across.
+	 */
+	private static float[][] interpSurfaces(float[][] Xq, float[][] Yq, float[][] Zq) {
+		
+		//number of interp X bins
+		double interpXn=500; 
+		double interpYn=500; 
+		
+//		System.out.println("Xq"); 
+//		ProbDetMonteCarlo.printResult(Xq); 
+//		System.out.println("Yq"); 
+//		ProbDetMonteCarlo.printResult(Yq); 
+//		System.out.println("Zq"); 
+//		ProbDetMonteCarlo.printResult(Zq); 
+
+
+		double[][] points = new double[Xq.length*Xq[0].length][3]; 
+		int n=0; 
+		for (int i=0; i<Xq.length; i++) {
+			for (int j=0; j<Xq[0].length; j++) {
+				points[n][0]=Xq[i][j]; 
+				points[n][1]=Yq[i][j]; 
+				points[n][2]=Zq[i][j]; 
+				//System.out.println(String.format("Point for interp: %.2f %.2f %.2f " , points[n][0] , points[n][1] , points[n][2])); 
+				n++;
+			} 
+		}
+		
+		//create the surface interpolator. Exagerate by a bit.
+		SurfaceData surfaceData =  SurfaceUtils.generateSurface(points, 200); 
+		
+		//now have interpolatedc surface we can find values on a much finer grid. 
+		//first need to have much fioner surface. 
+		float[] limsX=Utils3D.getMinMax(Xq);
+		float[] limsY=Utils3D.getMinMax(Yq);
+		
+		double xbin=(limsX[1]-limsX[0])/interpXn; 
+		double ybin=(limsY[1]-limsY[0])/interpYn; 
+		
+		float[][] interpZq= new float[(int) interpXn][(int) interpYn];
+
+		//hello
+		for (int i=0; i<interpXn; i++) {
+			for (int j=0; j<interpYn; j++) {
+				interpZq[i][j]=surfaceData.grid.interpolate((float) (limsX[0]+i*xbin), (float) (limsY[0]+j*ybin));
+			}
+		}
+		
+		//ProbDetMonteCarlo.printResult(interpZq); 
+
+
+		return interpZq; 
+	}
+	
+	
+
 	/**
 	 * Create the number axis. 
 	 */
@@ -40,7 +131,7 @@ public class ColouredSurfacePlot extends SurfacePlot {
 		yAxis = new NumberAxis(); 
 		yAxis.setLowerBound(0);
 		yAxis.setUpperBound(100);
-		//yAxis.setTickUnit(50);
+		yAxis.setTickUnit(50);
 		yAxis.setLabel("y (m)");
 		yAxis.setAutoRanging(false);
 		yAxis.setSide(Side.LEFT);
@@ -49,7 +140,7 @@ public class ColouredSurfacePlot extends SurfacePlot {
 		xAxis.setLowerBound(0);
 		xAxis.setUpperBound(100);
 		xAxis.setSide(Side.BOTTOM);
-		//xAxis.setTickUnit(50);
+		xAxis.setTickUnit(50);
 		xAxis.setLabel("x(m)");
 		xAxis.setAutoRanging(false);
 		
@@ -58,15 +149,30 @@ public class ColouredSurfacePlot extends SurfacePlot {
 		zAxis.setLowerBound(0);
 		zAxis.setUpperBound(100);
 		zAxis.setSide(Side.BOTTOM);
-		//xAxis.setTickUnit(50);
+		xAxis.setTickUnit(50);
 		zAxis.setLabel("z(m)");
 		zAxis.setAutoRanging(false);
 		zAxis.getTransforms().add(new Rotate(90, new Point3D(0,1,0))); 
 		zAxis.getTransforms().add(new Rotate(0, new Point3D(1,0,0))); 
 
-
 		
 		this.getChildren().addAll(xAxis, yAxis, zAxis); 
+	}
+	
+	
+	/***
+	 * Set axis values for the surface. 
+	 */
+	private void setAxisValues(float[][] Xq, float[][] Yq) {
+		float[] limsX=Utils3D.getMinMax(Xq);
+		xAxis.setLowerBound(limsX[0]);
+		xAxis.setUpperBound(limsX[1]);
+		float[] limsY=Utils3D.getMinMax(Yq);
+		yAxis.setLowerBound(limsY[0]);
+		yAxis.setUpperBound(limsY[1]);
+		yAxis.layout();
+		xAxis.layout();
+
 	}
 	
 	/**
@@ -92,7 +198,7 @@ public class ColouredSurfacePlot extends SurfacePlot {
 	 * @param Yq - the y axis data in mesh grid format
 	 * @param Zq - the surface data. 
 	 */
-	private void createSurface(float[][] Xq, float[][] Yq, float[][] Zq) {
+	private void createSurface(float[][] Zq) {
 		//create a coloured image of the data. 
 		Image diffuseMap = createImage(Zq); 
         PhongMaterial material = new PhongMaterial();
@@ -140,7 +246,9 @@ public class ColouredSurfacePlot extends SurfacePlot {
 
                 //gray = clamp(gray, 0, 1);
 
-                Color color = Color.YELLOWGREEN.interpolate(Color.DODGERBLUE, gray);
+               // Color color = Color.YELLOWGREEN.interpolate(Color.DODGERBLUE, gray);
+                
+                color=colourArray.getColour(gray);
 
                 pw.setColor(x, y, color);
             }

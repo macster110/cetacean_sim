@@ -20,7 +20,7 @@ public class ProbDetSimSettings implements Cloneable {
 	/**
 	 * The number of bootstraps 
 	 */
-	public int nBootStraps=1;
+	public int nBootStraps=100;
 	
 	
 	/************Dimensions*************/
@@ -53,7 +53,7 @@ public class ProbDetSimSettings implements Cloneable {
 	/**
 	 * The minimum number of receivers to detect a sound on. 
 	 */
-	public int minRecievers = 0; 
+	public int minRecievers = 4; 
 	
 	
 	/******Propagation********/

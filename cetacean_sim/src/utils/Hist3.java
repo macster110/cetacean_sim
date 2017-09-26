@@ -45,7 +45,7 @@ public class Hist3 {
 	public Hist3(double[][] simResults, double[] xbinEdges, double[] ybinEdges, Double findValue) {
 		this.xbinEdges=xbinEdges; 
 		this.ybinEdges=ybinEdges; 
-		this.histogram=generateHist3D(simResults,xbinEdges,ybinEdges, null);
+		this.histogram=generateHist3D(simResults,xbinEdges,ybinEdges, findValue);
 	}
 
 	
@@ -75,15 +75,21 @@ public class Hist3 {
 		for (int i=0; i<xbinEdges.length-1; i++) {
 			for (int j=0; j<ybinEdges.length-1; j++) {
 				histcount=0;
+				histvalue=0; 
 				for (int n=0; n<simResults.length; n++) {
+//					if (n%100==0) {
+//						System.out.println("Histograming: " + simResults[n][0] + " "+   simResults[n][1] + " " + simResults[n][2] + " " +(findValue!=null && findValue.doubleValue()==simResults[n][2]));
+//					}
 					if (simResults[n][0]>xbinEdges[i] && simResults[n][0]<=xbinEdges[i+1] &&
-							simResults[n][1]>ybinEdges[j] && simResults[n][1]<=ybinEdges[j+1])
+							simResults[n][1]>ybinEdges[j] && simResults[n][1]<=ybinEdges[j+1]) {
 						histcount++;
-						if (findValue!=null && findValue.doubleValue()==simResults[i][2]) {
+						if (findValue!=null && findValue.doubleValue()==simResults[n][2]) {
 							histvalue++; 
 						}
+					}
 				}
-				System.out.println("Hist: " + i + " "+ j + " value n: " + histvalue + " total n: " + histcount);
+//				System.out.println("Hist: " + i + " "+ j + " value n: " + histvalue + " total n: " + histcount + " checking for ranges between: " 
+//				+ xbinEdges[i] + " to " + xbinEdges[i+1] + " and depths from " + ybinEdges[j] + " to " + ybinEdges[j+1]);
 				if (findValue==null) histogram[i][j]=histcount; //just standard histogram 
 				else  histogram[i][j]=histvalue/ (double) histcount; //the percentage of values which equal findValue;
 			}
@@ -133,6 +139,30 @@ public class Hist3 {
 	public double[][] getHistogram() {
 		return histogram;
 	}
+	
+	
+	/**
+	 * Creatre an X or Y surface for plotting the histogram as a surface. 
+	 * @param xbins - the x bins 
+	 * @param ybins - the y bins
+	 * @param x - true to 
+ 	 * @return
+	 */
+	public static float[][] getXYSurface(double[] xbins, double[] ybins, boolean x){
+		float[][] surface = new float[xbins.length-1][ybins.length-1]; 
+		for (int i=0; i<xbins.length-1; i++) {
+			for (int j=0; j<ybins.length-1; j++) {
+				if (x) {
+					surface[i][j]=(float) xbins[i]; 
+				}
+				else {
+					surface[i][j]=(float) ybins[j]; 
+				}
+			}
+		}
+		return surface; 
+	}
+
 
 
 	

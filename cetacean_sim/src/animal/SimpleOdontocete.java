@@ -64,7 +64,7 @@ public class SimpleOdontocete {
 	 * Constructor for the animal. 
 	 */
 	public SimpleOdontocete () {
-		
+		beamSurface = SurfaceUtils.generateSurface(beamProfile);
 	}
 	
 	/**

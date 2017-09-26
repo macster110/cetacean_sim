@@ -38,7 +38,7 @@ import javafx.scene.shape.TriangleMesh;
  */
 public class SurfacePlot extends Group {
 
-	public AmbientLight selfLight = new AmbientLight(Color.WHITE);
+	public AmbientLight selfLight = new AmbientLight(Color.GREY);
 	public double nodeRadius = 1;
 	private double axesSize = 1000;
 	private boolean normalized = false;
@@ -126,7 +126,7 @@ public class SurfacePlot extends Group {
 
 	/**
 	 * Create a height map from an array. 
-	 * @param arrayY
+	 * @param arrayY - the y array. Note that z is negative. 
 	 * @param pskip
 	 * @param scale
 	 * @return
@@ -164,12 +164,12 @@ public class SurfacePlot extends Group {
 
 				int index = y * numDivX * pointSize + (x * pointSize);
 				points[index] = (float) fx * scale;   // x
-				points[index + 1] = (float) fy * scale;  // y
+				points[index + 1] = (float) ((- fy) * scale);  //positive y values shouild be up and negative values should be down. 
 				// color value for pixel at point
 				//System.out.println(" x: "+ x +  " y: "+y +  " subDivX: "+subDivX+ " subDivY "+subDivY);
 
 				if (x==arrayY.length || y==arrayY[0].length) points[index + 2]=0; //BUG- dinnae understand but stops weird lines on graph 
-				else points[index + 2] = arrayY[x][y];
+				else points[index + 2] = -arrayY[x][y]; // positive values shouild be up and negative values should be down. 
 
 				index = y * numDivX * texCoordSize + (x * texCoordSize);
 				texCoords[index] = currX;

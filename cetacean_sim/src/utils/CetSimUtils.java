@@ -27,20 +27,27 @@ public class CetSimUtils extends SurfaceUtils {
 		
 		double range = distance(recieverPos, animalPos); 
 		
+		//System.out.println("Distance: " + range); 
+		
 		//find the absolute horizontal and verical angle between the reciever and the animal. 
 		
 		//horizontal angle,
 		//just as many trig functions is you do this vector formalisation
-		double horzAngle=Math.atan2(recieverPos[0]-animalPos[1], recieverPos[1]-animalPos[1]);
-		horzAngle=MathUtils.normalizeAngle(horzAngle-animalAngle[0], 0); //normalise the angle between -Pi and Pi
+		double horzAngle=Math.atan2(recieverPos[0]-animalPos[0], recieverPos[1]-animalPos[1]);
+		horzAngle=MathUtils.normalizeAngle(horzAngle+animalAngle[0], 0.0); //normalise the angle between -Pi and Pi
+		//System.out.println("horzAngle: " + Math.toDegrees(horzAngle)); 
+
 		
 		//vertical angle
-		double vertAngle=Math.asin((recieverPos[2]-animalPos[2])/range)-animalAngle[1];
+		double vertAngle=Math.asin((recieverPos[2]-animalPos[2])/range)+animalAngle[1];
 		//the addition of the vertical angle may have flipped made the animal go beyond -PI/2 and PI/2
 		//so might need to get vertical angle back into PI/2 bounds and flip horizontal angle/ 
 		if (vertAngle<-Math.PI/2 || vertAngle>Math.PI/2) {
 			vertAngle= (vertAngle<-Math.PI/2 ? -Math.PI: Math.PI) - vertAngle; 
 		}		
+		//System.out.println("vertAngle: " + Math.toDegrees(vertAngle)); 
+		
+		//System.out.println("Find sureface for " + ((float) horzAngle));
 	
 		return animalBeamProfile.grid.interpolate((float) horzAngle, (float) vertAngle); 
 	}
@@ -49,12 +56,15 @@ public class CetSimUtils extends SurfaceUtils {
 	 * Calculate the total transmission loss due to beam profile loss, spreading and absorption. 
 	 * @param recieverPos - the position of the receiver in x y and z. 
 	 * @param animalPos - the position of the animal in x y and z.
-	 * @param animalAngle - the horizontal and vertical angle fo the animal. 
+	 * @param animalAngle - the horizontal and vertical angle fo the animal. in RADIANS
 	 * @param animalBeamProfile - the interpolated beam profile surface in horizontal, vertical angle and TL 
 	 * @return the beam loss in negative dB. 
 	 */
 	public static double tranmissionTotalLoss(double[] recieverPos, double[] animalPos, double[] animalAngle, SurfaceData animalBeamProfile, Propogation propogation) {
 		
+//		System.out.println("Beam loss: " + beamLoss(recieverPos, animalPos, animalAngle, animalBeamProfile) 
+//		+ " Propogation: " + propogation.getTranmissionLoss(recieverPos, animalPos));
+
 		return beamLoss(recieverPos, animalPos, animalAngle, animalBeamProfile) + propogation.getTranmissionLoss(recieverPos, animalPos); 
 	
 	}

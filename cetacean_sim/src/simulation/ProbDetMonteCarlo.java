@@ -83,7 +83,7 @@ public class ProbDetMonteCarlo {
 	 */
 	private int runMonteCarlo(ProbDetSimSettings simSettings) {
 		
-		System.out.println("Is this cancelled? " + this.cancel); 
+		//System.out.println("Is this cancelled? " + this.cancel); 
 		
 		notifyStatusListeners(StatusListener.SIM_STARTED, 0, 0 ); 
 
@@ -102,6 +102,7 @@ public class ProbDetMonteCarlo {
 		
 		int nRecievers = simSettings.recievers.length; 
 		double[] recievedLevels = new double[nRecievers]; 
+		double meanRecievedLvl=0; 
 		int aboveThresh = 0; 
 		
 		//quite memory intensive but easiest way to tstore results and then grid
@@ -141,6 +142,7 @@ public class ProbDetMonteCarlo {
 				sourceLevel = simSettings.simpleOdontocete.sourceLevel.getNextRandom();
 				
 				aboveThresh=0; 
+				meanRecievedLvl=0; 
 				for (int k=0; k<nRecievers; k++) {
 					//now have position of the animal position need to figure out what the source level, transmission loss due to
 					//beam profile and the transmission loss in general. 
@@ -151,17 +153,20 @@ public class ProbDetMonteCarlo {
 					if (recievedLevels[k]> simSettings.noiseThreshold){
 						aboveThresh++;
 					}
+					meanRecievedLvl+=recievedLevels[k]; 
 				}
+				meanRecievedLvl=meanRecievedLvl/nRecievers; 
 				
 				//now count the number of receiver levels that are above the 
-				simResults[i][0]=range; 
-				simResults[i][1]=depth; 
+				simResults[j][0]=range; 
+				simResults[j][1]=depth; 
+
 
 				if (aboveThresh>=simSettings.minRecievers) {
-					simResults[i][2]=1; 
+					simResults[j][2]=1; 
 				}
 				else {
-					simResults[i][2]=0; 
+					simResults[j][2]=0; 
 				}
 								
 				//print out some of the progress. 
@@ -169,21 +174,21 @@ public class ProbDetMonteCarlo {
 					notifyStatusListeners(StatusListener.SIM_RUNNING, i, (j/(double) simSettings.nRuns) ); 
 					System.out.println("Progress: Sim: " + i + " of "  + simSettings.nBootStraps 
 							+"   " + String.format("%.1f", (100.*j/(double) simSettings.nRuns)) + "%" +  
-							" Result sample: " + simResults[i][0] + " "+ simResults[i][1] + " "
-							+ simResults[i][2]); 
+							" Result sample: " + simResults[j][0] + " "+ simResults[j][1] + " "
+							+ simResults[j][2] + " mean recieved level: " + meanRecievedLvl + " aboveThresh: " + aboveThresh); 
 				}
 			}
 			
-			System.out.println("Bin edges");
-			System.out.print("X bin edges: ");
-			printResult(xBinEdges);
-			System.out.println("");
-			System.out.print("Y bin edges: ");
-			printResult(yBinEdges);
+//			System.out.println("Bin edges");
+//			System.out.print("X bin edges: ");
+//			printResult(xBinEdges);
+//			System.out.println("");
+//			System.out.print("Y bin edges: ");
+//			printResult(yBinEdges);
 
 			//now must split these results into a 3D chart. 
 			results.add(new Hist3(simResults, this.xBinEdges, this.yBinEdges, new Double(1))); 
-			printResult(results.get(i).getHistogram());
+			//printResult(results.get(i).getHistogram());
 
 		}
 		
@@ -308,22 +313,6 @@ public class ProbDetMonteCarlo {
 	 */
 	public double getBootStrapProgress() {
 		return bootStrapProgress;
-	}
-	
-	
-	/**
-	 * Run the simulation without a GUI. 
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		ProbDetSimSettings simSettings = new ProbDetSimSettings(); 
-		simSettings.simpleOdontocete.setUpAnimal(0, simSettings);
-		ProbDetMonteCarlo monteCarloSimulation = new ProbDetMonteCarlo(); 
-		
-		//now run the simulation 
-		monteCarloSimulation.setUpMonteCarlo(simSettings); 
-		monteCarloSimulation.runMonteCarlo(simSettings); 
-		
 	}
 
 	
@@ -464,9 +453,42 @@ public class ProbDetMonteCarlo {
 		for (int i=0; i<histWidth; i++) {
 			System.out.println("");
 			for (int j=0; j<histHeight; j++) {
-				System.out.print(result[i][j]+" ");
+				System.out.print(String.format("%.2f ",result[i][j]));
 			}
 		}
+	}
+	
+	/**
+	 * Print results form the simulation 
+	 * @param results. The results to print. 
+	 */
+	public static void printResult(float[][] result) {
+		
+		int histWidth=result.length; 
+		int histHeight=result[0].length; 
+		
+		for (int i=0; i<histWidth; i++) {
+			System.out.println("");
+			for (int j=0; j<histHeight; j++) {
+				System.out.print(String.format("%.2f ",result[i][j]));
+			}
+		}
+	}
+	
+	
+	/**
+	 * Run the simulation without a GUI. 
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		ProbDetSimSettings simSettings = new ProbDetSimSettings(); 
+		simSettings.simpleOdontocete.setUpAnimal(0, simSettings);
+		ProbDetMonteCarlo monteCarloSimulation = new ProbDetMonteCarlo(); 
+		
+		//now run the simulation 
+		monteCarloSimulation.setUpMonteCarlo(simSettings); 
+		monteCarloSimulation.runMonteCarlo(simSettings); 
+		
 	}
 	
 }

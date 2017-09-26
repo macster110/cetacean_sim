@@ -398,7 +398,7 @@ public class ColourArray implements Cloneable, Serializable{
 	 * @return colour form the specified bound
 	 */
 	public Color getColour(double col) {
-		int iCol=(int) Math.round(col*colours.length);
+		int iCol=Math.max(0, Math.min((int) Math.round(col*colours.length), colours.length-1));
 		return getColour(iCol);
 	}
 	
