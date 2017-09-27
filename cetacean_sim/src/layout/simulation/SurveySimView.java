@@ -13,7 +13,7 @@ import layout.MapPane3D;
 import layout.animal.AnimalPane;
 import layout.bathymetry.BathymetryPane;
 import layout.reciever.RecieverPane;
-import simulation.SurveySim;
+import simulation.surveySim.SurveySim;
 
 /**
  * The P

@@ -1,4 +1,4 @@
-package simulation;
+package simulation.probdetsim;
 
 import animal.SimpleOdontocete;
 import propogation.Propogation;
@@ -20,7 +20,7 @@ public class ProbDetSimSettings implements Cloneable {
 	/**
 	 * The number of bootstraps 
 	 */
-	public int nBootStraps=100;
+	public int nBootStraps=10;
 	
 	
 	/************Dimensions*************/

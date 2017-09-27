@@ -142,7 +142,8 @@ public class Hist3 {
 	
 	
 	/**
-	 * Creatre an X or Y surface for plotting the histogram as a surface. 
+	 * Creatre an X or Y surface for plotting the histogram as a surface. The X and y surfaces are the 
+	 * center of each histograqm bin
 	 * @param xbins - the x bins 
 	 * @param ybins - the y bins
 	 * @param x - true to 
@@ -150,24 +151,22 @@ public class Hist3 {
 	 */
 	public static float[][] getXYSurface(double[] xbins, double[] ybins, boolean x){
 		float[][] surface = new float[xbins.length-1][ybins.length-1]; 
+		
+		double xbinsSize=xbins[1]-xbins[0]; 
+		double ybinsSize=ybins[1]-ybins[0]; 
+
 		for (int i=0; i<xbins.length-1; i++) {
 			for (int j=0; j<ybins.length-1; j++) {
 				if (x) {
-					surface[i][j]=(float) xbins[i]; 
+					surface[i][j]=(float) (xbins[i]+xbinsSize); 
 				}
 				else {
-					surface[i][j]=(float) ybins[j]; 
+					surface[i][j]=(float) (ybins[j]+ybinsSize); 
 				}
 			}
 		}
 		return surface; 
 	}
 
-
-
-	
-
-		
-	
 
 }

@@ -1,11 +1,14 @@
 package layout.simulation;
 
 
+import java.io.File;
+
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.materialicons.MaterialIcon;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.CacheHint;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -16,15 +19,15 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Line;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 import layout.Pane3D;
 import layout.utils.Utils3D;
-import simulation.ProbDetMonteCarlo;
-import simulation.ProbDetMonteCarlo.ProbDetResult;
-import simulation.ProbDetSim;
-import simulation.ProbDetSimSettings;
 import simulation.StatusListener;
+import simulation.probdetsim.ProbDetMonteCarlo;
+import simulation.probdetsim.ProbDetSim;
+import simulation.probdetsim.ProbDetSimSettings;
+import simulation.probdetsim.ProbDetMonteCarlo.ProbDetResult;
 import utils.Hist3;
 
 /**
@@ -56,7 +59,9 @@ public class ProbDetSimView implements SimulationView {
 	 */
 	private ProbDetSim probDetSim;
 
-	
+	/**
+	 * Settings pane. 
+	 */
 	private ProbDetSettingsPane settingsPane;
 
 	/**
@@ -73,6 +78,11 @@ public class ProbDetSimView implements SimulationView {
 	 * Pane which sits at the top of the center display and shows to progress bars. 
 	 */
 	private VBox progressVBox;
+	
+	/**
+	 * Label which shows progress information on total number of bootstraps for the simualtion
+	 */
+	private Label customLabel;
 
 	/**
 	 * Label which shows progress information on total number of bootstraps for the simualtion
@@ -95,10 +105,10 @@ public class ProbDetSimView implements SimulationView {
 	 */
 	public ProbDetSimView(ProbDetSim probDetSim) {
 		this.probDetSim=probDetSim; 
-		this.settingsPane = new ProbDetSettingsPane(); 
+		this.settingsPane = new ProbDetSettingsPane(probDetSim); 
 		createCenterPane(); 
 	}
-	
+
 	/**
 	 * Create pane to start and stop the simulation. 
 	 * @return control pane. 
@@ -106,68 +116,79 @@ public class ProbDetSimView implements SimulationView {
 	private Pane createSimControlPane() {
 		HBox hBox= new HBox();
 		hBox.setSpacing(5); 
-		
+
 		//button to start thge simualtion 
 		play = new Button(); 
 		setPlayButtonGraphic(false);
-		
+
 		play.setOnAction((action)->{
 			if (this.probDetSim.isRunning()) {
-				probDetSim.run(false); 
+				probDetSim.runSim(false); 
 			}
 			else {
-				probDetSim.run(true); 
+				probDetSim.runSim(true); 
 			}
 		});
-	
+
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle("Open Resource File");
+		fileChooser.getExtensionFilters().addAll(
+				new ExtensionFilter("MATLAB Files", "*.mat"));
+
 		export = new Button(); 
 		export.setGraphic(GlyphsDude.createIcon(MaterialIcon.SAVE, "25"));
 		export.setOnAction((action)->{
-			
+			File selectedFile = fileChooser.showSaveDialog(hBox.getScene().getWindow());
+			if (selectedFile != null) {
+				probDetSim.saveProbDetData(selectedFile);
+			}
 		});
-		
+
 		//progress bars for the simulation.
 		progressBar1= new ProgressBar(); 
 		progressBar2= new ProgressBar(); 
-		
+
 		progressVBox = new VBox(); 
 		progressVBox.setSpacing(5);
-		progressVBox.getChildren().addAll(progressLabel1= new Label("No. Boostraps"),  progressBar1,
+		progressVBox.getChildren().addAll(customLabel= new Label(), progressLabel1= new Label("No. Boostraps"),  progressBar1,
 				progressLabel2= new Label("Sim. Progress"),  progressBar2); 
 		HBox.setHgrow(progressVBox, Priority.ALWAYS);
 		progressVBox.setVisible(false); 
-		
+
 		progressBar1.prefWidthProperty().bind(progressVBox.widthProperty());
 		progressBar2.prefWidthProperty().bind(progressVBox.widthProperty());
-		
+
 		hBox.getChildren().addAll(play, export, progressVBox);
-		
+
 		return hBox; 
 	}
-	
-	
 
-	
+
+
+
 	/**
 	 * Centre pane shows the current graph. 
 	 */
 	private void createCenterPane() {
 		StackPane pane = new StackPane(); 
-		
+
 		BorderPane plotPane = new BorderPane(); 
-		
+
 		pane3D = new Pane3D(); 
+		pane3D.setCache(true);
+		pane3D.setCacheHint(CacheHint.QUALITY);
+
 		plotPane.setCenter(pane3D);
-		
-//		////TEMP////
-//		pane3D.getDynamicGroup().getChildren().add(Utils3D.buildAxes(100, Color.RED, "x", "y", "z", Color.WHITE)); 
-//		ColouredSurfacePlot surfacePlot = new ColouredSurfacePlot(null, null, ColouredSurfacePlot.createTestData(400, 100.)); 
-//		pane3D.getDynamicGroup().getChildren().add(surfacePlot);
-//		Line line = new Line(0,0,100,100); 
-//		pane3D.getRootGroup().getChildren().add(line); 
-//		//pane3D.getRootGroup().getChildren().add(Utils3D.buildAxes(100, Color.CYAN, "x", "y", "z", Color.WHITE)); 
-//		///////////
-		
+
+		//		////TEMP////
+		//		pane3D.getDynamicGroup().getChildren().add(Utils3D.buildAxes(100, Color.RED, "x", "y", "z", Color.WHITE)); 
+		//		ColouredSurfacePlot surfacePlot = new ColouredSurfacePlot(null, null, ColouredSurfacePlot.createTestData(400, 100.)); 
+		//		pane3D.getDynamicGroup().getChildren().add(surfacePlot);
+		//		Line line = new Line(0,0,100,100); 
+		//		pane3D.getRootGroup().getChildren().add(line); 
+		//		//pane3D.getRootGroup().getChildren().add(Utils3D.buildAxes(100, Color.CYAN, "x", "y", "z", Color.WHITE)); 
+		//		///////////
+
 		Pane controlPane = createSimControlPane(); 
 		controlPane.setPadding(new Insets(10,10,10,10));
 		controlPane.prefWidthProperty().bind(plotPane.widthProperty());
@@ -175,7 +196,7 @@ public class ProbDetSimView implements SimulationView {
 		StackPane.setAlignment(controlPane, Pos.TOP_LEFT);
 		controlPane.setMaxHeight(50);
 		//controlPane.setStyle("-fx-background-color: cornsilk;");
-		
+
 		pane.getChildren().addAll(plotPane, controlPane);
 
 		this.centerPane = pane;
@@ -190,7 +211,7 @@ public class ProbDetSimView implements SimulationView {
 	public Node getCenterPane() {
 		return centerPane;
 	}
-	
+
 
 	/**
 	 * Set the play button graphic.
@@ -205,8 +226,8 @@ public class ProbDetSimView implements SimulationView {
 			}
 		});
 	}
-	
-	
+
+
 	/**
 	 * Called whenever the simualtion starts or starts running.
 	 */
@@ -229,15 +250,15 @@ public class ProbDetSimView implements SimulationView {
 			}
 		});
 	}
-	
-	
+
+
 	/**
 	 * Display the results of the simualtion
 	 * @param probDetResults - the results for the simulation
 	 */
 	private void displaySimResults(ProbDetResult probDetResults) {
 		pane3D.getDynamicGroup().getChildren().clear();
-		
+
 		ProbDetMonteCarlo.printResult(probDetResults.probSurfaceMean.getHistogram()); 
 
 		float[][] surface = Utils3D.double2float(probDetResults.probSurfaceMean.getHistogram()); 
@@ -245,11 +266,11 @@ public class ProbDetSimView implements SimulationView {
 		float[][] Yq=Hist3.getXYSurface(probDetResults.probSurfaceMean.getXbinEdges(), probDetResults.probSurfaceMean.getYbinEdges(), false); 
 
 		ColouredSurfacePlot surfacePlot = new ColouredSurfacePlot(Xq, Yq, surface); 
-		
+
 		pane3D.getDynamicGroup().getChildren().add(surfacePlot); 
-				
+
 	}
-	
+
 
 	/**
 	 * Set all parameter in the view. 
@@ -259,15 +280,13 @@ public class ProbDetSimView implements SimulationView {
 		settingsPane.setParams(settings); 
 
 	}
-	
+
 	/**
 	 * Get all parameters in the view before the simulation is run. 
 	 * @param settings - the parameter class to change. 
 	 */
 	public ProbDetSimSettings getParams(ProbDetSimSettings settings) {
-		
 		return settingsPane.getParams(settings); 
-
 	}
 
 	/**
@@ -282,7 +301,23 @@ public class ProbDetSimView implements SimulationView {
 		this.progressBar2.setProgress(simProg); ;
 
 	}
+
+	/**
+	 * Get the prob det sim. 
+	 * @return the prob det sim. 
+	 */
+	public ProbDetSim getProbDetSim() {
+		return this.probDetSim;
+	}
 	
+	/**
+	 * Set custom message in the progress pane. 
+	 * @param text - the custom progress message
+	 */
+	public void setCustomProgressText(String text) {
+		this.customLabel.setText(text);
+	} 
+
 
 
 }

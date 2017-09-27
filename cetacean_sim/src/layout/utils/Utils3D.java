@@ -53,6 +53,27 @@ public class Utils3D {
 	
 	
 	/**
+	 * Convert and array of the doubles to an array of floats
+	 * @param array - the double array 
+	 * @return float array with equivalent values 
+	 */
+	public static double[][] float2double(float[][] array) {
+		
+		if (array==null || array.length==0) return null; 
+		
+		double[][] doubleArray = new double[array.length][array[0].length];
+		
+		for (int i=0; i<array.length; i++) {
+			for (int j=0; j<array[0].length; j++) {
+				doubleArray[i][j]=(double) array[i][j]; 
+			}
+		}
+		
+		return doubleArray; 
+	}
+	
+	
+	/**
 	 * Get the minimum and maximum of a surface. 
 	 * @param data - a surface 
 	 * @return the minimum and maximum values. 

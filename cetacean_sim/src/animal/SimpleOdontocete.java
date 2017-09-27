@@ -1,9 +1,9 @@
 package animal;
 
 import simulation.NormalSimVariable;
-import simulation.ProbDetSimSettings;
 import simulation.RandomSimVariable;
 import simulation.SimVariable;
+import simulation.probdetsim.ProbDetSimSettings;
 import utils.SurfaceData;
 import utils.SurfaceUtils;
 

@@ -2,6 +2,8 @@ package layout.simulation;
 
 import javafx.geometry.Point3D;
 import javafx.geometry.Side;
+import javafx.scene.CacheHint;
+import javafx.scene.Group;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.ValueAxis;
 import javafx.scene.image.Image;
@@ -12,9 +14,9 @@ import javafx.scene.paint.PhongMaterial;
 import javafx.scene.transform.Rotate;
 import layout.utils.ColourArray;
 import layout.utils.ColourArray.ColourArrayType;
+import simulation.probdetsim.ProbDetMonteCarlo;
 import layout.utils.SurfacePlot;
 import layout.utils.Utils3D;
-import simulation.ProbDetMonteCarlo;
 import utils.SurfaceData;
 import utils.SurfaceUtils;
 
@@ -30,7 +32,8 @@ public class ColouredSurfacePlot extends SurfacePlot {
 	private NumberAxis zAxis;
 	
 	
-	ColourArray colourArray = ColourArray.createStandardColourArray(100, ColourArrayType.HOT); 
+	ColourArray colourArray = ColourArray.createStandardColourArray(100, ColourArrayType.HOT);
+	private Group axisGroup; 
 	
 	/**
 	 * Create a coloured surface plot
@@ -118,7 +121,6 @@ public class ColouredSurfacePlot extends SurfacePlot {
 		
 		//ProbDetMonteCarlo.printResult(interpZq); 
 
-
 		return interpZq; 
 	}
 	
@@ -149,14 +151,19 @@ public class ColouredSurfacePlot extends SurfacePlot {
 		zAxis.setLowerBound(0);
 		zAxis.setUpperBound(100);
 		zAxis.setSide(Side.BOTTOM);
-		xAxis.setTickUnit(50);
 		zAxis.setLabel("z(m)");
 		zAxis.setAutoRanging(false);
 		zAxis.getTransforms().add(new Rotate(90, new Point3D(0,1,0))); 
 		zAxis.getTransforms().add(new Rotate(0, new Point3D(1,0,0))); 
 
-		
-		this.getChildren().addAll(xAxis, yAxis, zAxis); 
+		//need to have z axis outside the same group as the x axis and the y axis as 
+		//there seems to be java bug that stops the x and y axis from renderring properly 
+		axisGroup = new Group(); 
+		axisGroup.getChildren().addAll(xAxis, yAxis); 
+		axisGroup.setCache(true);
+		axisGroup.setCacheHint(CacheHint.SCALE_AND_ROTATE);
+
+		this.getChildren().addAll(axisGroup, zAxis);
 	}
 	
 	
@@ -164,14 +171,24 @@ public class ColouredSurfacePlot extends SurfacePlot {
 	 * Set axis values for the surface. 
 	 */
 	private void setAxisValues(float[][] Xq, float[][] Yq) {
+		
 		float[] limsX=Utils3D.getMinMax(Xq);
 		xAxis.setLowerBound(limsX[0]);
 		xAxis.setUpperBound(limsX[1]);
+		
 		float[] limsY=Utils3D.getMinMax(Yq);
 		yAxis.setLowerBound(limsY[0]);
 		yAxis.setUpperBound(limsY[1]);
+		
+		System.out.println(String.format("xmin: %.2f xmax: %.2f ymin: %.2f ymax: %.2f", limsX[0], limsX[1], limsY[0], limsY[1]));
+
 		yAxis.layout();
 		xAxis.layout();
+		
+		zAxis.setLowerBound(0);
+		zAxis.setUpperBound(1);
+		zAxis.setTickUnit(0.1);
+
 
 	}
 	
@@ -179,14 +196,20 @@ public class ColouredSurfacePlot extends SurfacePlot {
 	 * Set the position of the axis. 
 	 */
 	private void setAxisPosition(double xwidth, double ywidth) {
-		xAxis.setLayoutX(-xwidth/2);
-		xAxis.setLayoutY(ywidth/2);
+		
+		xAxis.layoutXProperty().bind(yAxis.widthProperty());
+		xAxis.setLayoutY(ywidth);
 		xAxis.setPrefWidth(xwidth);
 		
-		yAxis.layoutXProperty().bind(yAxis.widthProperty().add(xwidth/2).multiply(-1));
-		yAxis.setLayoutY(-ywidth/2);
+		//yAxis.layoutXProperty().bind(yAxis.widthProperty().add(xwidth/2).multiply(-1));
+//		yAxis.setLayoutX(-xwidth/2-100);
+//		yAxis.setLayoutY(-ywidth/2);
 		yAxis.setPrefHeight(ywidth);
-		
+
+
+		axisGroup.layoutXProperty().bind(yAxis.widthProperty().multiply(-1).subtract(xwidth/2));
+		axisGroup.setLayoutY(-ywidth/2);
+
 		zAxis.setLayoutX(-xwidth/2);
 		zAxis.setLayoutY(ywidth/2);
 

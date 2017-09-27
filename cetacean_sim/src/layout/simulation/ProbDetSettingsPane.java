@@ -4,6 +4,7 @@ import animal.SimpleOdontocete;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.materialicons.MaterialIcon;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.layout.BorderPane;
@@ -13,7 +14,8 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import layout.CetSimView;
-import simulation.ProbDetSimSettings;
+import simulation.probdetsim.ProbDetSim;
+import simulation.probdetsim.ProbDetSimSettings;
 
 /**
  * Settings pane for the probability of detection
@@ -68,6 +70,16 @@ public class ProbDetSettingsPane extends BorderPane {
 
 
 	private Spinner<Double> absorbption;
+
+	/**
+	 * Reference to the porbability of detection view. 
+	 */
+	private ProbDetSim probDetSim;
+	
+	/**
+	 * Border pane. 
+	 */
+	private BorderPane probDetTypeHolder; 
 	
 	/**
 	 * Default width of the spinner. 
@@ -75,7 +87,8 @@ public class ProbDetSettingsPane extends BorderPane {
 	public static int spinnerWidth=60; 
 
 	
-	public ProbDetSettingsPane() {
+	public ProbDetSettingsPane(ProbDetSim probDetSim) {
+		this.probDetSim=probDetSim; 
 		this.setCenter(createSidePane()); 
 	}
 	
@@ -84,6 +97,7 @@ public class ProbDetSettingsPane extends BorderPane {
 	 */
 	private Pane createSidePane() {
 
+		probDetTypeHolder = new BorderPane(); 
 
 		int row=0; 
 
@@ -91,6 +105,32 @@ public class ProbDetSettingsPane extends BorderPane {
 		mainPane.setHgap(5);
 		mainPane.setVgap(5);
 
+		Label simTypesLabel = new Label("Simulation Type"); 
+		simTypesLabel.setFont(new Font(CetSimView.titleFontSize));
+		GridPane.setColumnSpan(simTypesLabel, 4);
+		mainPane.add(simTypesLabel, 0, row);
+		row++;
+		
+		ComboBox<String> simTypes = new ComboBox<String>(); 
+		simTypes.prefWidthProperty().bind(this.widthProperty());
+		for (int i=0; i<probDetSim.getProbDetSimTypes().size(); i++) {
+			simTypes.getItems().add(probDetSim.getProbDetSimTypes().get(i).getName()); 
+		} 
+		simTypes.setOnAction((action)->{
+			probDetSim.setSimIndex(simTypes.getSelectionModel().getSelectedIndex()); 
+		
+			probDetTypeHolder.setCenter(probDetSim.getCurrentSimType().getSettingsNode());
+		}); 
+		simTypes.getSelectionModel().select(probDetSim.getProbDetTypeIndex());
+		row++;
+		
+		GridPane.setColumnSpan(simTypes, 5);
+		mainPane.add(simTypes, 0, row);
+		row++;
+		
+		GridPane.setColumnSpan(probDetTypeHolder, 6);
+		mainPane.add(probDetTypeHolder, 0, row);
+		row++;
 
 		Label simLabel = new Label("Simulation Runs"); 
 		simLabel.setFont(new Font(CetSimView.titleFontSize));
@@ -154,7 +194,7 @@ public class ProbDetSettingsPane extends BorderPane {
 		recievers.prefWidthProperty().bind(mainPane.widthProperty());
 		recievers.setMaxWidth(500);
 		recievers.setGraphic(GlyphsDude.createIcon(MaterialIcon.SETTINGS, "25")); 
-		GridPane.setColumnSpan(recievers, 6);
+		GridPane.setColumnSpan(recievers, 5);
 		mainPane.add(recievers, 0, row);
 
 
@@ -181,7 +221,7 @@ public class ProbDetSettingsPane extends BorderPane {
 		propogationHolder.getChildren().addAll(new Label(" Spreading = "), spreading, new Label("*log10(R) +"),
 				absorbption, new Label("*R")); 
 		
-		GridPane.setColumnSpan(propogationHolder, 6);
+		GridPane.setColumnSpan(propogationHolder, 5);
 		mainPane.add(propogationHolder, 0, row);
 
 		/*******Noise*******/
@@ -194,25 +234,16 @@ public class ProbDetSettingsPane extends BorderPane {
 		row++; 
 		mainPane.add(new Label("Noise: min"), 0, row);
 
-		minNoise = new Spinner<Double>(0.,300.,85.,1.); 
+		minNoise = new Spinner<Double>(0.,300.,100.,1.); 
 		mainPane.add(minNoise, 1, row);
 		styleSpinner(minNoise);
-
-		mainPane.add(new Label("bin"), 2, row);
-		noiseBin= new Spinner<Double>(0.0001,300.,1.,0.5); 
-		styleSpinner(noiseBin);
-		mainPane.add(noiseBin, 3, row);
-
-		mainPane.add(new Label("max"), 4, row);
-		maxNoise = new Spinner<Double>(0.,300,150.,1.); 
-		styleSpinner(maxNoise);
-		mainPane.add(maxNoise, 5, row);
+		
 
 		/*******Animal*******/
 		row++; 
 		Label animalLabel = new Label("Animal"); 
 		animalLabel.setFont(new Font(CetSimView.titleFontSize));
-		GridPane.setColumnSpan(animalLabel, 6);
+		GridPane.setColumnSpan(animalLabel, 5);
 		mainPane.add(animalLabel, 0, row);
 
 		row++; 
@@ -224,7 +255,7 @@ public class ProbDetSettingsPane extends BorderPane {
 		animals.setGraphic(GlyphsDude.createIcon(MaterialIcon.SETTINGS, "25")); 
 		animals.prefWidthProperty().bind(mainPane.widthProperty());
 		animals.setMaxWidth(500);
-		GridPane.setColumnSpan(animals, 6);
+		GridPane.setColumnSpan(animals, 5);
 		mainPane.add(animals, 0, row);
 
 		VBox sidePane = new VBox(); 
@@ -239,7 +270,7 @@ public class ProbDetSettingsPane extends BorderPane {
 	 * Set default spinner look and size. 
 	 * @param spinner - the spinner to set look and feel for. 
 	 */
-	private void styleSpinner(Spinner spinner) {
+	public static void styleSpinner(Spinner spinner) {
 		spinner.setEditable(true);
 		spinner.setPrefWidth(spinnerWidth);
 	}

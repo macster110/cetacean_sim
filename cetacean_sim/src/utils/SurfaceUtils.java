@@ -45,7 +45,7 @@ public class SurfaceUtils extends BathymetryUtils {
 			
 			//if (f[n]==0.) f[n]=(float) Math.random();
 			
-			System.out.println(" i: "+ i+ " points: "+ x1[n] + " " + x2[n] +  " " +  f[n]);
+			//System.out.println(" i: "+ i+ " points: "+ x1[n] + " " + x2[n] +  " " +  f[n]);
 
 			
 			//work out m in max

@@ -1,4 +1,4 @@
-package simulation;
+package simulation.surveySim;
 
 import java.util.ArrayList;
 
@@ -15,6 +15,7 @@ import layout.simulation.SurveySimView;
 import noise.NoiseModel;
 import reciever.RecieverManager;
 import reciever.RecieverModel;
+import simulation.SimulationType;
 import tide.TideModel;
 
 /**

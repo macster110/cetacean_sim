@@ -12,9 +12,9 @@ import layout.MapProjector3D;
 import noise.NoiseModel;
 import reciever.RecieverManager;
 import reciever.RecieverModel;
-import simulation.ProbDetSim;
 import simulation.SimulationType;
-import simulation.SurveySim;
+import simulation.probdetsim.ProbDetSim;
+import simulation.surveySim.SurveySim;
 import tide.TideModel;
 
 /**

@@ -1,9 +1,10 @@
-package simulation;
+package simulation.probdetsim;
 
 
 import java.util.ArrayList;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 
+import simulation.StatusListener;
 import utils.CetSimUtils;
 import utils.Hist3;
 
@@ -169,13 +170,13 @@ public class ProbDetMonteCarlo {
 					simResults[j][2]=0; 
 				}
 								
-				//print out some of the progress. 
+//				//print out some of the progress. 
 				if (j%1000==0) {
 					notifyStatusListeners(StatusListener.SIM_RUNNING, i, (j/(double) simSettings.nRuns) ); 
-					System.out.println("Progress: Sim: " + i + " of "  + simSettings.nBootStraps 
-							+"   " + String.format("%.1f", (100.*j/(double) simSettings.nRuns)) + "%" +  
-							" Result sample: " + simResults[j][0] + " "+ simResults[j][1] + " "
-							+ simResults[j][2] + " mean recieved level: " + meanRecievedLvl + " aboveThresh: " + aboveThresh); 
+//					System.out.println("Progress: Sim: " + i + " of "  + simSettings.nBootStraps 
+//							+"   " + String.format("%.1f", (100.*j/(double) simSettings.nRuns)) + "%" +  
+//							" Result sample: " + simResults[j][0] + " "+ simResults[j][1] + " "
+//							+ simResults[j][2] + " mean recieved level: " + meanRecievedLvl + " aboveThresh: " + aboveThresh); 
 				}
 			}
 			
@@ -192,6 +193,8 @@ public class ProbDetMonteCarlo {
 
 		}
 		
+
+		notifyStatusListeners(StatusListener.SIM_STARTED,simSettings.nBootStraps, 1.); 
 
 		//now create an average histogram. 
 		Hist3[] histResults = averageHistograms(results); 
@@ -489,6 +492,14 @@ public class ProbDetMonteCarlo {
 		monteCarloSimulation.setUpMonteCarlo(simSettings); 
 		monteCarloSimulation.runMonteCarlo(simSettings); 
 		
+	}
+
+	/**
+	 * Check whether the simulation last run was cancelled. 
+	 * @return true if cancelled. 
+	 */
+	public boolean isCancelled() {
+		return this.cancel;
 	}
 	
 }

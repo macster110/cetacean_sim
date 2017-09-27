@@ -36,6 +36,11 @@ public class CetSimView extends BorderPane {
 	private StackPane centerHolder;
 
 	private VBox sideHolder;
+
+	/**
+	 * Combo box which chnages the simulation
+	 */
+	private ComboBox<String> simulationSelect;
 	
 	/**
 	 * Default font size ofr titles. 
@@ -58,7 +63,7 @@ public class CetSimView extends BorderPane {
 		Label simSelectLabel = new Label("Select Simultation");
 		simSelectLabel.setFont(new Font(titleFontSize));; 
 		
-		ComboBox<String> simulationSelect= new ComboBox<String>(); 
+		simulationSelect= new ComboBox<String>(); 
 		for (int i=0; i<csControl.getSimulationTypes().size(); i++) {
 			simulationSelect.getItems().add(csControl.getSimulationTypes().get(i).getName()); 
 		}
@@ -75,7 +80,7 @@ public class CetSimView extends BorderPane {
 		SplitPane sp = new SplitPane();
 		sp.getItems().add(sidePane);
 		sp.getItems().add(centerHolder);
-		sp.setDividerPositions(0.2f, 0.8f);
+		sp.setDividerPositions(0.3f, 0.7f);
 		 
 		this.setCenter(sp);
 		
@@ -117,49 +122,58 @@ public class CetSimView extends BorderPane {
 		this.cSControl.getCurrentSimulation().getSimView().notifyUpdate(flag); 
 	}
 	
-	/**
-	 * Add a stus pane; 
-	 * @param stackPane
-	 */
-	private void addStatusPane(StackPane stackPane){
-		loadPane =new CetStatusPane();
-		StackPane.setAlignment(loadPane, Pos.TOP_RIGHT);
-	    StackPane.setMargin(loadPane, new Insets(10,10,0,0));
-		stackPane.getChildren().addAll(loadPane);
-		loadPane.setVisible(false);
-	}
-	
-	/**
-	 * Add a play and stop button.s 
-	 * @param stackPane
-	 */
-	private void addProcessButtons(StackPane stackPane){
+//	/**
+//	 * Add a stus pane; 
+//	 * @param stackPane
+//	 */
+//	private void addStatusPane(StackPane stackPane){
+//		loadPane =new CetStatusPane();
+//		StackPane.setAlignment(loadPane, Pos.TOP_RIGHT);
+//	    StackPane.setMargin(loadPane, new Insets(10,10,0,0));
+//		stackPane.getChildren().addAll(loadPane);
+//		loadPane.setVisible(false);
+//	}
+//	
+//	/**
+//	 * Add a play and stop button.s 
+//	 * @param stackPane
+//	 */
+//	private void addProcessButtons(StackPane stackPane){
+////		
+//		final Button batchProcess=new Button("",GlyphsDude.createIcon(MaterialIcon.PLAY_ARROW, "25")); 
+//		batchProcess.setOnAction((action)->{
+//			cSControl.startSimulation(); 
+//		});
+//		StackPane.setAlignment(batchProcess, Pos.TOP_LEFT);
+//	    StackPane.setMargin(batchProcess, new Insets(10,0,0,10));
+//
+//		final Button stopProcess=new Button("", GlyphsDude.createIcon(MaterialIcon.STOP,"25")); 
+//		stopProcess.setOnAction((action)->{
+//			cSControl.stopSimulation(); 
+//		});
+//		stopProcess.prefHeightProperty().bind(batchProcess.heightProperty());
+//		StackPane.setAlignment(stopProcess, Pos.TOP_LEFT);
+//	    StackPane.setMargin(stopProcess, new Insets(10,0,0,60));
+//	
+//
+//		stackPane.getChildren().addAll(batchProcess, stopProcess);
 //		
-		final Button batchProcess=new Button("",GlyphsDude.createIcon(MaterialIcon.PLAY_ARROW, "25")); 
-		batchProcess.setOnAction((action)->{
-			cSControl.startSimulation(); 
-		});
-		StackPane.setAlignment(batchProcess, Pos.TOP_LEFT);
-	    StackPane.setMargin(batchProcess, new Insets(10,0,0,10));
-
-		final Button stopProcess=new Button("", GlyphsDude.createIcon(MaterialIcon.STOP,"25")); 
-		stopProcess.setOnAction((action)->{
-			cSControl.stopSimulation(); 
-		});
-		stopProcess.prefHeightProperty().bind(batchProcess.heightProperty());
-		StackPane.setAlignment(stopProcess, Pos.TOP_LEFT);
-	    StackPane.setMargin(stopProcess, new Insets(10,0,0,60));
-	
-
-		stackPane.getChildren().addAll(batchProcess, stopProcess);
-		
-	}
+//	}
 
 
 	public void setSimMessage(String string) {
 		// TODO Auto-generated method stub
 		
 	}
+	
+	/**
+	 * Set the simulation programmatically 
+	 * @param index - the simualtion index to select. 
+	 */
+	public void setSimulation(int index) {
+		this.simulationSelect.getSelectionModel().select(index);
+	}
+
 
 	/**
 	 * Set the current simulation. This changes the GUI to the current simulation

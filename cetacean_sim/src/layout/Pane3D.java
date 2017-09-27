@@ -32,7 +32,7 @@ public class Pane3D extends BorderPane  {
 	 */
 
 	final PerspectiveCamera camera = new PerspectiveCamera(true);
-    final double cameraDistance = 450;
+    final double cameraDistance = 1500;
 
 
 	final Xform cameraXform = new Xform();
