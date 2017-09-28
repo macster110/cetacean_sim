@@ -4,13 +4,13 @@ import animal.AnimalManager.AnimalTypeEnum;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.StringProperty;
 import layout.animal.ClickingOdontocetesPane;
-import layout.animal.SimpleAnimalPane;
+import layout.animal.SimpleOdontocetePane;
 import layout.utils.SettingsPane;
 
 
 public class SimpleCetacean implements AnimalModel, Cloneable {
 
-	private SimpleAnimalPane settingsPane;
+	private SimpleOdontocetePane settingsPane;
 
 	@Override
 	public double[][] getTrack(long timeStart, long longTimeEnd, double[][] bathySurface, double[][] tide) {
@@ -49,10 +49,11 @@ public class SimpleCetacean implements AnimalModel, Cloneable {
 
 	@Override
 	public SettingsPane getSettingsPane() {
-		if (settingsPane==null) {
-			settingsPane=new SimpleAnimalPane(this); 
-		}
-		return settingsPane; 
+//		if (settingsPane==null) {
+//			settingsPane=new SimpleOdontocetePane(this); 
+//		}
+//		return settingsPane; 
+		return null; 
 	}
 
 	@Override

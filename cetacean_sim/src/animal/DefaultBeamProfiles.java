@@ -27,5 +27,6 @@ public class DefaultBeamProfiles {
 			{Math.toRadians(0),		Math.toRadians(-3),		-1.5},
 			{Math.toRadians(0),		Math.toRadians(0),		0}};
 	
+	
 
 }

@@ -257,6 +257,9 @@ public class ProbDetSettingsPane extends BorderPane {
 		animals.setMaxWidth(500);
 		GridPane.setColumnSpan(animals, 5);
 		mainPane.add(animals, 0, row);
+		animals.setOnAction((action)->{
+			probDetSim.getProbDetSimView().openAnimalDialog(); 
+		});
 
 		VBox sidePane = new VBox(); 
 		sidePane.setSpacing(5);
@@ -295,6 +298,10 @@ public class ProbDetSettingsPane extends BorderPane {
 
 		return settings; 
 
+	}
+
+	public void enableControls(boolean enable) {
+		// TODO Auto-generated method stub
 	}
 
 }

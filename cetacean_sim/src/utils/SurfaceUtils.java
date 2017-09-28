@@ -33,14 +33,14 @@ public class SurfaceUtils extends BathymetryUtils {
 		double maxY=-Double.MAX_VALUE;
 		
 		int n=0;
-		for (int i=1; i<points.length; i++){
+		for (int i=0; i<points.length; i++){
 			
 			
-			if (points[i] == null || n>=((int) Math.floor(points.length))) continue;
+			if (points[i] == null || n>=points.length) continue;
 			
 			//create co-ordinate
-			x1[n]=(float) (points[i][0])+Float.MIN_VALUE;
-			x2[n]=(float) (points[i][1])+Float.MIN_VALUE;
+			x1[n]=(float) (points[i][0])-Float.MIN_VALUE;
+			x2[n]=(float) (points[i][1])-Float.MIN_VALUE;
 			f[n]=(float) points[i][2]*zExaggeration; 
 			
 			//if (f[n]==0.) f[n]=(float) Math.random();
@@ -58,10 +58,12 @@ public class SurfaceUtils extends BathymetryUtils {
 			
 		}
 		
-		System.out.println("Min max values for grid: " + minX + " "+  maxX + " " + minY + " "+ maxY); 
+		//System.out.println("Min max values for grid: " + minX + " "+  maxX + " " + minY + " "+ maxY); 
 		
 		SibsonGridder2 simpleGridder2= new SibsonGridder2(f, x1,  x2);
 		
+		//System.out.println("Interp value for : 28, -168: " + simpleGridder2.interpolate(28f, -162f)); 
+
 		SurfaceData surfaceData = new SurfaceData(simpleGridder2, minX, maxX, minY, maxY); 
 		
 		return surfaceData; 

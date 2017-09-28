@@ -67,6 +67,7 @@ public class CetSimView extends BorderPane {
 		for (int i=0; i<csControl.getSimulationTypes().size(); i++) {
 			simulationSelect.getItems().add(csControl.getSimulationTypes().get(i).getName()); 
 		}
+		simulationSelect.getSelectionModel().select(csControl.getCurrentSimIndex());
 		simulationSelect.setOnAction((action)->{
 			csControl.setSimulation(simulationSelect.getSelectionModel().getSelectedIndex()); 
 		});
@@ -76,14 +77,14 @@ public class CetSimView extends BorderPane {
 		
 		sidePane.getChildren().addAll(simSelectLabel, simulationSelect, new Separator(Orientation.HORIZONTAL), sideHolder); 
 
-	
 		SplitPane sp = new SplitPane();
 		sp.getItems().add(sidePane);
 		sp.getItems().add(centerHolder);
 		sp.setDividerPositions(0.3f, 0.7f);
+		
+		setSimulation(csControl.getCurrentSimulation()); 	
 		 
 		this.setCenter(sp);
-		
 	}
 	
 	

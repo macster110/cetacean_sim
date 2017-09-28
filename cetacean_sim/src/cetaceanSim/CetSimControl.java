@@ -114,7 +114,7 @@ public class CetSimControl {
 
 	public void setSimulation(int selectedIndex) {
 		this.currentSimIndex=selectedIndex; 
-		cetSimView.setSimulation(simulationTypes.get(selectedIndex)); 	
+		if (cetSimView!=null) cetSimView.setSimulation(simulationTypes.get(selectedIndex)); 	
 	}
 
 	/**
@@ -165,6 +165,14 @@ public class CetSimControl {
 	 */
 	public SimulationType getCurrentSimulation() {
 		return simulationTypes.get(this.currentSimIndex);
+	}
+
+	/**
+	 * Get the index of the current simualtion  
+	 * @return the index oif the current simulation. 
+	 */
+	public int getCurrentSimIndex() {
+		return this.currentSimIndex;
 	}
 	
 

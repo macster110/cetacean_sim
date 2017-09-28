@@ -7,20 +7,33 @@ import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import edu.mines.jtk.dsp.Sampling;
 import edu.mines.jtk.interp.Gridder2;
 import edu.mines.jtk.interp.SibsonGridder2;
-import javafx.scene.CacheHint;
 
 /**
- * Creatyes a beam profile from scatterred points and holds beam profile datra. 
+ * Creatyes a beam profile from scatterred points and holds beam profile data;
  * @author Jamie Macaulay 
  *
  */
 public class BeamProfile {
 	
 	/**
+	 * The name of the beam profile 
+	 */
+	private String name; 
+	
+	/**
+	 * The raw measurments used ot make the beam surface. 
+	 */
+	private  double[][] rawBeamMeasurments; 
+	
+	
+	/**
 	 * The gridder 2. This is the interpolated beam profile. 
 	 */
 	private Gridder2 beamProfileSurface; 
 	
+	/**
+	 * The horizontal angle values  
+	 */
 	double[] horzGrid;
 	
 	double[] vertGrid;
@@ -34,11 +47,15 @@ public class BeamProfile {
 
 	}
 	
+	
 	/**
 	 * Create the beam profile.
 	 * @param beamProfile - the beam prfoile. 
 	 */
 	public void createBeamProfile(double[][] beamProfile) {
+		
+		this.rawBeamMeasurments=beamProfile;
+		
 		//have a dispersed set of points. Need to create an interpolation surface. #
 		float[] horzAngle=new float[beamProfile.length];
 		float[] vertAngle=new float[beamProfile.length];
@@ -77,7 +94,6 @@ public class BeamProfile {
 		
 		double[][] gridd=convertFloatsToDoubles(grid); 
 		
-		
 		@SuppressWarnings("deprecation")
 		PiecewiseBicubicSplineInterpolator interpolator = new PiecewiseBicubicSplineInterpolator(); 
 		 lookUpSurface=interpolator.interpolate(vertGrid, horzGrid,
@@ -97,6 +113,7 @@ public class BeamProfile {
 	
 	}
 	
+	
 	/**
 	 * Get the transmission loss for a section of the beam. 
 	 * @param horzAngle - the horizontal angle in RADIANS (-pi -> pi)
@@ -110,6 +127,7 @@ public class BeamProfile {
 		return 0; 
 	}
 	
+	
 	/**
 	 * Get the surface. x is horizontal angle (RADIANS), y is vertical angle (RADIANS) and z is transmission loss. 
 	 * @return the interpolated beam profile surface.
@@ -117,6 +135,7 @@ public class BeamProfile {
 	public Gridder2 getSurface(){
 		return beamProfileSurface;
 	}
+	
 	
 	/**
 	 * Get the beam tranmission loss at a specified position for an animal at a specified position and orientation. 
@@ -152,6 +171,7 @@ public class BeamProfile {
 		return getTL(horz, vert); 
 	} 
 	
+	
 	/**
 	 * Convert 2D float array to 2D double array.
 	 * @param input - the input
@@ -174,6 +194,24 @@ public class BeamProfile {
 	        output[i] = row;
 	    }
 	    return output;
+	}
+	
+	
+	/**
+	 * Get the raw beam measurments.
+	 * @return the raw data measurements. 
+	 */
+	private  double[][] getRawBeamMeasurments() {
+		return rawBeamMeasurments; 
+	}
+
+		
+	/**
+	 * Get the name of the beam profile 
+	 * @return the name of the beam profile; 
+	 */
+	public String getName() {
+		return name;
 	}
 
 }

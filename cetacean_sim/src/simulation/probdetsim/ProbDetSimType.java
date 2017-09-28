@@ -30,5 +30,11 @@ public interface ProbDetSimType {
 	 * @return the settings node. 
 	 */
 	public Region getSettingsNode(); 
+	
+	/**
+	 * Called whenever the sim type is selected. For example, this might be used to disable some features on 
+	 * the GUI which are no longer needed when the particular sim type is used. 
+	 */
+	public void simTypeSelected();
 
 }

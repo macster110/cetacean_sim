@@ -164,4 +164,10 @@ public class NoiseSimType implements ProbDetSimType {
 		return mainPane; 
 	}
 
+	@Override
+	public void simTypeSelected() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

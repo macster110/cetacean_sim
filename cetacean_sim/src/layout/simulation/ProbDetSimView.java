@@ -3,6 +3,7 @@ package layout.simulation;
 
 import java.io.File;
 
+import animal.SimpleOdontocete;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.materialicons.MaterialIcon;
 import javafx.application.Platform;
@@ -11,6 +12,10 @@ import javafx.geometry.Pos;
 import javafx.scene.CacheHint;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.BorderPane;
@@ -21,7 +26,9 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
+import javafx.util.Callback;
 import layout.Pane3D;
+import layout.animal.SimpleOdontocetePane;
 import layout.utils.Utils3D;
 import simulation.StatusListener;
 import simulation.probdetsim.ProbDetMonteCarlo;
@@ -36,7 +43,6 @@ import utils.Hist3;
  *
  */
 public class ProbDetSimView implements SimulationView {
-
 
 	/**
 	 * Main holder pane.
@@ -78,7 +84,7 @@ public class ProbDetSimView implements SimulationView {
 	 * Pane which sits at the top of the center display and shows to progress bars. 
 	 */
 	private VBox progressVBox;
-	
+
 	/**
 	 * Label which shows progress information on total number of bootstraps for the simualtion
 	 */
@@ -99,6 +105,8 @@ public class ProbDetSimView implements SimulationView {
 	 */
 	private Pane3D pane3D;
 
+	private SimpleOdontocetePane animalPane;
+
 	/**
 	 * Constructor for the probability of detection view. 
 	 * @param probDetSim - reference to the ProbDetSim. 
@@ -107,8 +115,10 @@ public class ProbDetSimView implements SimulationView {
 		this.probDetSim=probDetSim; 
 		this.settingsPane = new ProbDetSettingsPane(probDetSim); 
 		createCenterPane(); 
+		this.animalPane = new SimpleOdontocetePane(); 
 	}
-
+	
+	
 	/**
 	 * Create pane to start and stop the simulation. 
 	 * @return control pane. 
@@ -163,9 +173,7 @@ public class ProbDetSimView implements SimulationView {
 		return hBox; 
 	}
 
-
-
-
+	
 	/**
 	 * Centre pane shows the current graph. 
 	 */
@@ -259,13 +267,14 @@ public class ProbDetSimView implements SimulationView {
 	private void displaySimResults(ProbDetResult probDetResults) {
 		pane3D.getDynamicGroup().getChildren().clear();
 
-		ProbDetMonteCarlo.printResult(probDetResults.probSurfaceMean.getHistogram()); 
+		//ProbDetMonteCarlo.printResult(probDetResults.probSurfaceMean.getHistogram()); 
 
 		float[][] surface = Utils3D.double2float(probDetResults.probSurfaceMean.getHistogram()); 
 		float[][] Xq=Hist3.getXYSurface(probDetResults.probSurfaceMean.getXbinEdges(), probDetResults.probSurfaceMean.getYbinEdges(), true); 
 		float[][] Yq=Hist3.getXYSurface(probDetResults.probSurfaceMean.getXbinEdges(), probDetResults.probSurfaceMean.getYbinEdges(), false); 
 
 		ColouredSurfacePlot surfacePlot = new ColouredSurfacePlot(Xq, Yq, surface); 
+		surfacePlot.setAxisNames("range (m)", "depth(m)", "p detection"); 
 
 		pane3D.getDynamicGroup().getChildren().add(surfacePlot); 
 
@@ -309,15 +318,55 @@ public class ProbDetSimView implements SimulationView {
 	public ProbDetSim getProbDetSim() {
 		return this.probDetSim;
 	}
-	
+
 	/**
 	 * Set custom message in the progress pane. 
 	 * @param text - the custom progress message
 	 */
 	public void setCustomProgressText(String text) {
 		this.customLabel.setText(text);
+	}
+
+	/**
+	 * Enable all the controls on the GUI
+	 * @param  true to enable the controls. False to disbale all controls. 
+	 */
+	public void enableControls(boolean enable) {
+		this.settingsPane.enableControls(enable);
+		
+	}
+
+	/**
+	 * Open the animal dialog
+	 */
+	public void openAnimalDialog() {
+		Dialog<SimpleOdontocete> animalDialog = new Dialog<>();
+		DialogPane dPane = new DialogPane(); 
+		dPane.setContent(this.animalPane);
+		animalPane.setPrefSize(300, 200);
+		animalDialog.setDialogPane(dPane);
+		
+		ButtonType buttonTypeOk = new ButtonType("Okay", ButtonData.OK_DONE);
+		animalDialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
+		
+		
+		animalDialog.setResultConverter(new Callback<ButtonType, SimpleOdontocete>() {
+			@Override
+			public SimpleOdontocete call(ButtonType b) {
+
+				if (b == buttonTypeOk) {
+					return animalPane.getParams();
+				}
+				return null;
+			}
+		});
+
+		animalDialog.showAndWait().ifPresent(response -> {
+			if (response!=null) {
+				
+			}
+		});
+		
 	} 
-
-
 
 }

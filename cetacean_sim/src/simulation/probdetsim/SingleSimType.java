@@ -40,4 +40,10 @@ public class SingleSimType implements ProbDetSimType {
 		return null;
 	}
 
+	@Override
+	public void simTypeSelected() {
+		probDetSim.getProbDetSimView().enableControls(true); 
+		
+	}
+
 }

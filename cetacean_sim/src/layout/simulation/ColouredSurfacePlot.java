@@ -119,12 +119,24 @@ public class ColouredSurfacePlot extends SurfacePlot {
 			}
 		}
 		
-		//ProbDetMonteCarlo.printResult(interpZq); 
+		
+//		System.out.println("Zq"); 
+//		ProbDetMonteCarlo.printResult(Zq);
+//		System.out.println("Zq Interp"); 
+//		ProbDetMonteCarlo.printResult(interpZq); 
 
 		return interpZq; 
 	}
 	
 	
+	/**
+	 * Set the axis names
+	 */
+	public void setAxisNames(String xAxisName, String yAxisName, String zAxisName) {
+		xAxis.setLabel(xAxisName);
+		yAxis.setLabel(yAxisName);
+		zAxis.setLabel(zAxisName);
+	}
 
 	/**
 	 * Create the number axis. 
