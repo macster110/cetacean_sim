@@ -1,5 +1,8 @@
 package animal;
 
+import java.util.ArrayList;
+
+import layout.animal.BeamProfile;
 
 public class DefaultBeamProfiles {
 	
@@ -26,6 +29,21 @@ public class DefaultBeamProfiles {
 			{Math.toRadians(0),		Math.toRadians(-10),	-9},
 			{Math.toRadians(0),		Math.toRadians(-3),		-1.5},
 			{Math.toRadians(0),		Math.toRadians(0),		0}};
+	
+	
+	
+	/**
+	 * Get a list of default beam profiles. 
+	 * @return list of default beam profiles. 
+	 */
+	public static ArrayList<BeamProfile> getDefaultBeams() {
+		
+		ArrayList<BeamProfile> beamProfiles = new ArrayList<BeamProfile>(); 
+		beamProfiles.add(new BeamProfile("Porpoise", porpBeam1));
+		
+		return beamProfiles;
+		
+	}
 	
 	
 

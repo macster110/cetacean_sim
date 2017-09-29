@@ -343,7 +343,7 @@ public class ProbDetSimView implements SimulationView {
 		Dialog<SimpleOdontocete> animalDialog = new Dialog<>();
 		DialogPane dPane = new DialogPane(); 
 		dPane.setContent(this.animalPane);
-		animalPane.setPrefSize(300, 200);
+		animalPane.setPrefSize(600, 800);
 		animalDialog.setDialogPane(dPane);
 		
 		ButtonType buttonTypeOk = new ButtonType("Okay", ButtonData.OK_DONE);

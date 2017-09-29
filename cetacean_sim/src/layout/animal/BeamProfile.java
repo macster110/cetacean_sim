@@ -47,6 +47,15 @@ public class BeamProfile {
 
 	}
 	
+	/*
+	 * The Beam Profile.
+	 */
+	public BeamProfile(String name,  double[][] rawBeamMeasurments){
+		this.name=name; 
+		this.rawBeamMeasurments=rawBeamMeasurments; 
+		createBeamProfile(rawBeamMeasurments);
+	}
+	
 	
 	/**
 	 * Create the beam profile.

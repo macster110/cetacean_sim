@@ -1,6 +1,10 @@
 package layout.animal;
 
+import java.util.ArrayList;
+
+import animal.DefaultBeamProfiles;
 import animal.SimpleOdontocete;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
@@ -10,6 +14,7 @@ import javafx.scene.control.Spinner;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import layout.SimVariablePane;
 import layout.SimVariablePane.DistributionType;
 import layout.utils.SettingsPane;
@@ -50,12 +55,17 @@ public class SimpleOdontocetePane extends BorderPane implements SettingsPane<Sim
 	private SimVariablePane depthDistribution;
 
 	/**
+	 * The beam profiles. 
+	 */
+	private ArrayList<BeamProfile> defaultBeamProfiles;
+
+	/**
 	 * Simple Odontocetes pane. 
 	 */
 	public SimpleOdontocetePane (){
 		this.setTop(new Label("Hey, I''m a simple animal!"));
-		this.setTop(createSettingsPane());
-
+		this.setLeft(createSettingsPane());
+		this.setCenter(createBeamPane()); 
 	}
 	
 	
@@ -88,13 +98,29 @@ public class SimpleOdontocetePane extends BorderPane implements SettingsPane<Sim
 	private Pane createBeamPane() {
 		
 		BorderPane borderPane = new BorderPane(); 
-		
+
+		BeamProfile2D beamProfile = new BeamProfile2D();
+		beamProfile.setPadding(new Insets(5,5,5,5)); 
+
 		ComboBox<String> beamProfileBox = new ComboBox<String>();
+		defaultBeamProfiles = DefaultBeamProfiles.getDefaultBeams();
+		for (int i=0; i<defaultBeamProfiles.size(); i++) {
+			beamProfileBox.getItems().add(defaultBeamProfiles.get(i).getName()); 
+		}
+		beamProfileBox.setOnAction((action)->{
+			beamProfile.setSurface(defaultBeamProfiles.get(beamProfileBox.getSelectionModel().getSelectedIndex()));
+		});
+		beamProfileBox.getSelectionModel().select(0);
+		beamProfile.setSurface(defaultBeamProfiles.get(0)); 
 		
-		BeamProfile2D beamProfile = new BeamProfile2D(); 
-		
-		
-		
+		VBox beamSelectorPane = new VBox();
+		beamSelectorPane.getChildren().addAll(new Label("Select Beam Profile: "), beamProfileBox); 
+		beamSelectorPane.setSpacing(5);
+		beamSelectorPane.setPadding(new Insets(5,5,5,35));
+
+		borderPane.setTop(beamSelectorPane);
+		borderPane.setCenter(beamProfile);
+
 		return borderPane; 
 	
 	}

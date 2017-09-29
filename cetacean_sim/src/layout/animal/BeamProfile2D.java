@@ -12,6 +12,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.paint.Color;
+import layout.utils.ColourArray;
+import layout.utils.ColourArray.ColourArrayType;
 
 
 /**
@@ -93,6 +95,11 @@ public class BeamProfile2D extends BorderPane  {
 	 * The animal orientation
 	 */
 	double[] animalOrientation={0,1,0};
+	
+	/**
+	 * The colour array to use for the image
+	 */
+	private ColourArray currentColourArray = ColourArray.createStandardColourArray(100, ColourArrayType.HOT);
 
 
 	public BeamProfile2D(){
@@ -106,7 +113,7 @@ public class BeamProfile2D extends BorderPane  {
 			repaint();		
 		});
 
-		canvas.widthProperty().addListener((oldVal, newVal, obsVal)->{
+		canvas.heightProperty().addListener((oldVal, newVal, obsVal)->{
 			repaint();		
 		});
 		
@@ -154,7 +161,7 @@ public class BeamProfile2D extends BorderPane  {
 	/**
 	 * Reapint the canvas. 
 	 */
-	private void repaint(){
+	private void repaint() {
 		canvas.getGraphicsContext2D().drawImage(currentBeamImage, 0, 0, canvas.getWidth(), canvas.getHeight());
 	}
 	
@@ -175,6 +182,11 @@ public class BeamProfile2D extends BorderPane  {
 	 */
 	private WritableImage createWritableImage(BeamProfile bp){
 	
+		double minsl=100; 
+		double maxsl=160; 
+		
+		double sourcellevel= 191; 
+		
 		currentBeamImage=new WritableImage(imageWidth, imageHeight); 
 		
 		//so we don;t have to keep calulating
@@ -188,6 +200,8 @@ public class BeamProfile2D extends BorderPane  {
 		int x; 
 		int y; 
 		double r; 
+		double slCol; 
+
 		//now need to write the image. 
 		for (int i=0; i<imageWidth; i++){
 			for (int j=0; j<imageHeight; j++){	
@@ -205,12 +219,16 @@ public class BeamProfile2D extends BorderPane  {
 				
 				tl=20*Math.log10(r)+0.04*r + tl; 
 				
-				double sl=191-tl;
-				if (sl<100 || sl>191) sl=100; 
+				double sl=sourcellevel-tl;
+				if (sl<minsl) sl=minsl; 
+				if (sl>maxsl) sl=maxsl; 
+				
+				//find value for colour array between 0 and 1.
+				slCol=(sl-minsl)/(maxsl-minsl); 
 				
 //				System.out.println(" x(m) " + x+ " y(m) "+ y+" sl: "+sl + " color: "+(int) (255*(191/sl))+ " "+(imageHeight-j));
 				
-				currentBeamImage.getPixelWriter().setColor(i, imageHeight-j-1, Color.rgb(0, (int) (255*((sl-100)/91)), 0));
+				currentBeamImage.getPixelWriter().setColor(i, imageHeight-j-1, currentColourArray.getColour(slCol));
 //				currentBeamImage.getPixelWriter().setColor(i, imageHeight-j-1, colourArray.getColor(i));
 
 			}
