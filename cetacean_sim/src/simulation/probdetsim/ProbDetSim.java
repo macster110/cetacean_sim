@@ -256,4 +256,13 @@ public class ProbDetSim  implements SimulationType {
 		return probDetView;
 	}
 
+	/**
+	 * Get the settings for the simualtion.
+	 * @return the sim settings.  
+	 */
+	public ProbDetSimSettings getProbDetSettings() {
+		return probDetSettings;
+		
+	}
+
 }

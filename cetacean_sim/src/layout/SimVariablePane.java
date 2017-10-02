@@ -15,6 +15,7 @@ import layout.simulation.ProbDetSettingsPane;
 import simulation.NormalSimVariable;
 import simulation.RandomSimVariable;
 import simulation.SimVariable;
+import simulation.SimVariable.DistributionType;
 
 
 /** 
@@ -24,9 +25,7 @@ import simulation.SimVariable;
  *
  */
 public class SimVariablePane extends BorderPane {
-	
-	public enum DistributionType {UNIFORM, NORMAL};
-	
+		
 	/**
 	 * The list of availbale sim varible panes. 
 	 */
@@ -40,7 +39,12 @@ public class SimVariablePane extends BorderPane {
 	/**
 	 * The name of the variable 
 	 */
-	private String name; 
+	private String name;
+
+	/**
+	 * Selects what type of varibale. 
+	 */
+	private ChoiceBox<String> cb; 
 	
 	/**
 	 * 
@@ -85,7 +89,7 @@ public class SimVariablePane extends BorderPane {
 		
 		BorderPane simHolder= new BorderPane(); 
 		
-		ChoiceBox<String> cb = new ChoiceBox<String>();
+		cb = new ChoiceBox<String>();
 		for (int i=0; i<DistributionType.values().length; i++) {
 			cb.getItems().add(getSimVarName(DistributionType.values()[i]));
 		}
@@ -146,6 +150,33 @@ public class SimVariablePane extends BorderPane {
 	public SimVariable getSimVariable() {
 		return simVarTypePane.get(currentSimVarIndex).getSimVariable(); 
 	}
+	
+
+	public void setSimVariable(SimVariable simVar) {
+		
+		//find which type of var to set. 
+		DistributionType distType = simVar.getType(); 
+		
+		System.out.println(simVar.getName() + " " + simVar.getType());
+		
+		int index=0; 
+		switch (distType) {
+		case NORMAL:
+			index=1; 
+			break;
+		case UNIFORM:
+			index=0; 
+			break;
+		default:
+			break;
+		}
+	
+		
+		cb.getSelectionModel().select(index);		
+		this.simVarTypePane.get(index).setSimVariable(simVar); 
+
+	}
+	
 
 	
 	/**
@@ -161,6 +192,12 @@ public class SimVariablePane extends BorderPane {
 		 */
 		public String getSimVarName(); 
 		
+		/**
+		 * Set params 
+		 * @param simVar
+		 */
+		public void setSimVariable(SimVariable simVar);
+
 		/**
 		 * The enum representation of the varibale 
 		 * @return the enum type for this SimVariable Pane
@@ -224,11 +261,11 @@ public class SimVariablePane extends BorderPane {
 
 			mainPane.setSpacing(5);
 			
-			minSpinner= new Spinner<Double>(0.,50000000.,min, 5.); 
+			minSpinner= new Spinner<Double>(-50000000.,50000000.,min, 5.); 
 			minSpinner.setEditable(true);
 			ProbDetSettingsPane.styleSpinner(minSpinner);
 			
-			maxSpinner= new Spinner<Double>(0.,50000000.,max,5.); 
+			maxSpinner= new Spinner<Double>(-50000000.,50000000.,max,5.); 
 			maxSpinner.setEditable(true);
 			ProbDetSettingsPane.styleSpinner(maxSpinner);
 
@@ -251,6 +288,16 @@ public class SimVariablePane extends BorderPane {
 			RandomSimVariable randSimVariable  = new RandomSimVariable(name, min, max); 
 
 			return randSimVariable;
+		}
+
+		@Override
+		public void setSimVariable(SimVariable simVar) {
+			min = ((RandomSimVariable) simVar).getMin(); 
+			max = ((RandomSimVariable) simVar).getMax(); 
+			
+			minSpinner.getValueFactory().setValue(min);
+			maxSpinner.getValueFactory().setValue(max);
+
 		}
 		
 	}
@@ -331,11 +378,20 @@ public class SimVariablePane extends BorderPane {
 			mean=meanSpinner.getValue(); 
 			std=stdSpinner.getValue(); 
 
-			NormalSimVariable randSimVariable  = new NormalSimVariable(name, mean, std); 
+			NormalSimVariable normalVariable  = new NormalSimVariable(name, mean, std); 
 
-			return randSimVariable;
+			return normalVariable;
+		}
+
+		@Override
+		public void setSimVariable(SimVariable simVar) {
+			mean = ((NormalSimVariable) simVar).getMean(); 
+			std = ((NormalSimVariable) simVar).getStd(); 
+			
+			meanSpinner.getValueFactory().setValue(mean);
+			stdSpinner.getValueFactory().setValue(std);
 		}
 		
 	}
-	
+
 } 

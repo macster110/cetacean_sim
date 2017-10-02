@@ -1,5 +1,6 @@
 package animal;
 
+import layout.animal.BeamProfile;
 import simulation.NormalSimVariable;
 import simulation.RandomSimVariable;
 import simulation.SimVariable;
@@ -42,7 +43,7 @@ public class SimpleOdontocete {
 	 * Order of each elements {horizontal angle (degrees), vertical angle (degrees), transmission loss dB}
 	 *  
 	 */
-	public double[][] beamProfile = DefaultBeamProfiles.porpBeam1; 
+	public BeamProfile beamProfile = DefaultBeamProfiles.getDefaultBeams().get(0); 
 
 	/******Variables which are used *****/
 	
@@ -64,7 +65,7 @@ public class SimpleOdontocete {
 	 * Constructor for the animal. 
 	 */
 	public SimpleOdontocete () {
-		beamSurface = SurfaceUtils.generateSurface(beamProfile);
+		beamSurface = SurfaceUtils.generateSurface(beamProfile.getRawBeamMeasurments());
 	}
 	
 	/**
@@ -83,7 +84,7 @@ public class SimpleOdontocete {
 
 		switch (flag) {
 		case SIM_UNIFORM_DEPTH_HORZ:
-			beamSurface = SurfaceUtils.generateSurface(beamProfile);
+			beamSurface = SurfaceUtils.generateSurface(beamProfile.getRawBeamMeasurments());
 
 			sourceLevel = new NormalSimVariable("Source Level", sourceLevelMean, sourceLevelStd); 
 
@@ -91,7 +92,7 @@ public class SimpleOdontocete {
 
 			horzAngle= new RandomSimVariable("Horizontal Angle", -Math.PI, Math.PI); 
 
-			depthDistribution =  new RandomSimVariable("Horizontal Angle", settings.minHeight, 0); 
+			depthDistribution =  new RandomSimVariable("Depth Distribution", settings.minHeight, 0); 
 			break;
 		default:
 			setUpAnimal(SIM_UNIFORM_DEPTH_HORZ,  settings);  

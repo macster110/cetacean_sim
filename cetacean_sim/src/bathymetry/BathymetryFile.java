@@ -53,7 +53,6 @@ public class BathymetryFile implements BathymetryModel {
 
 	@Override
 	public void loadBathy() {
-		
 		//load bathymetry 
 	     Task<Integer> task = new Task<Integer>() {
 	         @Override protected Integer call() throws Exception {
@@ -62,11 +61,9 @@ public class BathymetryFile implements BathymetryModel {
 	         }
 	     };
 		
-
         Thread th = new Thread(task);
         th.setDaemon(true);
         th.start();
-		
 	}
 	
 	public void loadBathyData(Task<Integer> task){
@@ -135,13 +132,11 @@ public class BathymetryFile implements BathymetryModel {
 
 	@Override
 	public double getDepth(double x, double y) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
 		return "Bathymetry File";
 	}
 

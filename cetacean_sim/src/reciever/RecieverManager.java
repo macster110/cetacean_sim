@@ -41,7 +41,7 @@ public class RecieverManager {
 	 * Get the list of current arrays.
 	 * @return list of current arrays. 
 	 */
-	public ObservableList<RecieverModel> getAnimalList(){
+	public ObservableList<RecieverModel> getRecieverList(){
 		return animals; 
 	}
 

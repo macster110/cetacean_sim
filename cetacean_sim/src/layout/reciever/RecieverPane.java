@@ -1,6 +1,5 @@
 package layout.reciever;
 
-import cetaceanSim.CetSimControl;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.TableColumn;
@@ -45,8 +44,8 @@ public class RecieverPane extends BorderPane {
 
 	class RecieverTable extends TablePane<RecieverModel> {
 		public RecieverTable() {
-			super(recieverManager.getAnimalList());
-
+			super(recieverManager.getRecieverList());
+			
 			TableColumn<RecieverModel,String>  animalName = new TableColumn<RecieverModel,String>("Name");
 			animalName.setCellValueFactory(cellData -> cellData.getValue().getStringName());
 
@@ -78,8 +77,6 @@ public class RecieverPane extends BorderPane {
 			// TODO Auto-generated method stub
 
 		}
-
-
 	}
 
 }

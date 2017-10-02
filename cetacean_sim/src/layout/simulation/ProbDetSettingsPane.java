@@ -1,8 +1,8 @@
 package layout.simulation;
 
-import animal.SimpleOdontocete;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.materialicons.MaterialIcon;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -14,6 +14,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import layout.CetSimView;
+import propogation.SimplePropogation;
 import simulation.probdetsim.ProbDetSim;
 import simulation.probdetsim.ProbDetSimSettings;
 
@@ -46,10 +47,10 @@ public class ProbDetSettingsPane extends BorderPane {
 	private Spinner<Double> maxDepth;
 
 
-	private Spinner<Double> rangeBin;
+	private Spinner<Integer> rangeBin;
 
 
-	private Spinner<Double> depthBin;
+	private Spinner<Integer> depthBin;
 
 	/**
 	 * The side pane. 
@@ -58,12 +59,6 @@ public class ProbDetSettingsPane extends BorderPane {
 
 
 	private Spinner<Double> minNoise;
-
-
-	private Spinner<Double> noiseBin;
-
-
-	private Spinner<Double> maxNoise;
 
 
 	private Spinner<Double> spreading;
@@ -86,7 +81,10 @@ public class ProbDetSettingsPane extends BorderPane {
 	 */
 	public static int spinnerWidth=60; 
 
-	
+	/**
+	 * Constructor for the main settings pane. 
+	 * @param probDetSim - the probability of detection simulation
+	 */
 	public ProbDetSettingsPane(ProbDetSim probDetSim) {
 		this.probDetSim=probDetSim; 
 		this.setCenter(createSidePane()); 
@@ -147,7 +145,7 @@ public class ProbDetSettingsPane extends BorderPane {
 
 		row++; 
 		mainPane.add(new Label("No. Boot"), 0, row);
-		nBootSpinner= new Spinner<Integer>(10,50000000,100,25); 
+		nBootSpinner= new Spinner<Integer>(10,50000000,10,25); 
 		GridPane.setColumnSpan(nBootSpinner, 2);
 		styleSpinner(nBootSpinner);
 		nBootSpinner.setPrefWidth(170);
@@ -166,8 +164,8 @@ public class ProbDetSettingsPane extends BorderPane {
 		maxRange = new Spinner<Double>(0.,50000000.,700.,10.); 
 		styleSpinner(maxRange);
 		mainPane.add(maxRange, 1, row);
-		mainPane.add(new Label("bin"), 2, row);
-		rangeBin = new Spinner<Double>(0.,50000000.,25.,2.); 
+		mainPane.add(new Label("No. bins"), 2, row);
+		rangeBin = new Spinner<Integer>(0,50000000,25,2); 
 		styleSpinner(rangeBin);
 		mainPane.add(rangeBin, 3, row);
 
@@ -176,8 +174,8 @@ public class ProbDetSettingsPane extends BorderPane {
 		maxDepth= new Spinner<Double>(-50000000.,50000000.,-200.,10.); 
 		styleSpinner(maxDepth);
 		mainPane.add(maxDepth, 1, row);
-		mainPane.add(new Label("bin"), 2, row);
-		depthBin= new Spinner<Double>(0.,50000000.,10.,2.); 
+		mainPane.add(new Label("No. bins"), 2, row);
+		depthBin= new Spinner<Integer>(0,50000000,10,2); 
 		styleSpinner(depthBin);
 		mainPane.add(depthBin, 3, row);
 		
@@ -194,6 +192,11 @@ public class ProbDetSettingsPane extends BorderPane {
 		recievers.prefWidthProperty().bind(mainPane.widthProperty());
 		recievers.setMaxWidth(500);
 		recievers.setGraphic(GlyphsDude.createIcon(MaterialIcon.SETTINGS, "25")); 
+		recievers.setOnAction((action)->{
+			probDetSim.getProbDetSimView().openRecieverDialog();
+		});
+		
+		
 		GridPane.setColumnSpan(recievers, 5);
 		mainPane.add(recievers, 0, row);
 
@@ -207,6 +210,7 @@ public class ProbDetSettingsPane extends BorderPane {
 
 		row++;
 		HBox propogationHolder = new HBox();
+		propogationHolder.setAlignment(Pos.CENTER);
 		propogationHolder.setSpacing(5); 
 //		mainPane.add(new Label(" Spreading = "), 0, row);
 		spreading = new Spinner<Double>(0.,20.,20.,0.5); 
@@ -232,13 +236,15 @@ public class ProbDetSettingsPane extends BorderPane {
 		mainPane.add(noiseLabel, 0, row);
 
 		row++; 
-		mainPane.add(new Label("Noise: min"), 0, row);
+		mainPane.add(new Label("Noise Threshold"), 0, row);
 
 		minNoise = new Spinner<Double>(0.,300.,100.,1.); 
 		mainPane.add(minNoise, 1, row);
 		styleSpinner(minNoise);
 		
+		mainPane.add(new Label("dB re 1uPa"), 2, row);
 
+		
 		/*******Animal*******/
 		row++; 
 		Label animalLabel = new Label("Animal"); 
@@ -283,7 +289,7 @@ public class ProbDetSettingsPane extends BorderPane {
 	 * @param settings - the parameter class to set.
 	 */
 	public void setParams(ProbDetSimSettings settings) {
-
+		
 
 	}
 	
@@ -294,12 +300,27 @@ public class ProbDetSettingsPane extends BorderPane {
 	 */
 	public ProbDetSimSettings getParams(ProbDetSimSettings settings) {
 		
-		settings.simpleOdontocete.setUpAnimal(SimpleOdontocete.SIM_UNIFORM_DEPTH_HORZ, settings);
+		settings.nBootStraps=nBootSpinner.getValue(); 
+		settings.nRuns=this.nRunnerSpinner.getValue(); 
+		
+		settings.depthBin=this.depthBin.getValue();
+		settings.minHeight=this.maxDepth.getValue();
+
+		settings.rangeBin=this.rangeBin.getValue();
+		settings.maxRange=this.maxRange.getValue();
+		
+		settings.noiseThreshold=this.minNoise.getValue(); 
+		
+		//TODO - eventually propogation will have it's own pane etc. 
+		settings.propogation = new SimplePropogation(this.spreading.getValue(), this.absorbption.getValue());
 
 		return settings; 
-
 	}
 
+	/**
+	 * 
+	 * @param enable
+	 */
 	public void enableControls(boolean enable) {
 		// TODO Auto-generated method stub
 	}

@@ -210,7 +210,7 @@ public class BeamProfile {
 	 * Get the raw beam measurments.
 	 * @return the raw data measurements. 
 	 */
-	private  double[][] getRawBeamMeasurments() {
+	public  double[][] getRawBeamMeasurments() {
 		return rawBeamMeasurments; 
 	}
 

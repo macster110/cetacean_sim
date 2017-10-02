@@ -4,6 +4,8 @@ import animal.SimpleOdontocete;
 import propogation.Propogation;
 import propogation.SimplePropogation;
 import reciever.DefaultHydrophoneArrays;
+import reciever.HydrophoneArray;
+import reciever.SimpleHydrophoneArray;
 
 /**
  * Probability of detection settings which can be serialized and saved 
@@ -33,7 +35,7 @@ public class ProbDetSimSettings implements Cloneable {
 	/**
 	 * The maximum possible depth
 	 */
-	public double minHeight=-180;
+	public double minHeight=-200;
 	
 	/**
 	 * The range bin
@@ -48,7 +50,7 @@ public class ProbDetSimSettings implements Cloneable {
 	
 	/********Recovers********/
 	
-	double[][] recievers = DefaultHydrophoneArrays.PLABuoyLong; 
+	public HydrophoneArray recievers = new SimpleHydrophoneArray(DefaultHydrophoneArrays.PLABuoyLong); 
 	
 	/**
 	 * The minimum number of receivers to detect a sound on. 

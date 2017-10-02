@@ -6,19 +6,15 @@ import animal.DefaultBeamProfiles;
 import animal.SimpleOdontocete;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.Spinner;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import layout.SimVariablePane;
-import layout.SimVariablePane.DistributionType;
 import layout.utils.SettingsPane;
-import simulation.SimVariable;
+import simulation.SimVariable.DistributionType;
 
 /**
  * 
@@ -47,7 +43,7 @@ public class SimpleOdontocetePane extends BorderPane implements SettingsPane<Sim
 	/**
 	 * Source level
 	 */
-	private SimVariablePane sourceAngle;
+	private SimVariablePane sourceLevel;
 
 	/**
 	 * The depth distribution
@@ -58,12 +54,16 @@ public class SimpleOdontocetePane extends BorderPane implements SettingsPane<Sim
 	 * The beam profiles. 
 	 */
 	private ArrayList<BeamProfile> defaultBeamProfiles;
+	
+	/**
+	 * The current beam profile. 
+	 */
+	private int currentBeamProfile;
 
 	/**
 	 * Simple Odontocetes pane. 
 	 */
 	public SimpleOdontocetePane (){
-		this.setTop(new Label("Hey, I''m a simple animal!"));
 		this.setLeft(createSettingsPane());
 		this.setCenter(createBeamPane()); 
 	}
@@ -79,14 +79,14 @@ public class SimpleOdontocetePane extends BorderPane implements SettingsPane<Sim
 		gridPane.setVgap(5);
 		gridPane.setHgap(5);
 		
-		vertAngle = new SimVariablePane("Vertical Angle", DistributionType.NORMAL, -90, 90, 0, 25);
+		vertAngle 	= new SimVariablePane("Vertical Angle", DistributionType.NORMAL, -90, 90, 0, 25);
 		horzAngle = new SimVariablePane("Horizontal Angle", DistributionType.UNIFORM, -180, 180, 0, 90);
-		sourceAngle = new SimVariablePane("Source Level", DistributionType.NORMAL, 0, 250, 180, 20);
-		depthDistribution = new SimVariablePane("Source Level", DistributionType.UNIFORM, -180, 0, 0, 0);
+		sourceLevel = new SimVariablePane("Source Level", DistributionType.NORMAL, 0, 250, 180, 20);
+		depthDistribution = new SimVariablePane("Depth Distribution", DistributionType.UNIFORM, -180, 0, 0, 0);
 
 		gridPane.add(vertAngle, 0, 0);
 		gridPane.add(horzAngle, 0, 1);
-		gridPane.add(sourceAngle, 0, 2);
+		gridPane.add(sourceLevel, 0, 2);
 		gridPane.add(depthDistribution, 0, 3);
 
 		return gridPane; 
@@ -107,8 +107,11 @@ public class SimpleOdontocetePane extends BorderPane implements SettingsPane<Sim
 		for (int i=0; i<defaultBeamProfiles.size(); i++) {
 			beamProfileBox.getItems().add(defaultBeamProfiles.get(i).getName()); 
 		}
+		
+		currentBeamProfile=0; 
 		beamProfileBox.setOnAction((action)->{
-			beamProfile.setSurface(defaultBeamProfiles.get(beamProfileBox.getSelectionModel().getSelectedIndex()));
+			this.currentBeamProfile= beamProfileBox.getSelectionModel().getSelectedIndex();
+			beamProfile.setSurface(defaultBeamProfiles.get(currentBeamProfile));
 		});
 		beamProfileBox.getSelectionModel().select(0);
 		beamProfile.setSurface(defaultBeamProfiles.get(0)); 
@@ -127,25 +130,37 @@ public class SimpleOdontocetePane extends BorderPane implements SettingsPane<Sim
 
 	@Override
 	public SimpleOdontocete getParams() {
-		// TODO Auto-generated method stub
-		return null;
+				
+		simpleOdontocete.beamProfile=this.defaultBeamProfiles.get(currentBeamProfile);
+		simpleOdontocete.horzAngle=this.horzAngle.getSimVariable(); 
+		simpleOdontocete.vertAngle=this.vertAngle.getSimVariable(); 
+		simpleOdontocete.depthDistribution=this.depthDistribution.getSimVariable(); 
+		simpleOdontocete.sourceLevel=this.sourceLevel.getSimVariable();
+		
+		return simpleOdontocete;
 	}
 
 	@Override
 	public void setParams(SimpleOdontocete settingsData, boolean clone) {
-		//if (clone) this.simpleOdontocete=settingsData.clone();
-		 this.simpleOdontocete=settingsData;
+		
+		this.simpleOdontocete=settingsData;
+
+		//if (clone) this.simpleOdontocete=settingsData.clone();		
+		//set the controls. 
+		this.horzAngle.setSimVariable(settingsData.horzAngle); 
+		this.vertAngle.setSimVariable(settingsData.vertAngle); 
+		this.sourceLevel.setSimVariable(settingsData.sourceLevel); 
+		this.depthDistribution.setSimVariable(settingsData.depthDistribution); 
+
 	}
 
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
 		return "Simple Animal";
 	}
 
 	@Override
 	public Node getContentNode() {
-		// TODO Auto-generated method stub
 		return this;
 	}
 

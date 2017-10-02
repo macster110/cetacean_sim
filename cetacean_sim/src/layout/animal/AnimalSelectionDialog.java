@@ -175,7 +175,6 @@ public class AnimalSelectionDialog extends Dialog<AnimalModel>{
 		mainPane.setRight(customAnimalPane); 
 
 		return mainPane; 
-		
 	}
 	
 	/**

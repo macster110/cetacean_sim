@@ -42,4 +42,26 @@ public class NormalSimVariable implements SimVariable {
 		return r.nextGaussian()*std + mean;
 	}
 
+	@Override
+	public DistributionType getType() {
+		return DistributionType.NORMAL;
+	}
+
+	/**
+	 * Get the mean 
+	 * @return the mean of the distribution
+	 */
+	public double getMean() {
+		return mean;
+	}
+	
+	/**
+	 * Get the standard deviation 
+	 * @return the standard deviation of the distribution
+	 */
+	public double getStd() {
+		return std;
+	}
+
+
 }

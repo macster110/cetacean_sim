@@ -42,4 +42,25 @@ public class RandomSimVariable implements SimVariable {
 		return (r.nextDouble()*(max-min)) + min;
 	}
 
+	@Override
+	public DistributionType getType() {
+		return DistributionType.UNIFORM;
+	}
+
+	/**
+	 * Get the minimum 
+	 * @return the minimum 
+	 */
+	public double getMin() {
+		return min;
+	}
+	
+	/**
+	 * The maximum value
+	 * @return the max value. 
+	 */
+	public double getMax() {
+		return max;
+	}
+
 }

@@ -124,7 +124,7 @@ public class BeamProfile2D extends BorderPane  {
 		yAxis.setLowerBound(yMin);
 		yAxis.setUpperBound(yMax);
 		yAxis.setTickUnit(50);
-		yAxis.setLabel("y(m)");
+		yAxis.setLabel("y (m) (anhimal faces +y)");
 		yAxis.setAutoRanging(false);
 
 		yAxis.setSide(Side.LEFT);
@@ -134,7 +134,7 @@ public class BeamProfile2D extends BorderPane  {
 		xAxis.setUpperBound(xMax);
 		xAxis.setSide(Side.BOTTOM);
 		xAxis.setTickUnit(50);
-		xAxis.setLabel("y(m)");
+		xAxis.setLabel("x (m)");
 		xAxis.setAutoRanging(false);
 		
 		//have to ave x Axis holder becuas eof the way Border Pane works out.  

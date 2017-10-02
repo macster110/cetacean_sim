@@ -29,9 +29,10 @@ import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.util.Callback;
 import layout.Pane3D;
 import layout.animal.SimpleOdontocetePane;
+import layout.reciever.ArrayPane;
 import layout.utils.Utils3D;
+import reciever.HydrophoneArray;
 import simulation.StatusListener;
-import simulation.probdetsim.ProbDetMonteCarlo;
 import simulation.probdetsim.ProbDetSim;
 import simulation.probdetsim.ProbDetSimSettings;
 import simulation.probdetsim.ProbDetMonteCarlo.ProbDetResult;
@@ -105,7 +106,15 @@ public class ProbDetSimView implements SimulationView {
 	 */
 	private Pane3D pane3D;
 
+	/**
+	 * The animal pane. 
+	 */
 	private SimpleOdontocetePane animalPane;
+
+	/**
+	 * Holds the hydrophone pane. 
+	 */
+	private ArrayPane recieverPane;
 
 	/**
 	 * Constructor for the probability of detection view. 
@@ -115,7 +124,16 @@ public class ProbDetSimView implements SimulationView {
 		this.probDetSim=probDetSim; 
 		this.settingsPane = new ProbDetSettingsPane(probDetSim); 
 		createCenterPane(); 
+		
+		//the animal pane
 		this.animalPane = new SimpleOdontocetePane(); 
+		probDetSim.getProbDetSettings().simpleOdontocete.setUpAnimal(
+				SimpleOdontocete.SIM_UNIFORM_DEPTH_HORZ, probDetSim.getProbDetSettings());
+		animalPane.setParams(probDetSim.getProbDetSettings().simpleOdontocete, false);
+		
+		//the reciever pane. 
+		this.recieverPane = new ArrayPane(); 
+		recieverPane.setParams(probDetSim.getProbDetSettings().recievers, false);
 	}
 	
 	
@@ -295,7 +313,13 @@ public class ProbDetSimView implements SimulationView {
 	 * @param settings - the parameter class to change. 
 	 */
 	public ProbDetSimSettings getParams(ProbDetSimSettings settings) {
-		return settingsPane.getParams(settings); 
+		
+		settings=this.settingsPane.getParams(settings);
+		
+		//settings.simpleOdontocete=this.animalPane.getParams();
+		settings.recievers=this.recieverPane.getParams();
+
+		return settings; 
 	}
 
 	/**
@@ -335,15 +359,54 @@ public class ProbDetSimView implements SimulationView {
 		this.settingsPane.enableControls(enable);
 		
 	}
+	
+	/**
+	 * Open the reciever dialog.
+	 */
+	public void openRecieverDialog() {
+		
+		Dialog<HydrophoneArray> recieverDialog = new Dialog<>();
+		recieverDialog.setTitle("Reciever Settings");
+		recieverDialog.setResizable(true);
+		DialogPane dPane = new DialogPane(); 
+		dPane.setContent(this.recieverPane);
+		recieverPane.setPrefSize(300, 300);
+		recieverDialog.setDialogPane(dPane);
+		
+		ButtonType buttonTypeOk = new ButtonType("Okay", ButtonData.OK_DONE);
+		recieverDialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
+		
+		
+		recieverDialog.setResultConverter(new Callback<ButtonType, HydrophoneArray>() {
+			@Override
+			public HydrophoneArray call(ButtonType b) {
+
+				if (b == buttonTypeOk) {
+					return recieverPane.getParams();
+				}
+				return null;
+			}
+		});
+
+		recieverDialog.showAndWait().ifPresent(response -> {
+			if (response!=null) {
+				
+			}
+		});
+		
+	} 
 
 	/**
-	 * Open the animal dialog
+	 * Open the animal dialog.
 	 */
 	public void openAnimalDialog() {
+		
 		Dialog<SimpleOdontocete> animalDialog = new Dialog<>();
+		animalDialog.setTitle("Animal Settings");
 		DialogPane dPane = new DialogPane(); 
 		dPane.setContent(this.animalPane);
-		animalPane.setPrefSize(600, 800);
+		animalPane.setPrefSize(730, 800);
+		animalPane.setParams(probDetSim.getProbDetSettings().simpleOdontocete, false);
 		animalDialog.setDialogPane(dPane);
 		
 		ButtonType buttonTypeOk = new ButtonType("Okay", ButtonData.OK_DONE);
@@ -363,7 +426,7 @@ public class ProbDetSimView implements SimulationView {
 
 		animalDialog.showAndWait().ifPresent(response -> {
 			if (response!=null) {
-				
+				this.probDetSim.getProbDetSettings().simpleOdontocete=response;
 			}
 		});
 		
