@@ -1,5 +1,7 @@
 package simulation;
 
+import simulation.SimVariable.DistributionType;
+
 public interface SimVariable {
 	
 	public enum DistributionType {UNIFORM, NORMAL};
@@ -20,6 +22,28 @@ public interface SimVariable {
 	/**
 	 * Get the next random from the distirbution. 
 	 */
-	public double getNextRandom(); 
+	public double getNextRandom();
+
+	
+	/**
+	 * Get the name for the varibale type. 
+	 * @param distType  - the distribution type
+	 * @return the string name of the distirbution type. 
+	 */
+	public static String getSimVarName(DistributionType distType) {
+		String name =""; 
+		switch (distType) {
+		case NORMAL:
+			name="Normal"; 
+			break;
+		case UNIFORM:
+			name="Uniform"; 
+			break;
+		default:
+			break;
+		}
+		return name;  
+	}
+	
 
 }

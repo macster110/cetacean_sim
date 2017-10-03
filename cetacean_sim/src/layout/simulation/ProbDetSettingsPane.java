@@ -14,6 +14,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import layout.CetSimView;
+import layout.animal.SimpleOdontocetePane;
 import propogation.SimplePropogation;
 import simulation.probdetsim.ProbDetSim;
 import simulation.probdetsim.ProbDetSimSettings;
@@ -242,7 +243,7 @@ public class ProbDetSettingsPane extends BorderPane {
 		mainPane.add(minNoise, 1, row);
 		styleSpinner(minNoise);
 		
-		mainPane.add(new Label("dB re 1uPa"), 2, row);
+		mainPane.add(new Label(SimpleOdontocetePane.dB), 2, row);
 
 		
 		/*******Animal*******/
@@ -282,6 +283,12 @@ public class ProbDetSettingsPane extends BorderPane {
 	public static void styleSpinner(Spinner spinner) {
 		spinner.setEditable(true);
 		spinner.setPrefWidth(spinnerWidth);
+		//HACK: spinner don;t change value when typed in. This forces change
+		spinner.focusedProperty().addListener((observable, oldValue, newValue) -> {
+			  if (!newValue) {
+			    spinner.increment(0); // won't change value, but will commit editor
+			  }
+			});
 	}
 	
 	/**

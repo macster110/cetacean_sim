@@ -29,10 +29,6 @@ public class NoiseSimType implements ProbDetSimType {
 	 */
 	private ProbDetSim probDetSim; 
 	
-	public NoiseSimType(ProbDetSim probDetSim) {
-		this.probDetSim=probDetSim;
-	}
-	
 	/**
 	 * The minimum noise to simulate
 	 */
@@ -62,6 +58,11 @@ public class NoiseSimType implements ProbDetSimType {
 	 * The max noise spinner. 
 	 */
 	private Spinner<Double> maxNoiseSpinner;
+	
+	public NoiseSimType(ProbDetSim probDetSim) {
+		this.probDetSim=probDetSim;
+	}
+	
 
 
 	@Override
@@ -79,7 +80,8 @@ public class NoiseSimType implements ProbDetSimType {
 
 	@Override
 	public ArrayList<ProbDetResult> runSimulation(ProbDetSimSettings probDetSettings) {
-	 getParams(); 
+		
+		getParams(); 
 		 
 		double[] noiseValues = createNoiseArray(); 
 		

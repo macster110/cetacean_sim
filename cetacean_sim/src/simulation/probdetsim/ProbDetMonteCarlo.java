@@ -74,7 +74,7 @@ public class ProbDetMonteCarlo {
 		this.isRunning=false; 
 		simProgress=0;
 		bootStrapProgress=0; 
-		System.out.println("DEPTH BIN: "+simSettings.minHeight + " " + simSettings.depthBin);
+		//System.out.println("DEPTH BIN: "+simSettings.minHeight + " " + simSettings.depthBin);
 		this.xBinEdges=Hist3.binEdges(0, simSettings.maxRange, simSettings.rangeBin);
 		this.yBinEdges=Hist3.binEdges(simSettings.minHeight, 0, simSettings.depthBin);
 	}

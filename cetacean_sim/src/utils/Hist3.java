@@ -140,16 +140,29 @@ public class Hist3 {
 		return histogram;
 	}
 	
+	/**
+	 * Creatre an X or Y surface for plotting the histogram as a surface. The X and y surfaces are the 
+	 * center of each histograqm bin
+	 * @param xbins - the x bins 
+	 * @param ybins - the y bins
+	 * @param x - true for x grid, false for y grid.
+ 	 * @return the grid used for drawing surfaces. 
+	 */
+	public static float[][] getXYSurface(double[] xbins, double[] ybins, boolean x){
+		return getXYSurface(xbins, ybins, x, true);
+	}
+	
 	
 	/**
 	 * Creatre an X or Y surface for plotting the histogram as a surface. The X and y surfaces are the 
 	 * center of each histograqm bin
 	 * @param xbins - the x bins 
 	 * @param ybins - the y bins
-	 * @param x - true to 
- 	 * @return
+	 * @param x - true for x grid, false for y grid.
+	 * @param binEdges - true if the inputsd are grid edges. Otherwise false
+ 	 * @return the grid used for drawing surfaces. 
 	 */
-	public static float[][] getXYSurface(double[] xbins, double[] ybins, boolean x){
+	public static float[][] getXYSurface(double[] xbins, double[] ybins, boolean x, boolean binEdges){
 		float[][] surface = new float[xbins.length-1][ybins.length-1]; 
 		
 		double xbinsSize=xbins[1]-xbins[0]; 

@@ -35,7 +35,8 @@ public class BeamProfile {
 	 * The horizontal angle values  
 	 */
 	double[] horzGrid;
-	
+
+
 	double[] vertGrid;
 
 	/**
@@ -107,6 +108,8 @@ public class BeamProfile {
 		PiecewiseBicubicSplineInterpolator interpolator = new PiecewiseBicubicSplineInterpolator(); 
 		 lookUpSurface=interpolator.interpolate(vertGrid, horzGrid,
 				gridd);
+		 
+		 
 //		lookupSurface = new BiCubicSplineFast(vertGrid, horzGrid, gridd);
 		
 //		//TEMP
@@ -221,6 +224,20 @@ public class BeamProfile {
 	 */
 	public String getName() {
 		return name;
+	}
+	
+	/**
+	 * @return the horzGrid
+	 */
+	public double[] getHorzGrid() {
+		return horzGrid;
+	}
+
+	/**
+	 * @return the vertGrid
+	 */
+	public double[] getVertGrid() {
+		return vertGrid;
 	}
 
 }

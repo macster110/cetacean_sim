@@ -47,6 +47,17 @@ public class SimVariablePane extends BorderPane {
 	private ChoiceBox<String> cb; 
 	
 	/**
+	 * Results convert. 
+	 */
+	private ResultConverter resultConverter = new ResultConverter();
+
+	/**
+	 * The units. 
+	 */
+	private String units; 
+	
+
+	/**
 	 * 
 	 * @param name
 	 */
@@ -54,6 +65,7 @@ public class SimVariablePane extends BorderPane {
 		this.name = name;
 		this.setCenter(createPane(DistributionType.NORMAL));
 	}
+	
 	
 	/**
 	 * 
@@ -64,8 +76,9 @@ public class SimVariablePane extends BorderPane {
 	 * @param mean
 	 * @param std
 	 */
-	public SimVariablePane(String name, DistributionType type, double min, double max, double mean, double std) {
+	public SimVariablePane(String name, String units, DistributionType type, double min, double max, double mean, double std) {
 		this.name = name;
+		this.units=units; 
 		simVarTypePane.add(new UniformSimPane(min, max));
 		simVarTypePane.add(new NormalSimPane(mean, std));
 		this.setCenter(createPane(type)); 
@@ -91,7 +104,7 @@ public class SimVariablePane extends BorderPane {
 		
 		cb = new ChoiceBox<String>();
 		for (int i=0; i<DistributionType.values().length; i++) {
-			cb.getItems().add(getSimVarName(DistributionType.values()[i]));
+			cb.getItems().add(SimVariable.getSimVarName(DistributionType.values()[i]));
 		}
 		
 		cb.setOnAction((action)->{
@@ -101,13 +114,15 @@ public class SimVariablePane extends BorderPane {
 		
 		cb.getSelectionModel().select(getDistTypeIndex(type));
 		
-		hBox.setAlignment(Pos.CENTER);
+		hBox.setAlignment(Pos.CENTER_LEFT);
 		hBox.getChildren().addAll(cb, simHolder); 
 		
 		holder.getChildren().add(hBox);
-		
+		hBox.getChildren().add(new Label(units));
+
 		return holder; 
 	}
+	
 	
 	/**
 	 * Get the distribution type. 
@@ -120,28 +135,6 @@ public class SimVariablePane extends BorderPane {
 		}
 		return -1; 
 	}
-
-	
-	/**
-	 * Get the name for the varibale type. 
-	 * @param distType  - the distribution type
-	 * @return the string name of the distirbution type. 
-	 */
-	public String getSimVarName(DistributionType distType) {
-		String name =""; 
-		switch (distType) {
-		case NORMAL:
-			name="Normal"; 
-			break;
-		case UNIFORM:
-			name="Uniform"; 
-			break;
-		default:
-			break;
-		}
-		return name;  
-	}
-	
 			
 	/**
 	 * Get the sim variable.
@@ -152,12 +145,16 @@ public class SimVariablePane extends BorderPane {
 	}
 	
 
+	/**
+	 *
+	 * @param simVar
+	 */
 	public void setSimVariable(SimVariable simVar) {
 		
 		//find which type of var to set. 
 		DistributionType distType = simVar.getType(); 
 		
-		System.out.println(simVar.getName() + " " + simVar.getType());
+		//System.out.println(simVar.getName() + " " + simVar.getType());
 		
 		int index=0; 
 		switch (distType) {
@@ -171,10 +168,8 @@ public class SimVariablePane extends BorderPane {
 			break;
 		}
 	
-		
 		cb.getSelectionModel().select(index);		
 		this.simVarTypePane.get(index).setSimVariable(simVar); 
-
 	}
 	
 
@@ -282,8 +277,8 @@ public class SimVariablePane extends BorderPane {
 
 		@Override
 		public SimVariable getSimVariable() {
-			min=minSpinner.getValue(); 
-			max=maxSpinner.getValue(); 
+			min=resultConverter.convert2Value(minSpinner.getValue()); 
+			max=resultConverter.convert2Value(maxSpinner.getValue()); 
 
 			RandomSimVariable randSimVariable  = new RandomSimVariable(name, min, max); 
 
@@ -295,8 +290,8 @@ public class SimVariablePane extends BorderPane {
 			min = ((RandomSimVariable) simVar).getMin(); 
 			max = ((RandomSimVariable) simVar).getMax(); 
 			
-			minSpinner.getValueFactory().setValue(min);
-			maxSpinner.getValueFactory().setValue(max);
+			minSpinner.getValueFactory().setValue(resultConverter.convert2Control(min));
+			maxSpinner.getValueFactory().setValue(resultConverter.convert2Control(max));
 
 		}
 		
@@ -347,7 +342,7 @@ public class SimVariablePane extends BorderPane {
 		@Override
 		public DistributionType getSimVarType() {
 			return DistributionType.NORMAL;
-		}
+		} 
 		
 		private Pane createNormalPane() {
 			HBox mainPane = new HBox(); 
@@ -375,8 +370,8 @@ public class SimVariablePane extends BorderPane {
 
 		@Override
 		public SimVariable getSimVariable() {
-			mean=meanSpinner.getValue(); 
-			std=stdSpinner.getValue(); 
+			mean=resultConverter.convert2Value(meanSpinner.getValue()); 
+			std=resultConverter.convert2Value(stdSpinner.getValue()); 
 
 			NormalSimVariable normalVariable  = new NormalSimVariable(name, mean, std); 
 
@@ -388,10 +383,24 @@ public class SimVariablePane extends BorderPane {
 			mean = ((NormalSimVariable) simVar).getMean(); 
 			std = ((NormalSimVariable) simVar).getStd(); 
 			
-			meanSpinner.getValueFactory().setValue(mean);
-			stdSpinner.getValueFactory().setValue(std);
+			meanSpinner.getValueFactory().setValue(resultConverter.convert2Control(mean));
+			stdSpinner.getValueFactory().setValue(resultConverter.convert2Control(std));
 		}
-		
+	}
+	
+	/**
+	 * @return the resultConverter
+	 */
+	public ResultConverter getResultConverter() {
+		return resultConverter;
+	}
+
+
+	/**
+	 * @param resultConverter the resultConverter to set
+	 */
+	public void setResultConverter(ResultConverter resultConverter) {
+		this.resultConverter = resultConverter;
 	}
 
 } 

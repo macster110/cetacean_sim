@@ -28,5 +28,20 @@ public class SimplePropogation implements Propogation {
 		return -TL;
 	}
 
+	/**
+	 * Get the spreading coefficient. 
+	 * @return
+	 */
+	public double getSpreadingCoeff() {
+		return spreading;
+	}
+
+	/**
+	 * Get the absorption coefficient. 
+	 * @return
+	 */
+	public double getAbsorptionCoeff() {
+		return absorption;
+	}
 	
 }

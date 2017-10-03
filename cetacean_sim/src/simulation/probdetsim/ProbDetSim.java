@@ -115,6 +115,7 @@ public class ProbDetSim  implements SimulationType {
 	 * @param start - true to start the simulation. False to stop the simulation. 
 	 */
 	public void runSim(boolean start) {
+		currentResult=null;
 		this.probDetSettings = probDetView.getParams(probDetSettings); 
 		
 		if (monteCarloTask!=null && monteCarloTask.isRunning()) {
@@ -193,12 +194,10 @@ public class ProbDetSim  implements SimulationType {
 	 * Save the latest data to a file. 
 	 */
 	public void saveProbDetData(File file) {
-		
-		ProbDetResult probDetResult = this.getProbDetResults(); 	
-		
+				
 		ProbDetMTExport mtExport = new ProbDetMTExport(); 
 		
-		MLArray mlaArray = mtExport.resultsToStruct(probDetResult);
+		MLArray mlaArray = mtExport.resultsToStruct(this.currentResult);
 		
 		ArrayList<MLArray> results = new ArrayList<MLArray>(); 
 		results.add(mlaArray); 

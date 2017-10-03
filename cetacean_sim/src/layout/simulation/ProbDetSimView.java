@@ -267,11 +267,13 @@ public class ProbDetSimView implements SimulationView {
 		Platform.runLater(()->{
 			switch (updateType) {
 			case StatusListener.SIM_STARTED:
+				//reset the custom label. 
 				setSimControls(true); 
 				break;
 			case StatusListener.SIM_FINIHSED:
 				setSimControls(false); 
 				displaySimResults(probDetSim.getProbDetResults()); 
+				//customLabel.setText(""); 
 				break;
 			}
 		});
@@ -286,6 +288,8 @@ public class ProbDetSimView implements SimulationView {
 		pane3D.getDynamicGroup().getChildren().clear();
 
 		//ProbDetMonteCarlo.printResult(probDetResults.probSurfaceMean.getHistogram()); 
+		
+		if (probDetResults==null || probDetResults.probSurfaceMean==null) return; 
 
 		float[][] surface = Utils3D.double2float(probDetResults.probSurfaceMean.getHistogram()); 
 		float[][] Xq=Hist3.getXYSurface(probDetResults.probSurfaceMean.getXbinEdges(), probDetResults.probSurfaceMean.getYbinEdges(), true); 
@@ -315,8 +319,7 @@ public class ProbDetSimView implements SimulationView {
 	public ProbDetSimSettings getParams(ProbDetSimSettings settings) {
 		
 		settings=this.settingsPane.getParams(settings);
-		
-		//settings.simpleOdontocete=this.animalPane.getParams();
+		settings.simpleOdontocete=this.animalPane.getParams();
 		settings.recievers=this.recieverPane.getParams();
 
 		return settings; 

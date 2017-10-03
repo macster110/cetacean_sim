@@ -34,8 +34,6 @@ public class SurfaceUtils extends BathymetryUtils {
 		
 		int n=0;
 		for (int i=0; i<points.length; i++){
-			
-			
 			if (points[i] == null || n>=points.length) continue;
 			
 			//create co-ordinate
@@ -44,10 +42,8 @@ public class SurfaceUtils extends BathymetryUtils {
 			f[n]=(float) points[i][2]*zExaggeration; 
 			
 			//if (f[n]==0.) f[n]=(float) Math.random();
-			
 			//System.out.println(" i: "+ i+ " points: "+ x1[n] + " " + x2[n] +  " " +  f[n]);
 
-			
 			//work out m in max
 			if (x1[n]>maxX) maxX=x1[n]; 
 			if (x1[n]<minX) minX=x1[n]; 
@@ -55,7 +51,6 @@ public class SurfaceUtils extends BathymetryUtils {
 			if (x2[n]<minY) minY=x2[n]; 
 			
 			n++;
-			
 		}
 		
 		//System.out.println("Min max values for grid: " + minX + " "+  maxX + " " + minY + " "+ maxY); 
