@@ -494,6 +494,16 @@ public class ProbDetMonteCarlo {
 		monteCarloSimulation.runMonteCarlo(simSettings); 
 		
 	}
+	
+	
+	/**
+	 * A convenicne function for calling the simualtion from MATLAB. Creates a settings class and runs the simualtion. 
+	 * @param vertMean - the mean vertical angle in RADIANS. 
+	 * @param vertStd  - the standard deviation of vertical angle in RADIANS. 
+	 */
+	public void runMonteCarloML(double vertMean, double vertStd) {
+		
+	}
 
 	/**
 	 * Check whether the simulation last run was cancelled. 

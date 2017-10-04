@@ -26,7 +26,6 @@ import simulation.probdetsim.ProbDetSimSettings;
  */
 public class ProbDetSettingsPane extends BorderPane {
 	
-	
 	/**
 	 * Spinner to define the number of runs
 	 */
@@ -75,7 +74,12 @@ public class ProbDetSettingsPane extends BorderPane {
 	/**
 	 * Border pane. 
 	 */
-	private BorderPane probDetTypeHolder; 
+	private BorderPane probDetTypeHolder;
+
+	/**
+	 * The minimum number of recievers to ensonify
+	 */
+	private Spinner<Integer> minRecievers; 
 	
 	/**
 	 * Default width of the spinner. 
@@ -141,7 +145,7 @@ public class ProbDetSettingsPane extends BorderPane {
 		nRunnerSpinner= new Spinner<Integer>(10,50000000,50000,10000); 
 		GridPane.setColumnSpan(nRunnerSpinner, 2);
 		styleSpinner(nRunnerSpinner);
-		nRunnerSpinner.setPrefWidth(170);
+		nRunnerSpinner.setPrefWidth(100);
 		mainPane.add(nRunnerSpinner, 1, row);
 
 		row++; 
@@ -149,7 +153,7 @@ public class ProbDetSettingsPane extends BorderPane {
 		nBootSpinner= new Spinner<Integer>(10,50000000,10,25); 
 		GridPane.setColumnSpan(nBootSpinner, 2);
 		styleSpinner(nBootSpinner);
-		nBootSpinner.setPrefWidth(170);
+		nBootSpinner.setPrefWidth(100);
 		mainPane.add(nBootSpinner, 1, row);
 		
 		/******Sim Dimensions*****/
@@ -196,10 +200,22 @@ public class ProbDetSettingsPane extends BorderPane {
 		recievers.setOnAction((action)->{
 			probDetSim.getProbDetSimView().openRecieverDialog();
 		});
-		
+	
 		
 		GridPane.setColumnSpan(recievers, 5);
 		mainPane.add(recievers, 0, row);
+		
+		row++;
+		
+		minRecievers = new Spinner<Integer>(0,128,1,1); 
+		styleSpinner(minRecievers);
+		minRecievers.setPrefWidth(90);
+		
+		Label minLabel=new Label("no. of recievers to ensonify");
+		GridPane.setColumnSpan(minLabel, 4);
+
+		mainPane.add(minLabel, 1, row);
+		mainPane.add(minRecievers, 0, row);
 
 
 		/******Propagation*****/
@@ -285,10 +301,10 @@ public class ProbDetSettingsPane extends BorderPane {
 		spinner.setPrefWidth(spinnerWidth);
 		//HACK: spinner don;t change value when typed in. This forces change
 		spinner.focusedProperty().addListener((observable, oldValue, newValue) -> {
-			  if (!newValue) {
-			    spinner.increment(0); // won't change value, but will commit editor
-			  }
-			});
+			if (!newValue) {
+				spinner.increment(0); // won't change value, but will commit editor
+			}
+		});
 	}
 	
 	/**
@@ -296,7 +312,7 @@ public class ProbDetSettingsPane extends BorderPane {
 	 * @param settings - the parameter class to set.
 	 */
 	public void setParams(ProbDetSimSettings settings) {
-		
+		//TODO
 
 	}
 	
@@ -317,6 +333,8 @@ public class ProbDetSettingsPane extends BorderPane {
 		settings.maxRange=this.maxRange.getValue();
 		
 		settings.noiseThreshold=this.minNoise.getValue(); 
+		
+		settings.minRecievers=this.minRecievers.getValue();
 		
 		//TODO - eventually propogation will have it's own pane etc. 
 		settings.propogation = new SimplePropogation(this.spreading.getValue(), this.absorbption.getValue());
