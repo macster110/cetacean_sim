@@ -80,7 +80,7 @@ public class SimpleOdontocete {
 	 * @param flag
 	 * @param settings
 	 */
-	public void  setUpAnimal(int flag, ProbDetSimSettings settings) {
+	public void setUpAnimal(int flag, ProbDetSimSettings settings) {
 
 		switch (flag) {
 		case SIM_UNIFORM_DEPTH_HORZ:

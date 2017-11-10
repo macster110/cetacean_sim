@@ -171,10 +171,10 @@ public class Hist3 {
 		for (int i=0; i<xbins.length-1; i++) {
 			for (int j=0; j<ybins.length-1; j++) {
 				if (x) {
-					surface[i][j]=(float) (xbins[i]+xbinsSize); 
+					surface[i][j]=(float) (xbins[i]+xbinsSize/2); 
 				}
 				else {
-					surface[i][j]=(float) (ybins[j]+ybinsSize); 
+					surface[i][j]=(float) (ybins[j]+ybinsSize/2); 
 				}
 			}
 		}
