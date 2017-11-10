@@ -1,38 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.8.0_131"/>
-	<classpathentry kind="lib" path="src/jars/commons-math3-3.6.1.jar" sourcepath="src/jars/commons-math3-3.6.1-sources.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:file:/C:/Users/jamie/cetaceanSimGit/cetacean_sim/src/jars/commons-math3-3.6.1-javadoc.jar!/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="src/jars/jts-1.14.jar" sourcepath="src/jars/jts-1.14-sources.jar"/>
-	<classpathentry kind="lib" path="src/jars/edu-mines-jtk-1.0.0.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="src/jars/commons-math3-3.6.1.jar"/>
 	<classpathentry kind="lib" path="src/jars/controlsfx-8.40.11.jar"/>
-	<classpathentry kind="lib" path="src/jars/fontawesomefx-8.9.jar"/>
-	<classpathentry kind="lib" path="src/jars/fontawesomefx-materialicons-2.1-2.jar"/>
-	<classpathentry kind="lib" path="src/jars/flanagan.jar"/>
-	<classpathentry kind="lib" path="src/jars/fxyz.jar"/>
-	<classpathentry kind="lib" path="src/jars/matfilerw-master-3.1.0.jar"/>
-	<classpathentry kind="output" path="bin"/>
-</classpath>
-=======
-<?xml version="1.0" encoding="UTF-8"?>
-<classpath>
-	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.8.0_144"/>
-	<classpathentry kind="lib" path="src/jars/commons-math3-3.6.1.jar" sourcepath="src/jars/commons-math3-3.6.1-sources.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:file:/C:/Users/jamie/cetaceanSimGit/cetacean_sim/src/jars/commons-math3-3.6.1-javadoc.jar!/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="src/jars/jts-1.14.jar" sourcepath="src/jars/jts-1.14-sources.jar"/>
 	<classpathentry kind="lib" path="src/jars/edu-mines-jtk-1.0.0.jar"/>
-	<classpathentry kind="lib" path="src/jars/controlsfx-8.40.11.jar"/>
 	<classpathentry kind="lib" path="src/jars/fontawesomefx-8.9.jar"/>
-	<classpathentry kind="lib" path="src/jars/fontawesomefx-materialicons-2.1-2.jar"/>
-	<classpathentry kind="lib" path="src/jars/flanagan.jar"/>
 	<classpathentry kind="lib" path="src/jars/fxyz.jar"/>
 	<classpathentry kind="lib" path="src/jars/matfilerw-master-3.1.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
