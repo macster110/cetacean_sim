@@ -4,6 +4,7 @@ package simulation.probdetsim;
 import java.util.ArrayList;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 
+import animal.SimpleOdontocete;
 import simulation.StatusListener;
 import utils.CetSimUtils;
 import utils.Hist3;
@@ -54,7 +55,9 @@ public class ProbDetMonteCarlo {
 	/**
 	 * The results of the simualtion. 
 	 */
-	private ProbDetResult result; 
+	private ProbDetResult result;
+
+	private boolean print; 
 	
 	
 	/**
@@ -77,6 +80,7 @@ public class ProbDetMonteCarlo {
 		//System.out.println("DEPTH BIN: "+simSettings.minHeight + " " + simSettings.depthBin);
 		this.xBinEdges=Hist3.binEdges(0, simSettings.maxRange, simSettings.rangeBin);
 		this.yBinEdges=Hist3.binEdges(simSettings.minHeight, 0, simSettings.depthBin);
+		simSettings.printSettings();
 	}
 	
 	
@@ -174,9 +178,11 @@ public class ProbDetMonteCarlo {
 //				//print out some of the progress. 
 				if (j%1000==0) {
 					notifyStatusListeners(StatusListener.SIM_RUNNING, i, (j/(double) simSettings.nRuns) ); 
+					if (this.print)	System.out.println("Progress: Sim: " + i + " of "  + simSettings.nBootStraps 
+							+"   " + String.format("%.1f", (100.*j/(double) simSettings.nRuns)) + "%"); 
 //					System.out.println("Progress: Sim: " + i + " of "  + simSettings.nBootStraps 
 //							+"   " + String.format("%.1f", (100.*j/(double) simSettings.nRuns)) + "%" +  
-//							" Result sample: " + simResults[j][0] + " "+ simResults[j][1] + " "
+//							" Result sample: " + simResults[j][0] + " "+ simResults[j][1]+ " "
 //							+ simResults[j][2] + " mean recieved level: " + meanRecievedLvl + " aboveThresh: " + aboveThresh); 
 				}
 			}
@@ -327,12 +333,33 @@ public class ProbDetMonteCarlo {
 	public boolean isRunning() {
 		return isRunning;
 	}
-
+	
 	
 	/**
-	 * Run the simulation with the current settings. 
+	 * Run the probability of detection simualtion using a new instance  default settings file. This
+	 * will always return the same result and is only used for testing purposes. 
+	 */
+	public void run() {
+		ProbDetSimSettings simSettings= new ProbDetSimSettings(); 
+		simSettings.simpleOdontocete.setUpAnimal(SimpleOdontocete.SIM_UNIFORM_DEPTH_HORZ, simSettings);
+		run(simSettings, true); 
+	}
+
+	/**
+	 * Run the probability of detection simualtion
+	 * @param simSettings - the settings for the simualtion
 	 */
 	public void run(ProbDetSimSettings simSettings) {
+		 run(simSettings, false); 
+	}
+	
+	/**
+	 * Run the probability of detection simualtion
+	 * @param simSettings - the settings for the simualtion
+	 * @param print - true to print some summary information to terminal. 
+	 */
+	public void run(ProbDetSimSettings simSettings, boolean print) {
+		this.print=print;
 		if (simSettings==null) {
 			System.err.println("The settings class is null. Simulation cannot run.");
 		}
@@ -433,6 +460,22 @@ public class ProbDetMonteCarlo {
 	}
 	
 	
+	/*
+	 * Print the current results. 
+	 */
+	public void printResult() {
+		if (result==null) {
+			System.out.println("The prob. det. result is null:"); 
+		}
+		
+		System.out.println("Mean P: ");
+		printResult(this.result.probSurfaceMean.getHistogram()); 
+		System.out.println("");
+		System.out.println("Std P: ");
+		printResult(this.result.probSurfaceStd.getHistogram()); 
+	}
+	
+	
 	/**
 	 * Print the result. 
 	 * @param result - the results.
@@ -480,6 +523,9 @@ public class ProbDetMonteCarlo {
 	}
 	
 	
+	
+	
+	
 	/**
 	 * Run the simulation without a GUI. 
 	 * @param args
@@ -496,14 +542,15 @@ public class ProbDetMonteCarlo {
 	}
 	
 	
-	/**
-	 * A convenicne function for calling the simualtion from MATLAB. Creates a settings class and runs the simualtion. 
-	 * @param vertMean - the mean vertical angle in RADIANS. 
-	 * @param vertStd  - the standard deviation of vertical angle in RADIANS. 
-	 */
-	public void runMonteCarloML(double vertMean, double vertStd) {
-		
-	}
+//	/**
+//	 * A convenicne function for calling the simualtion from MATLAB. Creates a settings class and runs the simualtion. 
+//	 * @param vertMean - the mean vertical angle in RADIANS. 
+//	 * @param vertStd  - the standard deviation of vertical angle in RADIANS. 
+//	 */
+//	public double runMonteCarloML(ProbDetSimSettings simSettings) {
+//		System.out.println("Hello Monte Carlo in Java"); 
+//		return 45; 
+//	}
 
 	/**
 	 * Check whether the simulation last run was cancelled. 

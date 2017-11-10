@@ -90,6 +90,10 @@ public class SimpleOdontocetePane extends BorderPane implements SettingsPane<Sim
 		horzAngle = new SimVariablePane("Horizontal Angle", degreeSymbol, DistributionType.UNIFORM, -180, 180, 0, 90);
 		sourceLevel = new SimVariablePane("Source Level", dB, DistributionType.NORMAL, 0, 250, 180, 20);
 		depthDistribution = new SimVariablePane("Depth Distribution", "m", DistributionType.UNIFORM, -180, 0, 0, 0);
+		horzAngle.setResultConverter(new Radians2Degrees());
+		vertAngle.setResultConverter(new Radians2Degrees());
+
+
 
 		gridPane.add(vertAngle, 0, 0);
 		gridPane.add(horzAngle, 0, 1);
@@ -155,9 +159,7 @@ public class SimpleOdontocetePane extends BorderPane implements SettingsPane<Sim
 		//if (clone) this.simpleOdontocete=settingsData.clone();		
 		//set the controls. 
 		this.horzAngle.setSimVariable(settingsData.horzAngle); 
-		horzAngle.setResultConverter(new Radians2Degrees());
 		this.vertAngle.setSimVariable(settingsData.vertAngle); 
-		vertAngle.setResultConverter(new Radians2Degrees());
 		this.sourceLevel.setSimVariable(settingsData.sourceLevel); 
 		this.depthDistribution.setSimVariable(settingsData.depthDistribution); 
 

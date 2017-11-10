@@ -62,5 +62,9 @@ public class RandomSimVariable implements SimVariable {
 	public double getMax() {
 		return max;
 	}
+	
+	public String toString() {
+		return String.format("Uniform distribution: Min: %.3f  Max %.3f", min, max);
+	}
 
 }
