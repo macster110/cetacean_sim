@@ -62,6 +62,10 @@ public class NormalSimVariable implements SimVariable {
 	public double getStd() {
 		return std;
 	}
+	
+	public String toString() {
+		return String.format("Normal distribution: Mean: %.3f Std %.3f", mean, std);
+	}
 
 
 }

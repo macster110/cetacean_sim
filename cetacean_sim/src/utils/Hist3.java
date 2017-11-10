@@ -107,8 +107,8 @@ public class Hist3 {
 	 */
 	public static double[] binEdges(double min, double max, int nBins) {
 		double binSize=(max-min)/nBins;
-		double[] binEdges = new double[nBins]; 
-		for (int i=0; i<nBins; i++) {
+		double[] binEdges = new double[nBins+1]; 
+		for (int i=0; i<nBins+1; i++) {
 			binEdges[i]=min+i*binSize;
 		}
 		return binEdges;

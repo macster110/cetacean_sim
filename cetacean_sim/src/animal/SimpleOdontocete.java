@@ -21,7 +21,6 @@ public class SimpleOdontocete {
 	/**
 	 * Animal Parameters. 
 	 */
-	
 	private double verticalAngleMean=Math.toRadians(3.29);
 	private double verticalAngleStd=Math.toRadians(27.524);
 	
@@ -47,14 +46,16 @@ public class SimpleOdontocete {
 
 	/******Variables which are used *****/
 	
+	//beam surface
 	public SurfaceData beamSurface;
 	
-	
+	//source level
 	public SimVariable sourceLevel; 
 
 	//orientation 
 	public SimVariable vertAngle;
 	
+	//horizontal angle
 	public SimVariable horzAngle;
 	
 	//depth distribution
@@ -66,6 +67,34 @@ public class SimpleOdontocete {
 	 */
 	public SimpleOdontocete () {
 		beamSurface = SurfaceUtils.generateSurface(beamProfile.getRawBeamMeasurments());
+	}
+	
+	/**
+	 * Constructor for the animal with intial starting values. Used primarily to call from MATLAB 
+	 * Creates an animal which has an even depth distribution with normal distributions for source levels
+	 * and vertical angle.
+	 */
+	public SimpleOdontocete (double sourceLevelMean, double sourceLevelStd, double vertAngleMean , 
+			double vertAngleStd,  double maxDepth, String beamType) {
+				 
+		this.verticalAngleMean=vertAngleMean;
+		this.verticalAngleStd=vertAngleStd;
+
+		this.sourceLevelMean=sourceLevelMean; //dB re 1 uPa
+		this.sourceLevelStd=sourceLevelStd;
+		
+		switch(beamType) {
+		case "porp":
+			beamProfile = DefaultBeamProfiles.getDefaultBeams().get(0); 
+			break;
+		}
+		
+		beamSurface = SurfaceUtils.generateSurface(beamProfile.getRawBeamMeasurments());
+		
+		//bit of a hack but works 
+		ProbDetSimSettings probDetSimSettings = new ProbDetSimSettings(); 
+		probDetSimSettings.minHeight=maxDepth; 
+		setUpAnimal(SIM_UNIFORM_DEPTH_HORZ, probDetSimSettings); 
 	}
 	
 	/**
@@ -98,6 +127,19 @@ public class SimpleOdontocete {
 			setUpAnimal(SIM_UNIFORM_DEPTH_HORZ,  settings);  
 			break; 
 		}
+	}
+	
+	
+	@Override
+	public String toString() {
+		
+		String animalString = ("Simple Animal\n "
+				+ "source level: " + sourceLevel.toString() +"\n"
+				+ "vertical angle: " + vertAngle.toString() +"\n"
+				+ "horizontal angle: " + horzAngle.toString() +"\n"
+				+ "depth distribution: " + depthDistribution.toString());
+		
+		return animalString;
 	}
 
 }

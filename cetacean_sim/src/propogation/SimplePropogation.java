@@ -44,4 +44,8 @@ public class SimplePropogation implements Propogation {
 		return absorption;
 	}
 	
+	@Override
+	public String toString() {
+		return String.format("Simple spreading: Spreading coeff.: %.2f absorption coeff.: %.2f", spreading, absorption); 
+	}
 }
