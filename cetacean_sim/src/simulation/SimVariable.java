@@ -23,6 +23,13 @@ public interface SimVariable {
 	 * Get the next random from the distirbution. 
 	 */
 	public double getNextRandom();
+	
+	/**
+	 * The limits in between which the sim variable is relevent. 
+	 * This value can be null if there are no limits
+	 * @return - the limits in between whihc the distribution applies. 
+	 */
+	public double[] getLimits();
 
 	
 	/**

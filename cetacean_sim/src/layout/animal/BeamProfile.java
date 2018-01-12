@@ -75,7 +75,7 @@ public class BeamProfile {
 			horzAngle[i]=(float) beamProfile[i][0];
 			vertAngle[i]=(float) beamProfile[i][1];
 			tl[i]=-(float) beamProfile[i][2];
-			System.out.println("TL input: "+tl[i]);
+			//System.out.println("TL input: "+tl[i]);
 		}
 		//create the beam profile surface. 
 		beamProfileSurface=new  SibsonGridder2(tl,horzAngle,vertAngle); 

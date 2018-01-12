@@ -2,6 +2,8 @@ package simulation.probdetsim;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
+
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 
 import animal.SimpleOdontocete;
@@ -57,7 +59,22 @@ public class ProbDetMonteCarlo {
 	 */
 	private ProbDetResult result;
 
+	/**
+	 * Print out progress data
+	 */
 	private boolean print; 
+	
+	
+	/**
+	 * Records the angles of detected animals. Note, this can take a lot of memory 
+	 */
+	private boolean recordAngles=true;
+
+	/*
+	 * Animal horizontal and vertical angles in RADIANS from the last simulation to have run. Note that 
+	 * this is the last single simulation, so all previous bootstraps will have not been included. 
+	 */
+	private double[][] angles;
 	
 	
 	/**
@@ -103,6 +120,7 @@ public class ProbDetMonteCarlo {
 		double vertAngle, horzAngle; //the horizontal and vertical angle of the animal in RADIANS. 
 		double sourceLevel;
 		
+		
 		double[] animalPos; 
 		double[] animalAngle;
 		
@@ -110,12 +128,19 @@ public class ProbDetMonteCarlo {
 		double[] recievedLevels = new double[nRecievers]; 
 		double meanRecievedLvl=0; 
 		int aboveThresh = 0; 
+		int ndet = 0; //the number of successful detections
 		
 		//quite memory intensive but easiest way to tstore results and then grid
 		double[][] simResults = new double[simSettings.nRuns][3]; 
 		
 		for (int i=0; i<simSettings.nBootStraps; i++) {
+			
 			notifyStatusListeners(StatusListener.SIM_RUNNING, i, 0 ); 
+			
+			//if recording detected angles then allocate an array 
+			if (recordAngles && i==simSettings.nBootStraps-1) angles=new double[simSettings.nRuns][4];
+			ndet=0;
+			
 			for (int j=0; j<simSettings.nRuns; j++) {
 				
 				if (cancel) {
@@ -137,13 +162,14 @@ public class ProbDetMonteCarlo {
 			    animalPos= new double[] {x, y, depth}; 
 				
 				//calculate the vertical angle of the animal
-				vertAngle = simSettings.simpleOdontocete.vertAngle.getNextRandom();
+				vertAngle = simSettings.simpleOdontocete.getVertAngle(depth).getNextRandom();
 				
 				//calculate the horizontal anlfe of the animal 
 				horzAngle = simSettings.simpleOdontocete.horzAngle.getNextRandom();
 				
+
 				animalAngle = new double[] {horzAngle, vertAngle};
-				
+
 				//calculate the source level
 				sourceLevel = simSettings.simpleOdontocete.sourceLevel.getNextRandom();
 				
@@ -163,6 +189,7 @@ public class ProbDetMonteCarlo {
 				}
 				meanRecievedLvl=meanRecievedLvl/nRecievers; 
 				
+				
 				//now count the number of receiver levels that are above the 
 				simResults[j][0]=range; 
 				simResults[j][1]=depth; 
@@ -170,13 +197,21 @@ public class ProbDetMonteCarlo {
 
 				if (aboveThresh>=simSettings.minRecievers) {
 					simResults[j][2]=1; 
+					//record angles if required. 
+					if (recordAngles && i==simSettings.nBootStraps-1) {
+						angles[ndet][0]=range; 
+						angles[ndet][1]=depth; 
+						angles[ndet][2]=horzAngle; 
+						angles[ndet][3]=vertAngle; 
+					}
+					ndet++; 
 				}
 				else {
 					simResults[j][2]=0; 
 				}
 								
 //				//print out some of the progress. 
-				if (j%1000==0) {
+				if (j%5000==0) {
 					notifyStatusListeners(StatusListener.SIM_RUNNING, i, (j/(double) simSettings.nRuns) ); 
 					if (this.print)	System.out.println("Progress: Sim: " + i + " of "  + simSettings.nBootStraps 
 							+"   " + String.format("%.1f", (100.*j/(double) simSettings.nRuns)) + "%"); 
@@ -194,14 +229,20 @@ public class ProbDetMonteCarlo {
 //			System.out.print("Y bin edges: ");
 //			printResult(yBinEdges);
 
+
 			//now must split these results into a 3D chart. 
 			results.add(new Hist3(simResults, this.xBinEdges, this.yBinEdges, new Double(1))); 
 			//printResult(results.get(i).getHistogram());
 
 		}
 		
-
-		notifyStatusListeners(StatusListener.SIM_STARTED,simSettings.nBootStraps, 1.); 
+		
+		//trim of array 
+		if (recordAngles) angles=Arrays.copyOf(angles, ndet); 
+		
+		notifyStatusListeners(StatusListener.SIM_RUNNING,simSettings.nBootStraps, 1.); 
+		if (this.print)	System.out.println("Progress: Sim: " + simSettings.nBootStraps + " of "  + simSettings.nBootStraps 
+				+"   " + String.format("%.1f", (100.)) + "%"); 
 
 		//now create an average histogram. 
 		Hist3[] histResults = averageHistograms(results); 
@@ -559,6 +600,37 @@ public class ProbDetMonteCarlo {
 	public boolean isCancelled() {
 		return this.cancel;
 	}
+	
+	
+	/**
+	 * Check whether animal angles are being recorded for the simulation. Angles are only recorded
+	 * for the last simulation run. 
+	 * @return true if angles are being saved 
+	 */
+	public boolean isRecordAngles() {
+		return recordAngles;
+	}
+
+	
+	/**
+	 * Set whether animal angles are being recorded for the simulation. Angles are only recorded
+	 * for the last simulation run. 
+	 * @param true to save animal angles. 
+	 */
+	public void setRecordAngles(boolean recordAngles) {
+		this.recordAngles = recordAngles;
+	}
+	
+	/**
+	 * Get all angles from the last single simulation run in which the animal was detected. this will be null
+	 * unless isRecordAngles(). 
+	 * @return the angles form the last angle simulation.
+	 */
+	public double[][] getAngles() {
+		if (angles==null) return null; 
+		else return angles; 
+	}
+
 	
 }
 

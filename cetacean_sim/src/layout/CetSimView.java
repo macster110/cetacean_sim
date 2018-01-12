@@ -46,6 +46,8 @@ public class CetSimView extends BorderPane {
 	 * Default font size ofr titles. 
 	 */
 	public final static int titleFontSize=16;   
+	
+	
 
 
 	public CetSimView(CetSimControl csControl) {

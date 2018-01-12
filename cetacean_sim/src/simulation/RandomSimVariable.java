@@ -24,7 +24,12 @@ public class RandomSimVariable implements SimVariable {
 	/**
 	 * The maximum, value of the variable 
 	 */
-	double max; 
+	double max;
+
+	/**
+	 * The limits in between which this distribution applies. 
+	 */
+	private double[] limits; 
 	
 	public RandomSimVariable(String name, double min, double max) {
 		this.name=name;
@@ -67,4 +72,17 @@ public class RandomSimVariable implements SimVariable {
 		return String.format("Uniform distribution: Min: %.3f  Max %.3f", min, max);
 	}
 
+	@Override
+	public double[] getLimits() {
+		return limits;
+	}
+	
+	/**
+	 * Set the limits between which the variable applies. These cna be any number and dimensions e.g. depth. 
+	 * Set to  null for no limits. 
+	 * @param limits - the limits (min, max).
+	 */
+	public void setLimits(double[] limits) {
+		this.limits = limits;
+	}
 }

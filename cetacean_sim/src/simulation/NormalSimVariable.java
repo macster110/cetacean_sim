@@ -26,6 +26,12 @@ public class NormalSimVariable implements SimVariable {
 	 */
 	String name;
 	
+	/**
+	 * Limits between which the variable applies. Cna be null 
+	 */
+	double[] limits= null; 
+	
+
 	public NormalSimVariable(String name, double mean, double std){
 		this.name=name;
 		this.mean=mean;
@@ -65,6 +71,20 @@ public class NormalSimVariable implements SimVariable {
 	
 	public String toString() {
 		return String.format("Normal distribution: Mean: %.3f Std %.3f", mean, std);
+	}
+
+	@Override
+	public double[] getLimits() {
+		return limits;
+	}
+	
+	/**
+	 * Set the limits between which the variable applies. These cna be any number and dimensions e.g. depth. 
+	 * Set to  null for no limits. 
+	 * @param limits - the limits (min, max).
+	 */
+	public void setLimits(double[] limits) {
+		this.limits = limits;
 	}
 
 

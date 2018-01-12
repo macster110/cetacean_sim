@@ -84,7 +84,7 @@ public class ProbDetSettingsPane extends BorderPane {
 	/**
 	 * Default width of the spinner. 
 	 */
-	public static int spinnerWidth=60; 
+	public static int spinnerWidth=70; 
 
 	/**
 	 * Constructor for the main settings pane. 

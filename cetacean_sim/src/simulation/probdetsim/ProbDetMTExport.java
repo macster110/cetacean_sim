@@ -124,17 +124,18 @@ public class ProbDetMTExport {
 		mlStruct.setField("N",  mlDouble(settings.nRuns), 0);
 		
 		
-		//animal 
-		//vert angle 
-		mlStruct.setField("vertangletype", new MLChar(null, SimVariable.getSimVarName(settings.simpleOdontocete.vertAngle.getType())));
-		if (settings.simpleOdontocete.vertAngle.getType()==DistributionType.NORMAL) {
-			mlStruct.setField("vertangle",  mlDouble(Math.toDegrees(((NormalSimVariable) settings.simpleOdontocete.vertAngle).getMean())), 0);
-			mlStruct.setField("vertstd", mlDouble(Math.toDegrees(((NormalSimVariable) settings.simpleOdontocete.vertAngle).getStd())), 0);
-		}
-		if (settings.simpleOdontocete.vertAngle.getType()==DistributionType.UNIFORM) {
-			mlStruct.setField("vertmin",  mlDouble(Math.toDegrees(((RandomSimVariable) settings.simpleOdontocete.vertAngle).getMin())), 0);
-			mlStruct.setField("vertmax", mlDouble(Math.toDegrees(((RandomSimVariable) settings.simpleOdontocete.vertAngle).getMax())), 0);
-		}
+//		//animal 
+//		//vert angle 
+//		//TODO
+//		mlStruct.setField("vertangletype", new MLChar(null, SimVariable.getSimVarName(settings.simpleOdontocete.vertAngle.getType())));
+//		if (settings.simpleOdontocete.vertAngle.getType()==DistributionType.NORMAL) {
+//			mlStruct.setField("vertangle",  mlDouble(Math.toDegrees(((NormalSimVariable) settings.simpleOdontocete.vertAngle).getMean())), 0);
+//			mlStruct.setField("vertstd", mlDouble(Math.toDegrees(((NormalSimVariable) settings.simpleOdontocete.vertAngle).getStd())), 0);
+//		}
+//		if (settings.simpleOdontocete.vertAngle.getType()==DistributionType.UNIFORM) {
+//			mlStruct.setField("vertmin",  mlDouble(Math.toDegrees(((RandomSimVariable) settings.simpleOdontocete.vertAngle).getMin())), 0);
+//			mlStruct.setField("vertmax", mlDouble(Math.toDegrees(((RandomSimVariable) settings.simpleOdontocete.vertAngle).getMax())), 0);
+//		}
 
 		
 		//src level

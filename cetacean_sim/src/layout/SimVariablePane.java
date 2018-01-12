@@ -11,6 +11,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import layout.simulation.ProbDetSettingsPane;
 import simulation.NormalSimVariable;
 import simulation.RandomSimVariable;
@@ -25,17 +26,17 @@ import simulation.SimVariable.DistributionType;
  *
  */
 public class SimVariablePane extends BorderPane {
-		
+
 	/**
 	 * The list of availbale sim varible panes. 
 	 */
 	public ArrayList<SimTypePane> simVarTypePane = new ArrayList<SimTypePane>();
-	
+
 	/**
 	 * The 
 	 */
 	public int currentSimVarIndex=0;
-	
+
 	/**
 	 * The name of the variable 
 	 */
@@ -45,7 +46,7 @@ public class SimVariablePane extends BorderPane {
 	 * Selects what type of varibale. 
 	 */
 	private ChoiceBox<String> cb; 
-	
+
 	/**
 	 * Results convert. 
 	 */
@@ -54,21 +55,67 @@ public class SimVariablePane extends BorderPane {
 	/**
 	 * The units. 
 	 */
-	private String units; 
-	
+	private String units;
+
+	/**
+	 * Text field for entering minimum limits
+	 */
+	private Spinner<Double> minLim;
+
+	/**
+	 * Indicates whether to show limit controls.
+	 */
+	private boolean showLims;
+
+	/**
+	 * Text field for entering maximum limits
+	 */
+	private Spinner<Double> maxLim;
+
+	/**
+	 * The name of limits
+	 */
+	private String limName;
+
+	/**
+	 * The unit of the limits. 
+	 */
+	private String limUnits; 
+
 
 	/**
 	 * 
 	 * @param name
 	 */
-	public SimVariablePane(String name) {
+	public SimVariablePane(String name,  String units) {
 		this.name = name;
+		this.units=units; 
+		simVarTypePane.add(new UniformSimPane(0, 10));
+		simVarTypePane.add(new NormalSimPane(0, 10));
 		this.setCenter(createPane(DistributionType.NORMAL));
 	}
-	
-	
+
 	/**
-	 * 
+	 * Create sim variable pane which shows limit controls. 
+	 * @param name - the name of the sim variable
+	 * @param units- the units of the sim variable
+	 * @param LimName - the name of the limits units. 
+	 * @param limUnits - the limit units. 
+	 */
+	public SimVariablePane(String name,  String units, String limName, String limUnits) {
+		this.name = name;
+		this.units=units; 
+		this.limName=limName; 
+		this.limUnits=limUnits; 
+		this.showLims=true; 
+		simVarTypePane.add(new UniformSimPane(0, 10));
+		simVarTypePane.add(new NormalSimPane(0, 10));
+		this.setCenter(createPane(DistributionType.NORMAL));
+	}
+
+
+	/**
+	 * Create a sim variable pane with some default values. Does not show limit controls 
 	 * @param name
 	 * @param type
 	 * @param min
@@ -83,47 +130,88 @@ public class SimVariablePane extends BorderPane {
 		simVarTypePane.add(new NormalSimPane(mean, std));
 		this.setCenter(createPane(type)); 
 	}
+
 	
-	
+	/**
+	 * Get sim limits from the pane. 
+	 * @return the limits of the sim. 
+	 */
+	private double[] getSimLimits() {
+		if (!this.showLims) {
+			return null; 
+		}
+		else {
+			return new double[] {
+					this.minLim.getValue(),
+					this.maxLim.getValue(),
+			}; 
+		}
+	}
+
 	/**
 	 * Create the pane. 
 	 * @param - the distirbution to start with. 
 	 */
 	private Pane createPane(DistributionType type) {
-		
+
 		VBox holder = new VBox(); 
 		holder.setSpacing(5);
-		
-		Label label = new Label(name); 
-		holder.getChildren().add(label); 
-		
+
+		if (name!=null) {
+			Label label = new Label(name); 
+			label.setFont(new Font(CetSimView.titleFontSize));
+			holder.getChildren().add(label); 
+		}
+
 		HBox hBox= new HBox(); 
 		hBox.setSpacing(5);
-		
+
 		BorderPane simHolder= new BorderPane(); 
-		
+
 		cb = new ChoiceBox<String>();
 		for (int i=0; i<DistributionType.values().length; i++) {
 			cb.getItems().add(SimVariable.getSimVarName(DistributionType.values()[i]));
 		}
-		
+
 		cb.setOnAction((action)->{
 			currentSimVarIndex=cb.getSelectionModel().getSelectedIndex(); 
 			simHolder.setCenter(simVarTypePane.get(currentSimVarIndex).getPane());
 		});
-		
+
 		cb.getSelectionModel().select(getDistTypeIndex(type));
-		
+
 		hBox.setAlignment(Pos.CENTER_LEFT);
 		hBox.getChildren().addAll(cb, simHolder); 
-		
+
 		holder.getChildren().add(hBox);
 		hBox.getChildren().add(new Label(units));
 
+		HBox limHBox = new HBox(); 
+		limHBox.setAlignment(Pos.CENTER_LEFT);
+		limHBox.setSpacing(5);
+		
+		//create section of the pane to input limits. 
+		minLim= new Spinner<Double>(-10000000.,10000000.,0.,5.); 
+		minLim.setEditable(true);
+		ProbDetSettingsPane.styleSpinner(minLim);
+		minLim.setPrefWidth(80);
+
+		maxLim= new Spinner<Double>(-10000000.,10000000.,0.,5.); 
+		maxLim.setEditable(true);
+		ProbDetSettingsPane.styleSpinner(maxLim);
+		maxLim.setPrefWidth(80);
+
+		limHBox.getChildren().addAll(new Label(this.limName), new Label("Min:"), minLim, 
+				new Label("Max:"), maxLim, new Label(this.limUnits));
+
+		if (showLims) {
+			holder.getChildren().add(limHBox);
+		}
+
 		return holder; 
 	}
-	
-	
+
+
 	/**
 	 * Get the distribution type. 
 	 * @param distType - the type. 
@@ -135,7 +223,7 @@ public class SimVariablePane extends BorderPane {
 		}
 		return -1; 
 	}
-			
+
 	/**
 	 * Get the sim variable.
 	 * @return the sim variable. 
@@ -143,19 +231,19 @@ public class SimVariablePane extends BorderPane {
 	public SimVariable getSimVariable() {
 		return simVarTypePane.get(currentSimVarIndex).getSimVariable(); 
 	}
-	
+
 
 	/**
 	 *
 	 * @param simVar
 	 */
 	public void setSimVariable(SimVariable simVar) {
-		
+
 		//find which type of var to set. 
 		DistributionType distType = simVar.getType(); 
-		
+
 		//System.out.println(simVar.getName() + " " + simVar.getType());
-		
+
 		int index=0; 
 		switch (distType) {
 		case NORMAL:
@@ -167,26 +255,33 @@ public class SimVariablePane extends BorderPane {
 		default:
 			break;
 		}
-	
+
 		cb.getSelectionModel().select(index);		
 		this.simVarTypePane.get(index).setSimVariable(simVar); 
-	}
-	
 
-	
+		if (simVar.getLimits()!=null && this.showLims) {
+			//set limits
+			this.minLim.getValueFactory().setValue(simVar.getLimits()[0]);
+			this.maxLim.getValueFactory().setValue(simVar.getLimits()[1]);
+		}
+
+	}
+
+
+
 	/**
 	 * Pane which is specific to the type of variable 
 	 * @author Jamie Macaulay 
 	 *
 	 */
 	public interface SimTypePane {
-		
+
 		/**
 		 * The name of the varibale type  
 		 * @return
 		 */
 		public String getSimVarName(); 
-		
+
 		/**
 		 * Set params 
 		 * @param simVar
@@ -198,54 +293,54 @@ public class SimVariablePane extends BorderPane {
 		 * @return the enum type for this SimVariable Pane
 		 */
 		public DistributionType getSimVarType(); 
-		
+
 		/**~
 		 * Get the pane to change settings for this type of distribution
 		 * @return the region to set variable params
 		 */
 		public Region getPane(); 
-		
+
 		/**
 		 * Get the sim variable
 		 * @return the sim varibale. 
 		 */
 		public SimVariable getSimVariable();
-		
+
 	}
-	
+
 	/**
 	 * Pane for uniform sim varibale. i.e. a uniform random distribution
 	 * @author Jamie Macaulay 
 	 *
 	 */
 	public class UniformSimPane implements SimTypePane {
-		
+
 		private double min; 
-		
+
 		private double max;
-		
+
 		private Spinner<Double> minSpinner; 
-		
+
 		private Spinner<Double> maxSpinner; 
-		
+
 		private Pane randSimPane;
 
 		public UniformSimPane(double min, double max) {
 			this.min=min;
 			this.max=max;
 		}
-		
+
 		@Override
 		public String getSimVarName() {
 			return "Uniform";
 		}
 
-		
+
 		@Override
 		public DistributionType getSimVarType() {
 			return DistributionType.UNIFORM;
 		}
-		
+
 		/**
 		 * Create pane for a uniform random variable 
 		 * @return pane with controls for changing min and max; 
@@ -255,17 +350,17 @@ public class SimVariablePane extends BorderPane {
 			mainPane.setAlignment(Pos.CENTER);
 
 			mainPane.setSpacing(5);
-			
+
 			minSpinner= new Spinner<Double>(-50000000.,50000000.,min, 5.); 
 			minSpinner.setEditable(true);
 			ProbDetSettingsPane.styleSpinner(minSpinner);
-			
+
 			maxSpinner= new Spinner<Double>(-50000000.,50000000.,max,5.); 
 			maxSpinner.setEditable(true);
 			ProbDetSettingsPane.styleSpinner(maxSpinner);
 
 			mainPane.getChildren().addAll(new Label("min"), minSpinner, new Label("max"), maxSpinner); 
-			
+
 			return mainPane; 
 		}
 
@@ -281,6 +376,7 @@ public class SimVariablePane extends BorderPane {
 			max=resultConverter.convert2Value(maxSpinner.getValue()); 
 
 			RandomSimVariable randSimVariable  = new RandomSimVariable(name, min, max); 
+			randSimVariable.setLimits(getSimLimits());
 
 			return randSimVariable;
 		}
@@ -289,14 +385,14 @@ public class SimVariablePane extends BorderPane {
 		public void setSimVariable(SimVariable simVar) {
 			min = ((RandomSimVariable) simVar).getMin(); 
 			max = ((RandomSimVariable) simVar).getMax(); 
-			
+
 			minSpinner.getValueFactory().setValue(resultConverter.convert2Control(min));
 			maxSpinner.getValueFactory().setValue(resultConverter.convert2Control(max));
 
 		}
-		
+
 	}
-	
+
 	/**
 	 * Normal distribution sim pane. 
 	 * @author Jamie Macaulay 
@@ -308,27 +404,27 @@ public class SimVariablePane extends BorderPane {
 		 * Spinenr for mean value.
 		 */
 		private Spinner<Double> meanSpinner;
-		
+
 		/**
 		 * Spinner for standard deviation of distribution. 
 		 */
 		private Spinner<Double> stdSpinner;
-		
+
 		/**
 		 * The mean level
 		 */
 		private double mean=0; 
-		
+
 		/**
 		 * The standard deviation
 		 */
 		private double std=20; 
-		
+
 		/**
 		 * The pane. 
 		 */
 		private Pane normalPane; 
-		
+
 		public NormalSimPane(double mean, double std) {
 			this.mean=mean; 
 			this.std=std; 
@@ -343,7 +439,7 @@ public class SimVariablePane extends BorderPane {
 		public DistributionType getSimVarType() {
 			return DistributionType.NORMAL;
 		} 
-		
+
 		private Pane createNormalPane() {
 			HBox mainPane = new HBox(); 
 			mainPane.setSpacing(5);
@@ -358,7 +454,7 @@ public class SimVariablePane extends BorderPane {
 			ProbDetSettingsPane.styleSpinner(stdSpinner);
 
 			mainPane.getChildren().addAll(new Label("mean"), meanSpinner, new Label("std"), stdSpinner); 
-			
+
 			return mainPane; 
 		}
 
@@ -374,6 +470,7 @@ public class SimVariablePane extends BorderPane {
 			std=resultConverter.convert2Value(stdSpinner.getValue()); 
 
 			NormalSimVariable normalVariable  = new NormalSimVariable(name, mean, std); 
+			normalVariable.setLimits(getSimLimits());
 
 			return normalVariable;
 		}
@@ -382,12 +479,12 @@ public class SimVariablePane extends BorderPane {
 		public void setSimVariable(SimVariable simVar) {
 			mean = ((NormalSimVariable) simVar).getMean(); 
 			std = ((NormalSimVariable) simVar).getStd(); 
-			
+
 			meanSpinner.getValueFactory().setValue(resultConverter.convert2Control(mean));
 			stdSpinner.getValueFactory().setValue(resultConverter.convert2Control(std));
 		}
 	}
-	
+
 	/**
 	 * @return the resultConverter
 	 */

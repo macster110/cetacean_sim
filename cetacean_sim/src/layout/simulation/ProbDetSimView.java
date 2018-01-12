@@ -408,7 +408,7 @@ public class ProbDetSimView implements SimulationView {
 		animalDialog.setTitle("Animal Settings");
 		DialogPane dPane = new DialogPane(); 
 		dPane.setContent(this.animalPane);
-		animalPane.setPrefSize(730, 800);
+		animalPane.setPrefSize(900, 800);
 		animalPane.setParams(probDetSim.getProbDetSettings().simpleOdontocete, false);
 		animalDialog.setDialogPane(dPane);
 		
