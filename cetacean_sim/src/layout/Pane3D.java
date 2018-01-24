@@ -24,7 +24,7 @@ import layout.utils.Xform;
  * @author Jamie Macaulay	
  *
  */
-public class Pane3D extends BorderPane  {
+public class Pane3D extends BorderPane {
 
 
 	/**
@@ -32,6 +32,7 @@ public class Pane3D extends BorderPane  {
 	 */
 
 	final PerspectiveCamera camera = new PerspectiveCamera(true);
+	
     final double cameraDistance = 1500;
 
 
@@ -138,8 +139,9 @@ public class Pane3D extends BorderPane  {
 	}
 
 
-	
+
 	private void initLights(Group sceneRoot){
+		
 		headLight = new PointLight();        
 		headLight.translateXProperty().bindBidirectional(camera.translateXProperty());
 		headLight.translateYProperty().bindBidirectional(camera.translateYProperty());
@@ -158,7 +160,6 @@ public class Pane3D extends BorderPane  {
 
 		//	        ambientLight = new AmbientLight();
 		//	        ambientLight.setTranslateY(-1000);
-
 		sceneRoot.getChildren().addAll(pointLight1, pointLight2, headLight);
 	}
 
