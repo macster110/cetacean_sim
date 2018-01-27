@@ -382,7 +382,7 @@ public class ProbDetMonteCarlo {
 	 */
 	public void run() {
 		ProbDetSimSettings simSettings= new ProbDetSimSettings(); 
-		simSettings.simpleOdontocete.setUpAnimal(SimpleOdontocete.SIM_UNIFORM_DEPTH_HORZ, simSettings);
+		//simSettings.simpleOdontocete.setUpAnimal(SimpleOdontocete.SIM_UNIFORM_DEPTH_HORZ, simSettings);
 		run(simSettings, true); 
 	}
 
@@ -573,7 +573,7 @@ public class ProbDetMonteCarlo {
 	 */
 	public static void main(String[] args) {
 		ProbDetSimSettings simSettings = new ProbDetSimSettings(); 
-		simSettings.simpleOdontocete.setUpAnimal(0, simSettings);
+		//simSettings.simpleOdontocete.setUpAnimal(0, simSettings);
 		ProbDetMonteCarlo monteCarloSimulation = new ProbDetMonteCarlo(); 
 		
 		//now run the simulation 

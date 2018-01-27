@@ -16,7 +16,7 @@ import layout.reciever.RecieverPane;
 import simulation.surveySim.SurveySim;
 
 /**
- * The P
+ * 
  * @author Jamie Macaulay
  *
  */

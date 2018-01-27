@@ -37,6 +37,13 @@ public class NormalSimVariable implements SimVariable {
 		this.mean=mean;
 		this.std=std; 
 	}
+	
+	public NormalSimVariable(String name, double mean, double std, double[] depthLims){
+		this.name=name;
+		this.mean=mean;
+		this.std=std; 
+		this.limits=depthLims;
+	}
 
 	@Override
 	public String getName() {
@@ -79,7 +86,7 @@ public class NormalSimVariable implements SimVariable {
 	}
 	
 	/**
-	 * Set the limits between which the variable applies. These cna be any number and dimensions e.g. depth. 
+	 * Set the limits between which the variable applies. These can be any number and dimensions e.g. depth. 
 	 * Set to  null for no limits. 
 	 * @param limits - the limits (min, max).
 	 */

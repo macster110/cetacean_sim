@@ -91,7 +91,10 @@ public class Hist3 {
 //				System.out.println("Hist: " + i + " "+ j + " value n: " + histvalue + " total n: " + histcount + " checking for ranges between: " 
 //				+ xbinEdges[i] + " to " + xbinEdges[i+1] + " and depths from " + ybinEdges[j] + " to " + ybinEdges[j+1]);
 				if (findValue==null) histogram[i][j]=histcount; //just standard histogram 
-				else  histogram[i][j]=histvalue/ (double) histcount; //the percentage of values which equal findValue;
+				else  {
+					if (histcount==0) histogram[i][j]=0;
+					else histogram[i][j]=histvalue/ (double) histcount; //the percentage of values which equal findValue;
+				}
 			}
 		}
 		return histogram; 

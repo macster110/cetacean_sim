@@ -127,8 +127,8 @@ public class ProbDetSimView implements SimulationView {
 		
 		//the animal pane
 		this.animalPane = new SimpleOdontocetePane(); 
-		probDetSim.getProbDetSettings().simpleOdontocete.setUpAnimal(
-				SimpleOdontocete.SIM_UNIFORM_DEPTH_HORZ, probDetSim.getProbDetSettings());
+//		probDetSim.getProbDetSettings().simpleOdontocete.setUpAnimal(
+//				SimpleOdontocete.SIM_UNIFORM_DEPTH_HORZ, probDetSim.getProbDetSettings());
 		animalPane.setParams(probDetSim.getProbDetSettings().simpleOdontocete, false);
 		
 		//the reciever pane. 
@@ -411,6 +411,7 @@ public class ProbDetSimView implements SimulationView {
 		animalPane.setPrefSize(900, 800);
 		animalPane.setParams(probDetSim.getProbDetSettings().simpleOdontocete, false);
 		animalDialog.setDialogPane(dPane);
+		animalDialog.setResizable(true);
 		
 		ButtonType buttonTypeOk = new ButtonType("Okay", ButtonData.OK_DONE);
 		animalDialog.getDialogPane().getButtonTypes().add(buttonTypeOk);

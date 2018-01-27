@@ -1,6 +1,7 @@
 package animal;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import layout.animal.BeamProfile;
 import simulation.NormalSimVariable;
@@ -17,33 +18,8 @@ import utils.SurfaceUtils;
  */
 public class SimpleOdontocete {
 	
-	
-
 	/****************Variables which are saved********************/
-	/**
-	 * Animal Parameters. 
-	 */
-	private double[] verticalAngleMean=new double[] {Math.toRadians(3.29)};
-	private double[] verticalAngleStd=new double[] {Math.toRadians(27.524)};
-	private double[][] verticalDepthLims=new double[][] {{-100000,0}}; 
 	
-	private double horizontalAngleMean=Math.toRadians(0);
-	private double horizontalAngleatd=Math.toRadians(50);
-
-	private double sourceLevelMean=180; //dB re 1 uPa
-	private double sourceLevelStd=10;
-	
-	/**
-	 * The depth distribution (not yet used)
-	 */
-	private double[][] depthDistributions;
-
-	/**
-	 * Uniform depth distirbution between two limits. 
-	 */
-	private double[] depthLims= new double[]{-100000,0}; 
-
-
 	/**
 	 * The beam profile. Non uniform points on the beam profile surface.
 	 * Order of each elements {horizontal angle (degrees), vertical angle (degrees), transmission loss dB}
@@ -57,17 +33,18 @@ public class SimpleOdontocete {
 	public SurfaceData beamSurface;
 	
 	//source level
-	public SimVariable sourceLevel; 
-
+	public SimVariable sourceLevel = new NormalSimVariable("Source Level", 180, 10);
 	//orientation 
-	public ArrayList<SimVariable> vertAngles;
+	public ArrayList<SimVariable> vertAngles = new ArrayList<SimVariable>(Arrays.asList(new NormalSimVariable("Vertical Angle", 0, Math.toRadians(21), new double[] {-10000,0})));
 	
 	//horizontal angle
-	public SimVariable horzAngle;
+	public SimVariable horzAngle = new RandomSimVariable("Horizontal Angle", Math.toRadians(180), Math.toRadians(180));
+	//orientation 
 	
 	//depth distribution
-	public SimVariable depthDistribution;
+	public SimVariable depthDistribution = new RandomSimVariable("Depth", -200, 0);
 	
+	/************************************/
 	
 	/**
 	 * Constructor for the animal. 
@@ -94,6 +71,7 @@ public class SimpleOdontocete {
 				new double[][] {{-100000,0}}, maxDepth, minDepth, beamType);
 	}
 	
+	
 	/**
 	 * Constructor for the animal with in starting values. Used primarily to call from MATLAB 
 	 * Creates an animal which has an even depth distribution with normal distributions for source levels
@@ -102,15 +80,16 @@ public class SimpleOdontocete {
 	public SimpleOdontocete (double sourceLevelMean, double sourceLevelStd, double[] vertAngleMean , 
 			double[] vertAngleStd, double[][] lim,  double maxDepth, double minDepth, String beamType) {
 		
-		this.verticalAngleMean=vertAngleMean;
-		this.verticalAngleStd=vertAngleStd;
-		this.verticalDepthLims=lim; 
+		//set the sim-variables
+		this.sourceLevel = new NormalSimVariable("Source Level", sourceLevelMean, sourceLevelStd);
 		
-		this.depthLims=new double[]{maxDepth, minDepth};
-
-		this.sourceLevelMean=sourceLevelMean; //dB re 1 uPa
-		this.sourceLevelStd=sourceLevelStd;
+		vertAngles.clear();
+		for (int i=0; i<vertAngleMean.length; i++) {
+			vertAngles.add(new NormalSimVariable("Vertical Angle", vertAngleMean[i], vertAngleStd[i], lim[i]));
+		}
+		/*********************/
 		
+		//setup the beam profile
 		switch(beamType) {
 		case "porp":
 			beamProfile = DefaultBeamProfiles.getDefaultBeams().get(0); 
@@ -122,9 +101,20 @@ public class SimpleOdontocete {
 		//bit of a hack but works 
 		ProbDetSimSettings probDetSimSettings = new ProbDetSimSettings(); 
 		probDetSimSettings.minHeight=maxDepth; 
-		setUpAnimal(SIM_UNIFORM_DEPTH_HORZ, probDetSimSettings); 
-		
-		
+	}
+	
+	/**
+	 * Constructor for simple odontocetes. 
+	 * @param sourceLevel - source level distirbution of the animal. 
+	 * @param vertAngles - vertical angles of the animal for different depth limits. 
+	 * @param horzAngle - horizontal angles of the animal.  
+	 * @param depthDist - the depth distribution of the animal. 
+	 */
+	public SimpleOdontocete (SimVariable sourceLevel, SimVariable[] vertAngles, SimVariable horzAngle, SimVariable depthDist) {
+		this.sourceLevel=sourceLevel;
+		this.vertAngles= new ArrayList<SimVariable>(Arrays.asList(vertAngles));
+		this.horzAngle=horzAngle;
+		this.depthDistribution=depthDist;
 	}
 	
 	/**
@@ -133,55 +123,22 @@ public class SimpleOdontocete {
 	 */
 	public static final int SIM_UNIFORM_DEPTH_HORZ=0; 	
 	
-	
-	/**
-	 * Set up the animal
-	 * @param flag - the default flag. 
-	 * @param settings -reference ot simulation settings. 
-	 */
-	public void setUpAnimal(int flag, ProbDetSimSettings settings) {
 
-		switch (flag) {
-		case SIM_UNIFORM_DEPTH_HORZ:
-			beamSurface = SurfaceUtils.generateSurface(beamProfile.getRawBeamMeasurments());
-
-			sourceLevel = new NormalSimVariable("Source Level", sourceLevelMean, sourceLevelStd); 
-
-			//vertical angles can change with depth. 
-			vertAngles= new ArrayList<SimVariable>();
-			NormalSimVariable variable; 
-			for (int i=0; i<verticalAngleMean.length; i++) {
-				 variable = new NormalSimVariable("Vertical Angle", verticalAngleMean[i],  verticalAngleStd[i]);
-				 variable.setLimits(this.verticalDepthLims[i]);
-				 vertAngles.add(variable); 
-			}
-
-			horzAngle= new RandomSimVariable("Horizontal Angle", -Math.PI, Math.PI); 
-
-			depthDistribution =  new RandomSimVariable("Depth Distribution", Math.max(settings.minHeight,this.depthLims[0]), this.depthLims[1]); 
-			break;
-		default:
-			setUpAnimal(SIM_UNIFORM_DEPTH_HORZ,  settings);  
-			break; 
-		}
-	}
-	
-	
 	@Override
 	public String toString() {
 		
 		String vertAnglesString="";
 		for (int i=0; i<vertAngles.size(); i++) {
-			String newstring ="vert angle: " + vertAngles.get(i).toString() + " between "
+			String newstring ="vert angle: " + vertAngles.get(i).toString() + " rad between "
 					+ vertAngles.get(i).getLimits()[0] + " and " + vertAngles.get(i).getLimits()[1]+ "m"; 
 			vertAnglesString=vertAnglesString + newstring + "\n"; 
 		}
 		
 		String animalString = ("Simple Animal\n "
-				+ "source level: " + sourceLevel.toString() +"\n"
+				+ "source level: " + sourceLevel.toString() +" dB re 1uPa \n"
 				+ vertAnglesString
-				+ "horizontal angle: " + horzAngle.toString() +"\n"
-				+ "depth distribution: " + depthDistribution.toString());
+				+ "horizontal angle: " + horzAngle.toString() +" rad \n"
+				+ "depth distribution: " + depthDistribution.toString() + " m");
 		
 		
 		return animalString;

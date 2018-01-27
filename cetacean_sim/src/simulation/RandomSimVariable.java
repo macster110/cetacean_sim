@@ -3,8 +3,8 @@ package simulation;
 import java.util.Random;
 
 /**
- * Generates a uniforma random value between a minimum and a maximum value
- * @author macst
+ * Generates a uniform random value between a minimum and a maximum value
+ * @author Jamie Macaulay
  *
  */
 public class RandomSimVariable implements SimVariable {
@@ -30,6 +30,7 @@ public class RandomSimVariable implements SimVariable {
 	 * The limits in between which this distribution applies. 
 	 */
 	private double[] limits; 
+	
 	
 	public RandomSimVariable(String name, double min, double max) {
 		this.name=name;

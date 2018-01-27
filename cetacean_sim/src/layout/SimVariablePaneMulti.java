@@ -18,7 +18,7 @@ import javafx.scene.text.Font;
 import simulation.SimVariable;
 
 /**
- * A simvariable pane that allows multiple distributions between two limits. 
+ * A sim variable pane that allows multiple distributions between two limits. 
  * @author Jamie Macaulay
  *
  */
@@ -59,7 +59,7 @@ public class SimVariablePaneMulti extends BorderPane {
 	 */
 	private Pane createPane() {
 		
-		BorderPane maiunHolder = new BorderPane(); 
+		BorderPane mainHolder = new BorderPane(); 
 		
 		simHolder = new VBox(); 
 		simHolder.setSpacing(25);
@@ -83,17 +83,17 @@ public class SimVariablePaneMulti extends BorderPane {
 		});
 	
 		buttonPane.getChildren().addAll(addButton, removeButton); 
-		buttonPane.setPadding(new Insets(0,0,5,0));
+		buttonPane.setPadding(new Insets(0,0,5,5));
 		
 		Label label = new Label(name);
 		label.setFont(new Font(CetSimView.titleFontSize));
 
 		
-		maiunHolder.setTop(label); 
-		maiunHolder.setCenter(simHolder);
-		maiunHolder.setRight(buttonPane);
-
-		return maiunHolder; 
+		mainHolder.setTop(label); 
+		mainHolder.setCenter(simHolder);
+		mainHolder.setRight(buttonPane);
+		
+		return mainHolder; 
 	}
 	
 	/**

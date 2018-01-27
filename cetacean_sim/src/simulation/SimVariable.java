@@ -1,10 +1,14 @@
 package simulation;
 
-import simulation.SimVariable.DistributionType;
 
 public interface SimVariable {
 	
-	public enum DistributionType {UNIFORM, NORMAL};
+	/**
+	 * The type of distirbution
+	 * @author Jamie Macaulay 
+	 *
+	 */
+	public enum DistributionType {UNIFORM, NORMAL, LOGNORMAL, CUSTOM};
 
 	/**
 	 * Get the type of distirbution. 
@@ -46,11 +50,18 @@ public interface SimVariable {
 		case UNIFORM:
 			name="Uniform"; 
 			break;
+		case LOGNORMAL:
+			name="Log-normal"; 
+			break;
+		case CUSTOM:
+			name="Custom"; 
+			break;
 		default:
 			break;
 		}
 		return name;  
 	}
+
 	
 
 }

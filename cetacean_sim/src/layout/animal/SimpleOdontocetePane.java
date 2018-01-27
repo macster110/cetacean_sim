@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import animal.DefaultBeamProfiles;
 import animal.SimpleOdontocete;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -20,7 +21,7 @@ import simulation.SimVariable.DistributionType;
 
 /**
  * 
- * Simple pane for describing an animal. Usually used for prob det. simulation as doesn;t have detailed diving information. 
+ * Simple pane for describing an animal. Usually used for prob. det. simulation as does not have detailed diving information. 
  * @author Jamie Macaulay 
  *
  */
@@ -32,10 +33,9 @@ public class SimpleOdontocetePane extends BorderPane implements SettingsPane<Sim
 	private SimpleOdontocete simpleOdontocete;
 	
 	/**
-	 * the vertical angle
+	 * The vertical angle.
 	 */
 	private SimVariablePaneMulti vertAngle;
-
 
 	/**
 	 * The horizontal angle. 
@@ -63,7 +63,7 @@ public class SimpleOdontocetePane extends BorderPane implements SettingsPane<Sim
 	private int currentBeamProfile;
 	
 	/**
-	 * Sumbol for degrees
+	 * Symbol for degrees
 	 */
 	public static final String  degreeSymbol =  "" +(char) 0x00B0 ; 
 
@@ -78,7 +78,7 @@ public class SimpleOdontocetePane extends BorderPane implements SettingsPane<Sim
 	
 	
 	/**
-	 * Create the setttings pane.
+	 * Create the settings pane.
 	 * @return the pane for changing simulations variables.
 	 */
 	private Pane createSettingsPane() {
@@ -86,11 +86,13 @@ public class SimpleOdontocetePane extends BorderPane implements SettingsPane<Sim
 		GridPane gridPane = new GridPane(); 
 		gridPane.setVgap(5);
 		gridPane.setHgap(5);
-		
+		gridPane.setAlignment(Pos.TOP_LEFT);
+
 		vertAngle 	= new SimVariablePaneMulti("Vertical Angle", degreeSymbol, "Depth", "m");
 		horzAngle = new SimVariablePane("Horizontal Angle", degreeSymbol, DistributionType.UNIFORM, -180, 180, 0, 90);
 		sourceLevel = new SimVariablePane("Source Level", dB, DistributionType.NORMAL, 0, 250, 180, 20);
 		depthDistribution = new SimVariablePane("Depth Distribution", "m", DistributionType.UNIFORM, -180, 0, 0, 0);
+		
 		horzAngle.setResultConverter(new Radians2Degrees());
 		vertAngle.setResultConverter(new Radians2Degrees());
 		

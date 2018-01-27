@@ -11,10 +11,25 @@ import propogation.Propogation;
  */
 public class CetSimUtils extends SurfaceUtils {
 	
+	/**
+	 * 
+	 * @param array one dimensional array of doubles
+	 * @return two element array with the min and max values of the input array
+	 */
+	public static double[] getMinAndMax(double[] array) {
+		double[] minmax = {Double.MAX_VALUE, Double.MIN_VALUE};
+		for (int i = 0; i < array.length; i++) {
+		  minmax[0] = Math.min(minmax[0], array[i]);
+		  minmax[1] = Math.max(minmax[1], array[i]);
+		}
+		return minmax;
+	}
 	
 	public static double distance(double[] point1, double[] point2) {
 		return Math.sqrt(Math.pow(point1[0]-point2[0],2) + Math.pow(point1[1]-point2[1],2) + Math.pow(point1[2]-point2[2],2)); 
 	}
+	
+	
 	/**
 	 * Calculate the beam loss between an animal and receiver. The co-ordinate system is such that 
 	 * @param recieverPos - the position of the receiver in x y and z. 
