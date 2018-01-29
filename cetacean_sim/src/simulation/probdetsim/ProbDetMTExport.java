@@ -181,9 +181,46 @@ public class ProbDetMTExport {
 		
 		return mlStruct; 
 
-
 		}
+	
+		/**
+		 * 
+		 * @return
+		 */
+		public MLStructure simVar2MLStrcut(String name, SimVariable simVar) {
+			MLStructure mlStruct = new MLStructure(name, new int[] {1,1});
+			
+			//define all possible variables which can be in the struct. 
+			mlStruct.setField("type",  new MLChar(null, SimVariable.getSimVarName(simVar.getType())));
+			mlStruct.setField("mean",   mlDouble(0), 0);
+			mlStruct.setField("std",   mlDouble(0), 0);
+			mlStruct.setField("scale",   mlDouble(0), 0);
+			mlStruct.setField("shape",   mlDouble(0), 0);
+			mlStruct.setField("min",   mlDouble(0), 0);
+			mlStruct.setField("max",   mlDouble(0), 0);
+			mlStruct.setField("customp",   mlDouble(0), 0);
+			
+			switch (simVar.getType()) {
+			case CUSTOM:
+//				CustomVar = simVar; 
+//				mlStruct.setField("customp", new MLDouble(null, new double[]{value}, 1);, 0);
+				break;
+			case LOGNORMAL:
+				break;
+			case NORMAL:
+				break;
+			case UNIFORM:
+				break;
+			default:
+				break;
+			
+			}
 
+			return null;
+		}
+		
+		
+	
 		/**
 		 * Single double value in MATLAB
 		 * @param value - the value  

@@ -26,7 +26,7 @@ public class CetaceanSim extends Application {
         StackPane root = new StackPane();
         
         CetSimView view = null; 
-        root.getChildren().add(view= new CetSimView(CetSimControl.getInstance()));
+        root.getChildren().add(view= new CetSimView(CetSimControl.getInstance(), primaryStage));
         CetSimControl.getInstance().setView(view);
    
         

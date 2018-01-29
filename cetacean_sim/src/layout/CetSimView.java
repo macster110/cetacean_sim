@@ -1,12 +1,8 @@
 package layout;
 
 import cetaceanSim.CetSimControl;
-import de.jensd.fx.glyphs.GlyphsDude;
-import de.jensd.fx.glyphs.materialicons.MaterialIcon;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
-import javafx.geometry.Pos;
-import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
@@ -15,6 +11,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
+import javafx.stage.Stage;
+import javafx.stage.Window;
 import simulation.SimulationType;
 
 /**
@@ -41,6 +39,11 @@ public class CetSimView extends BorderPane {
 	 * Combo box which chnages the simulation
 	 */
 	private ComboBox<String> simulationSelect;
+
+	/**
+	 * Reference to the main stage. 
+	 */
+	private Stage mainStage;
 	
 	/**
 	 * Default font size ofr titles. 
@@ -48,9 +51,9 @@ public class CetSimView extends BorderPane {
 	public final static int titleFontSize=16;   
 	
 
-	public CetSimView(CetSimControl csControl) {
-		
+	public CetSimView(CetSimControl csControl, Stage mainStage) {
 		this.cSControl= csControl;
+		this.mainStage=mainStage; 
 		
 		//finally add the map pane. 
 		centerHolder=new StackPane(); 
@@ -190,6 +193,11 @@ public class CetSimView extends BorderPane {
 
 		}
 		
+	}
+
+
+	public Window getMainStage() {
+		return this.mainStage;
 	}
 
 }
