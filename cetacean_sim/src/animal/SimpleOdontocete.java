@@ -53,6 +53,20 @@ public class SimpleOdontocete {
 		beamSurface = SurfaceUtils.generateSurface(beamProfile.getRawBeamMeasurments());
 	}
 	
+	/**
+	 * Constructor for simple odontocetes. 
+	 * @param sourceLevel - source level distribution of the animal. 
+	 * @param vertAngles - vertical angles of the animal for different depth limits. 
+	 * @param horzAngle - horizontal angles of the animal.  
+	 * @param depthDist - the depth distribution of the animal. 
+	 */
+	public SimpleOdontocete (SimVariable sourceLevel, SimVariable[] vertAngles, SimVariable horzAngle, SimVariable depthDist) {
+		this.sourceLevel=sourceLevel;
+		this.vertAngles= new ArrayList<SimVariable>(Arrays.asList(vertAngles));
+		this.horzAngle=horzAngle;
+		this.depthDistribution=depthDist;
+	}
+	
 
 	/**
 	 * Constructor for the animal with intial starting values. Used primarily to call from MATLAB 
@@ -103,19 +117,6 @@ public class SimpleOdontocete {
 		probDetSimSettings.minHeight=maxDepth; 
 	}
 	
-	/**
-	 * Constructor for simple odontocetes. 
-	 * @param sourceLevel - source level distirbution of the animal. 
-	 * @param vertAngles - vertical angles of the animal for different depth limits. 
-	 * @param horzAngle - horizontal angles of the animal.  
-	 * @param depthDist - the depth distribution of the animal. 
-	 */
-	public SimpleOdontocete (SimVariable sourceLevel, SimVariable[] vertAngles, SimVariable horzAngle, SimVariable depthDist) {
-		this.sourceLevel=sourceLevel;
-		this.vertAngles= new ArrayList<SimVariable>(Arrays.asList(vertAngles));
-		this.horzAngle=horzAngle;
-		this.depthDistribution=depthDist;
-	}
 	
 	/**
 	 * Animal with uniform depth distribution and horizontal angle. Source levels and 

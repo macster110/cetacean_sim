@@ -4,13 +4,12 @@ import org.apache.commons.math3.distribution.LogNormalDistribution;
 
 /**
  * Log normal distribution. 
- * @author Jamie Macaulay 
- *
+ * @author Jamie Macaulay
  */
 public class LogNormalSimVar implements SimVariable {
 	
 	/**
-	 * The log normal distirbution
+	 * The log normal distribution.
 	 */
 	private LogNormalDistribution logNormalDist;
 	
@@ -19,7 +18,9 @@ public class LogNormalSimVar implements SimVariable {
 	 */
 	private double[] limits;
 	
-
+	/**
+	 * The name. 
+	 */
 	private String name;
 
 	/**
@@ -50,15 +51,12 @@ public class LogNormalSimVar implements SimVariable {
 		return name;
 	}
 	
-	
-
 	@Override
 	public double getNextRandom() {
 		double sample= logNormalDist.sample();
 		if (sample>this.truncation) return getNextRandom();
 		else return this.negative ? -sample : sample;
 	}
-	
 	
 	@Override
 	public double[] getLimits() {
@@ -68,7 +66,7 @@ public class LogNormalSimVar implements SimVariable {
 	/**
 	 * Set the limits between which the variable applies. These can be any number and dimensions e.g. depth. 
 	 * Set to  null for no limits. 
-	 * @param limits - the limits (min, max).
+	 * @param limits - the limits (minimum, maximum).
 	 */
 	public void setLimits(double[] limits) {
 		this.limits = limits;
@@ -76,7 +74,7 @@ public class LogNormalSimVar implements SimVariable {
 
 	/**
 	 * Get the scale value for the log normal distribution
-	 * @return the scale value
+	 * @return the scale value. 
 	 */
 	public double getScale() {
 		return logNormalDist.getScale();
@@ -98,11 +96,18 @@ public class LogNormalSimVar implements SimVariable {
 		return truncation;
 	}
 	
-	
+	/**
+	 * Check whether the distribution is flipped negative.
+	 * @return true if negative
+	 */
 	public boolean isNegative() {
 		return negative;
 	}
 
+	/**
+	 * Set to flip the negative distribution
+	 * @param negative - the negative distribution. 
+	 */
 	public void setNegative(boolean negative) {
 		this.negative = negative;
 	}

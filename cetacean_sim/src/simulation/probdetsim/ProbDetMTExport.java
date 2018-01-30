@@ -15,6 +15,8 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import layout.utils.Utils3D;
 import propogation.SimplePropogation;
+import simulation.CustomSimVar;
+import simulation.LogNormalSimVar;
 import simulation.NormalSimVariable;
 import simulation.RandomSimVariable;
 import simulation.SimVariable;
@@ -122,22 +124,22 @@ public class ProbDetMTExport {
 		mlStruct.setField("abs_coeff",  mlDouble(((SimplePropogation) settings.propogation).getSpreadingCoeff()), 0);
 		mlStruct.setField("n",  mlDouble(settings.nBootStraps), 0);
 		mlStruct.setField("N",  mlDouble(settings.nRuns), 0);
-		
-		
-//		//animal 
-//		//vert angle 
-//		//TODO
-//		mlStruct.setField("vertangletype", new MLChar(null, SimVariable.getSimVarName(settings.simpleOdontocete.vertAngle.getType())));
-//		if (settings.simpleOdontocete.vertAngle.getType()==DistributionType.NORMAL) {
-//			mlStruct.setField("vertangle",  mlDouble(Math.toDegrees(((NormalSimVariable) settings.simpleOdontocete.vertAngle).getMean())), 0);
-//			mlStruct.setField("vertstd", mlDouble(Math.toDegrees(((NormalSimVariable) settings.simpleOdontocete.vertAngle).getStd())), 0);
-//		}
-//		if (settings.simpleOdontocete.vertAngle.getType()==DistributionType.UNIFORM) {
-//			mlStruct.setField("vertmin",  mlDouble(Math.toDegrees(((RandomSimVariable) settings.simpleOdontocete.vertAngle).getMin())), 0);
-//			mlStruct.setField("vertmax", mlDouble(Math.toDegrees(((RandomSimVariable) settings.simpleOdontocete.vertAngle).getMax())), 0);
-//		}
 
-		
+
+		//		//animal 
+		//		//vert angle 
+		//		//TODO
+		//		mlStruct.setField("vertangletype", new MLChar(null, SimVariable.getSimVarName(settings.simpleOdontocete.vertAngle.getType())));
+		//		if (settings.simpleOdontocete.vertAngle.getType()==DistributionType.NORMAL) {
+		//			mlStruct.setField("vertangle",  mlDouble(Math.toDegrees(((NormalSimVariable) settings.simpleOdontocete.vertAngle).getMean())), 0);
+		//			mlStruct.setField("vertstd", mlDouble(Math.toDegrees(((NormalSimVariable) settings.simpleOdontocete.vertAngle).getStd())), 0);
+		//		}
+		//		if (settings.simpleOdontocete.vertAngle.getType()==DistributionType.UNIFORM) {
+		//			mlStruct.setField("vertmin",  mlDouble(Math.toDegrees(((RandomSimVariable) settings.simpleOdontocete.vertAngle).getMin())), 0);
+		//			mlStruct.setField("vertmax", mlDouble(Math.toDegrees(((RandomSimVariable) settings.simpleOdontocete.vertAngle).getMax())), 0);
+		//		}
+
+
 		//src level
 		mlStruct.setField("srcleveltype", new MLChar(null, SimVariable.getSimVarName(settings.simpleOdontocete.sourceLevel.getType())));
 		if (settings.simpleOdontocete.sourceLevel.getType()==DistributionType.NORMAL) {
@@ -148,8 +150,8 @@ public class ProbDetMTExport {
 			mlStruct.setField("srcmin", mlDouble(((RandomSimVariable) settings.simpleOdontocete.sourceLevel).getMin()), 0);
 			mlStruct.setField("srcmax", mlDouble(((RandomSimVariable) settings.simpleOdontocete.sourceLevel).getMax()), 0);
 		}
-		
-		
+
+
 		//horizontal beam
 		mlStruct.setField("horzalangletype", new MLChar(null, SimVariable.getSimVarName(settings.simpleOdontocete.horzAngle.getType())));
 		if (settings.simpleOdontocete.horzAngle.getType()==DistributionType.NORMAL) {
@@ -160,74 +162,92 @@ public class ProbDetMTExport {
 			mlStruct.setField("horzmin",  mlDouble(Math.toDegrees(((RandomSimVariable) settings.simpleOdontocete.horzAngle).getMin())), 0);
 			mlStruct.setField("horzmax",  mlDouble(Math.toDegrees(((RandomSimVariable) settings.simpleOdontocete.horzAngle).getMax())), 0);
 		}
-		
-		
+
+
 		Sampling x = new Sampling(settings.simpleOdontocete.beamProfile.getHorzGrid()); 
 		Sampling y = new Sampling(settings.simpleOdontocete.beamProfile.getVertGrid()); 
 		float[][] grid = settings.simpleOdontocete.beamProfile.getSurface().grid(x, y);
-		
-		
+
+
 		float[][] horzGrid = Hist3.getXYSurface(settings.simpleOdontocete.beamProfile.getHorzGrid(), 
 				settings.simpleOdontocete.beamProfile.getVertGrid(), true, false); 
-		
+
 		float[][] vertGrid = Hist3.getXYSurface(settings.simpleOdontocete.beamProfile.getHorzGrid(), 
 				settings.simpleOdontocete.beamProfile.getVertGrid(), false, false); 
-	
-				
+
+
 		mlStruct.setField("horzbeam",  new MLDouble(null, Utils3D.float2double(horzGrid)));
 		mlStruct.setField("vertbeam",  new MLDouble(null, Utils3D.float2double(vertGrid)));
 		mlStruct.setField("tlBeam",    new MLDouble(null, Utils3D.float2double(grid)));
 
-		
 		return mlStruct; 
-
-		}
-	
-		/**
-		 * 
-		 * @return
-		 */
-		public MLStructure simVar2MLStrcut(String name, SimVariable simVar) {
-			MLStructure mlStruct = new MLStructure(name, new int[] {1,1});
-			
-			//define all possible variables which can be in the struct. 
-			mlStruct.setField("type",  new MLChar(null, SimVariable.getSimVarName(simVar.getType())));
-			mlStruct.setField("mean",   mlDouble(0), 0);
-			mlStruct.setField("std",   mlDouble(0), 0);
-			mlStruct.setField("scale",   mlDouble(0), 0);
-			mlStruct.setField("shape",   mlDouble(0), 0);
-			mlStruct.setField("min",   mlDouble(0), 0);
-			mlStruct.setField("max",   mlDouble(0), 0);
-			mlStruct.setField("customp",   mlDouble(0), 0);
-			
-			switch (simVar.getType()) {
-			case CUSTOM:
-//				CustomVar = simVar; 
-//				mlStruct.setField("customp", new MLDouble(null, new double[]{value}, 1);, 0);
-				break;
-			case LOGNORMAL:
-				break;
-			case NORMAL:
-				break;
-			case UNIFORM:
-				break;
-			default:
-				break;
-			
-			}
-
-			return null;
-		}
-		
-		
-	
-		/**
-		 * Single double value in MATLAB
-		 * @param value - the value  
-		 * @return
-		 */
-		private MLDouble mlDouble(double value) {
-			return new MLDouble(null, new double[]{value}, 1);
-		}
-
 	}
+
+	/**
+	 * Create a sim variable structure in MATLAB from and a sim variable. 
+	 * @return a matlab structure representing the 
+	 */
+	public MLStructure simVar2MLStrcut(String name, SimVariable simVar) {
+		
+		//define the MATLAB structure
+		MLStructure mlStruct = new MLStructure(name, new int[] {1,1});
+
+		//define all possible variables which can be in the struct. 
+		mlStruct.setField("type",  new MLChar(null, SimVariable.getSimVarName(simVar.getType())));
+		mlStruct.setField("mean",   mlDouble(0), 0);
+		mlStruct.setField("std",   mlDouble(0), 0);
+		mlStruct.setField("scale",   mlDouble(0), 0);
+		mlStruct.setField("shape",   mlDouble(0), 0);
+		mlStruct.setField("truncation",   mlDouble(0), 0);
+		mlStruct.setField("min",   mlDouble(0), 0);
+		mlStruct.setField("max",   mlDouble(0), 0);
+		mlStruct.setField("customp",   mlDouble(0), 0);
+		mlStruct.setField("limits",   new MLDouble(null, new double[]{0,1}, 2), 0);
+
+		//switch to get type
+		switch (simVar.getType()) {
+		case CUSTOM:
+			CustomSimVar customSimVar = (CustomSimVar) simVar; 
+			mlStruct.setField("customp", new MLDouble(null, customSimVar.getProbData(), customSimVar.getProbData().length), 0);
+			mlStruct.setField("min", mlDouble(customSimVar.getMin()), 1); 
+			mlStruct.setField("max", mlDouble(customSimVar.getMax()), 1); 
+			break;
+		case LOGNORMAL:
+			LogNormalSimVar logNormal = (LogNormalSimVar) simVar; 
+			mlStruct.setField("scale", mlDouble(logNormal.getScale()), 0);
+			mlStruct.setField("shape", mlDouble(logNormal.getShape()), 0); 
+			mlStruct.setField("truncation", mlDouble(logNormal.getTruncation()), 0); 
+			break;
+		case NORMAL:
+			NormalSimVariable normalSim = (NormalSimVariable) simVar; 
+			mlStruct.setField("mean", mlDouble(normalSim.getMean()), 0);
+			mlStruct.setField("std", mlDouble(normalSim.getStd()), 0); 
+			break;
+		case UNIFORM:
+			RandomSimVariable uniformSim = (RandomSimVariable) simVar; 
+			mlStruct.setField("min", mlDouble(uniformSim.getMin()), 0);
+			mlStruct.setField("max", mlDouble(uniformSim.getMax()), 0); 
+			break;
+		default:
+			break;
+
+		}
+		
+		mlStruct.setField("limits",  new MLDouble(null, simVar.getLimits(), 2), 0); 
+
+		//MATLAB structure
+		return mlStruct;
+	}
+
+
+
+	/**
+	 * Single double value in MATLAB
+	 * @param value - the value  
+	 * @return
+	 */
+	private MLDouble mlDouble(double value) {
+		return new MLDouble(null, new double[]{value}, 1);
+	}
+
+}

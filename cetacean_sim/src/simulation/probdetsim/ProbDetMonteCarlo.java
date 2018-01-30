@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
-
-import animal.SimpleOdontocete;
 import simulation.StatusListener;
 import utils.CetSimUtils;
 import utils.Hist3;
@@ -63,7 +61,6 @@ public class ProbDetMonteCarlo {
 	 * Print out progress data
 	 */
 	private boolean print; 
-	
 	
 	/**
 	 * Records the angles of detected animals. Note, this can take a lot of memory 
@@ -337,7 +334,6 @@ public class ProbDetMonteCarlo {
 		double[][] histGrid= new double[xbinEdges.length-1][ybinEdges.length-1];
 		
 		return histGrid;
-		
 	}
 
 	

@@ -44,10 +44,27 @@ public class CustomSimVar implements SimVariable {
 	 * The limits in which the distribution applies e.g. depth. 
 	 */
 	private double[] limits;
+	
+	/**
+	 * The string name. 
+	 */
+	private String name=""; 
 
 	
 	public CustomSimVar() {
 		setDistirbution(defaultProb, min, max); 
+	}
+	
+	/**
+	 * Custom sim variable. 
+	 * @param name - the name
+	 * @param probData - the probability data
+	 * @param min - the minimum value.
+	 * @param max - the maximum value. 
+	 */
+	public CustomSimVar(String name, double[] probData, Double min, Double max) {
+		this.name=name; 
+		setDistirbution(probData, min,max); 
 	}
 	
 	/**
@@ -86,7 +103,7 @@ public class CustomSimVar implements SimVariable {
 
 	@Override
 	public String getName() {
-		return "Custom Distribution";
+		return name; 
 	}
 
 	@Override
@@ -102,7 +119,6 @@ public class CustomSimVar implements SimVariable {
 
 	@Override
 	public double[] getLimits() {
-		// TODO Auto-generated method stub
 		return limits;
 	}
 	
@@ -156,7 +172,6 @@ public class CustomSimVar implements SimVariable {
 	public double[] setProbData() {
 		return discreteProbabilities;
 	}
-
 
 
 	

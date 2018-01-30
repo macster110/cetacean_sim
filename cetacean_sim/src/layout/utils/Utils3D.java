@@ -168,4 +168,21 @@ public class Utils3D {
         return axisGroup;
     }
 
+	/**
+	 * Normalise an array so the maximum value is 1. 
+	 * @param zqIn
+	 * @return
+	 */
+	public static float[][] normalise(float[][] zqIn) {
+		float[] minMax= getMinMax(zqIn);
+		
+		float[][] zqOut= new float[zqIn.length][zqIn[0].length]; 
+		for (int i=0; i<zqIn.length; i++) {
+			for (int j=0; j<zqIn[0].length; j++) {
+				zqOut[i][j]=zqIn[i][j]/minMax[1]; 
+			}
+		}
+		return zqOut;
+	}
+
 }

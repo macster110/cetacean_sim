@@ -46,10 +46,14 @@ public class ColouredSurfacePlot extends SurfacePlot {
 	/**
 	 * Create a coloured surface plot
 	 */
-	public ColouredSurfacePlot(float[][] Xq, float[][] Yq, float[][] Zq, boolean interp) {
+	public ColouredSurfacePlot(float[][] Xq, float[][] Yq, float[][] ZqIn, boolean interp) {
 		super(true);		
-		System.out.println("Surface without interp: " + Zq.length +  " by " + Zq[0].length);
+		System.out.println("Surface without interp: " + ZqIn.length +  " by " + ZqIn[0].length);
 		createAxis();
+		
+		float[][] Zq=Utils3D.normalise(ZqIn);
+		
+		
 		if (interp) {
 			 float[][] interpZ =interpSurfaces(Xq, Yq, Zq);
 			 System.out.println("Surface is interp: " + interpZ.length +  " by " + interpZ[0].length);
@@ -60,8 +64,10 @@ public class ColouredSurfacePlot extends SurfacePlot {
 		else {
 			createSurface(Zq); 
 			setAxisPosition(Zq.length, Zq[0].length); 
-
 		}
+		
+		
+		
 		setAxisValues(Xq, Yq); 
 	}
 	

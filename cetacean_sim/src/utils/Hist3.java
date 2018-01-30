@@ -40,7 +40,7 @@ public class Hist3 {
 	 * @param simResults
 	 * @param xbinEdges - the edges of the x bins
 	 * @param ybinEdges - the edges of the y bins
-	 * @param findValue - if not null the hsitgram calulates the percentage of findValue's in each hist bin. 
+	 * @param findValue - if not null the histogram calulates the percentage of findValue's in each hist bin. 
 	 * */
 	public Hist3(double[][] simResults, double[] xbinEdges, double[] ybinEdges, Double findValue) {
 		this.xbinEdges=xbinEdges; 
@@ -93,7 +93,7 @@ public class Hist3 {
 				if (findValue==null) histogram[i][j]=histcount; //just standard histogram 
 				else  {
 					if (histcount==0) histogram[i][j]=0;
-					else histogram[i][j]=histvalue/ (double) histcount; //the percentage of values which equal findValue;
+					else histogram[i][j]=histvalue/ (double) simResults.length; //the percentage of values which equal findValue;
 				}
 			}
 		}
