@@ -2,7 +2,6 @@ package layout.utils;
 
 import javafx.geometry.Point3D;
 import javafx.scene.Group;
-import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
@@ -10,6 +9,11 @@ import javafx.scene.shape.Sphere;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 
+/**
+ * Useful classes for simulations. 
+ * @author Jamie Macaulay
+ *
+ */
 public class Utils3D {
 	
 	

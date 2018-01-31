@@ -112,14 +112,14 @@ public class ProbDetMTExport {
 
 		MLStructure mlStruct = new MLStructure("settings", new int[] {1,1});
 
-
+		
 		mlStruct.setField("maxrange", mlDouble(settings.maxRange), 0);
 		mlStruct.setField("maxdepth", mlDouble(-settings.minHeight), 0);
 		mlStruct.setField("depthbin", mlDouble(settings.depthBin), 0);
 		mlStruct.setField("rangebin", mlDouble(settings.rangeBin), 0);
 		mlStruct.setField("thresh", mlDouble(settings.noiseThreshold), 0);
 		mlStruct.setField("minhydrophone", mlDouble(settings.minRecievers), 0);
-		mlStruct.setField("hydrophonedepth", new MLDouble(null, settings.recievers.getArrayXYZ()), 1);
+		mlStruct.setField("hydrophonedepth", new MLDouble(null, settings.recievers.getArrayXYZ()), 0);
 		mlStruct.setField("spreading_coeff", mlDouble(((SimplePropogation) settings.propogation).getSpreadingCoeff()), 0);
 		mlStruct.setField("abs_coeff",  mlDouble(((SimplePropogation) settings.propogation).getSpreadingCoeff()), 0);
 		mlStruct.setField("n",  mlDouble(settings.nBootStraps), 0);
@@ -141,27 +141,15 @@ public class ProbDetMTExport {
 
 
 		//src level
-		mlStruct.setField("srcleveltype", new MLChar(null, SimVariable.getSimVarName(settings.simpleOdontocete.sourceLevel.getType())));
-		if (settings.simpleOdontocete.sourceLevel.getType()==DistributionType.NORMAL) {
-			mlStruct.setField("srclevel",  mlDouble(((NormalSimVariable) settings.simpleOdontocete.sourceLevel).getMean()), 0);
-			mlStruct.setField("srcstd", mlDouble(((NormalSimVariable) settings.simpleOdontocete.sourceLevel).getStd()), 0);
-		}
-		if (settings.simpleOdontocete.sourceLevel.getType()==DistributionType.UNIFORM) {
-			mlStruct.setField("srcmin", mlDouble(((RandomSimVariable) settings.simpleOdontocete.sourceLevel).getMin()), 0);
-			mlStruct.setField("srcmax", mlDouble(((RandomSimVariable) settings.simpleOdontocete.sourceLevel).getMax()), 0);
-		}
+		mlStruct.setField("sourcelevel", simVar2MLStrcut(null, settings.simpleOdontocete.sourceLevel),0);
 
+		//horizontal angle 
+		mlStruct.setField("horzangle",  simVar2MLStrcut(null, settings.simpleOdontocete.horzAngle),0); 
 
-		//horizontal beam
-		mlStruct.setField("horzalangletype", new MLChar(null, SimVariable.getSimVarName(settings.simpleOdontocete.horzAngle.getType())));
-		if (settings.simpleOdontocete.horzAngle.getType()==DistributionType.NORMAL) {
-			mlStruct.setField("horzangle",  mlDouble(Math.toDegrees(((NormalSimVariable) settings.simpleOdontocete.horzAngle).getMean())), 0);
-			mlStruct.setField("horzstd", mlDouble(Math.toDegrees(((NormalSimVariable) settings.simpleOdontocete.horzAngle).getStd())), 0);
-		}
-		if (settings.simpleOdontocete.horzAngle.getType()==DistributionType.UNIFORM) {
-			mlStruct.setField("horzmin",  mlDouble(Math.toDegrees(((RandomSimVariable) settings.simpleOdontocete.horzAngle).getMin())), 0);
-			mlStruct.setField("horzmax",  mlDouble(Math.toDegrees(((RandomSimVariable) settings.simpleOdontocete.horzAngle).getMax())), 0);
-		}
+		//TODO
+		mlStruct.setField("vertangle",  simVar2MLStrcut(null, settings.simpleOdontocete.vertAngles.get(0)),0); 
+
+		mlStruct.setField("depthdist",  simVar2MLStrcut(null, settings.simpleOdontocete.depthDistribution),0); 
 
 
 		Sampling x = new Sampling(settings.simpleOdontocete.beamProfile.getHorzGrid()); 
@@ -176,9 +164,9 @@ public class ProbDetMTExport {
 				settings.simpleOdontocete.beamProfile.getVertGrid(), false, false); 
 
 
-		mlStruct.setField("horzbeam",  new MLDouble(null, Utils3D.float2double(horzGrid)));
-		mlStruct.setField("vertbeam",  new MLDouble(null, Utils3D.float2double(vertGrid)));
-		mlStruct.setField("tlBeam",    new MLDouble(null, Utils3D.float2double(grid)));
+		mlStruct.setField("horzbeam",  new MLDouble(null, Utils3D.float2double(horzGrid)),0);
+		mlStruct.setField("vertbeam",  new MLDouble(null, Utils3D.float2double(vertGrid)),0);
+		mlStruct.setField("tlBeam",    new MLDouble(null, Utils3D.float2double(grid)),0);
 
 		return mlStruct; 
 	}
@@ -188,7 +176,7 @@ public class ProbDetMTExport {
 	 * @return a matlab structure representing the 
 	 */
 	public MLStructure simVar2MLStrcut(String name, SimVariable simVar) {
-		
+
 		//define the MATLAB structure
 		MLStructure mlStruct = new MLStructure(name, new int[] {1,1});
 
@@ -209,14 +197,16 @@ public class ProbDetMTExport {
 		case CUSTOM:
 			CustomSimVar customSimVar = (CustomSimVar) simVar; 
 			mlStruct.setField("customp", new MLDouble(null, customSimVar.getProbData(), customSimVar.getProbData().length), 0);
-			mlStruct.setField("min", mlDouble(customSimVar.getMin()), 1); 
-			mlStruct.setField("max", mlDouble(customSimVar.getMax()), 1); 
+			mlStruct.setField("min", mlDouble(customSimVar.getMin()), 0); 
+			mlStruct.setField("max", mlDouble(customSimVar.getMax()), 0); 
 			break;
 		case LOGNORMAL:
 			LogNormalSimVar logNormal = (LogNormalSimVar) simVar; 
 			mlStruct.setField("scale", mlDouble(logNormal.getScale()), 0);
 			mlStruct.setField("shape", mlDouble(logNormal.getShape()), 0); 
 			mlStruct.setField("truncation", mlDouble(logNormal.getTruncation()), 0); 
+			mlStruct.setField("negative", logNormal.isNegative() ? mlDouble(1) : mlDouble(0), 0); 
+
 			break;
 		case NORMAL:
 			NormalSimVariable normalSim = (NormalSimVariable) simVar; 
@@ -232,8 +222,10 @@ public class ProbDetMTExport {
 			break;
 
 		}
-		
-		mlStruct.setField("limits",  new MLDouble(null, simVar.getLimits(), 2), 0); 
+
+		if (simVar.getLimits()!=null) {
+			mlStruct.setField("limits",  new MLDouble(null, simVar.getLimits(), 2), 0); 
+		}
 
 		//MATLAB structure
 		return mlStruct;

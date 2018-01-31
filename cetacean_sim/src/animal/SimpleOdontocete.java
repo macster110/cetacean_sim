@@ -60,48 +60,13 @@ public class SimpleOdontocete {
 	 * @param horzAngle - horizontal angles of the animal.  
 	 * @param depthDist - the depth distribution of the animal. 
 	 */
-	public SimpleOdontocete (SimVariable sourceLevel, SimVariable[] vertAngles, SimVariable horzAngle, SimVariable depthDist) {
+	public SimpleOdontocete (SimVariable sourceLevel, SimVariable[] vertAngles, SimVariable horzAngle, 
+			SimVariable depthDist, String beamType, double maxDepth) {
 		this.sourceLevel=sourceLevel;
 		this.vertAngles= new ArrayList<SimVariable>(Arrays.asList(vertAngles));
 		this.horzAngle=horzAngle;
 		this.depthDistribution=depthDist;
-	}
-	
-
-	/**
-	 * Constructor for the animal with intial starting values. Used primarily to call from MATLAB 
-	 * Creates an animal which has an even depth distribution with normal distributions for source levels
-	 * and vertical angle.
-	 * @param sourceLevelMean - the mean source level
-	 * @param sourceLevelStd - the standard deviation in source level
-	 * @param vertAngleMean - the mean vertical angle
-	 * @param vertAngleStd - the standard deviation in vertical angle.
-	 * @param maxDepth - the max depth for the simulation 
-	 * @param beamType - the beam type flag. 
-	 */
-	public SimpleOdontocete (double sourceLevelMean, double sourceLevelStd, double vertAngleMean , 
-			double vertAngleStd,  double maxDepth, double minDepth, String beamType) {
-		this(sourceLevelMean, sourceLevelStd, new double[]{vertAngleMean}, new double[]{vertAngleStd},
-				new double[][] {{-100000,0}}, maxDepth, minDepth, beamType);
-	}
-	
-	
-	/**
-	 * Constructor for the animal with in starting values. Used primarily to call from MATLAB 
-	 * Creates an animal which has an even depth distribution with normal distributions for source levels
-	 * and vertical angle.
-	 */
-	public SimpleOdontocete (double sourceLevelMean, double sourceLevelStd, double[] vertAngleMean , 
-			double[] vertAngleStd, double[][] lim,  double maxDepth, double minDepth, String beamType) {
 		
-		//set the sim-variables
-		this.sourceLevel = new NormalSimVariable("Source Level", sourceLevelMean, sourceLevelStd);
-		
-		vertAngles.clear();
-		for (int i=0; i<vertAngleMean.length; i++) {
-			vertAngles.add(new NormalSimVariable("Vertical Angle", vertAngleMean[i], vertAngleStd[i], lim[i]));
-		}
-		/*********************/
 		
 		//setup the beam profile
 		switch(beamType) {
@@ -116,6 +81,56 @@ public class SimpleOdontocete {
 		ProbDetSimSettings probDetSimSettings = new ProbDetSimSettings(); 
 		probDetSimSettings.minHeight=maxDepth; 
 	}
+	
+
+//	/**
+//	 * Constructor for the animal with intial starting values. Used primarily to call from MATLAB 
+//	 * Creates an animal which has an even depth distribution with normal distributions for source levels
+//	 * and vertical angle.
+//	 * @param sourceLevelMean - the mean source level
+//	 * @param sourceLevelStd - the standard deviation in source level
+//	 * @param vertAngleMean - the mean vertical angle
+//	 * @param vertAngleStd - the standard deviation in vertical angle.
+//	 * @param maxDepth - the max depth for the simulation 
+//	 * @param beamType - the beam type flag. 
+//	 */
+//	public SimpleOdontocete (double sourceLevelMean, double sourceLevelStd, double vertAngleMean , 
+//			double vertAngleStd,  double maxDepth, double minDepth, String beamType) {
+//		this(sourceLevelMean, sourceLevelStd, new double[]{vertAngleMean}, new double[]{vertAngleStd},
+//				new double[][] {{-100000,0}}, maxDepth, minDepth, beamType);
+//	}
+//	
+//	
+//	/**
+//	 * Constructor for the animal with in starting values. Used primarily to call from MATLAB 
+//	 * Creates an animal which has an even depth distribution with normal distributions for source levels
+//	 * and vertical angle.
+//	 */
+//	public SimpleOdontocete (double sourceLevelMean, double sourceLevelStd, double[] vertAngleMean , 
+//			double[] vertAngleStd, double[][] lim,  double maxDepth, double minDepth, String beamType) {
+//		
+//		//set the sim-variables
+//		this.sourceLevel = new NormalSimVariable("Source Level", sourceLevelMean, sourceLevelStd);
+//		
+//		vertAngles.clear();
+//		for (int i=0; i<vertAngleMean.length; i++) {
+//			vertAngles.add(new NormalSimVariable("Vertical Angle", vertAngleMean[i], vertAngleStd[i], lim[i]));
+//		}
+//		/*********************/
+//		
+//		//setup the beam profile
+//		switch(beamType) {
+//		case "porp":
+//			beamProfile = DefaultBeamProfiles.getDefaultBeams().get(0); 
+//			break;
+//		}
+//		
+//		beamSurface = SurfaceUtils.generateSurface(beamProfile.getRawBeamMeasurments());
+//		
+//		//bit of a hack but works 
+//		ProbDetSimSettings probDetSimSettings = new ProbDetSimSettings(); 
+//		probDetSimSettings.minHeight=maxDepth; 
+//	}
 	
 	
 	/**
