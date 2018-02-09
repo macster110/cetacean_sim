@@ -2,20 +2,10 @@ package cetaceanSim;
 
 import java.util.ArrayList;
 
-import animal.AnimalManager;
-import animal.AnimalModel;
-import bathymetry.BathymetryModel;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import layout.CetSimView;
-import layout.MapProjector3D;
-import noise.NoiseModel;
-import reciever.RecieverManager;
-import reciever.RecieverModel;
 import simulation.SimulationType;
 import simulation.probdetsim.ProbDetSim;
 import simulation.surveySim.SurveySim;
-import tide.TideModel;
 
 /**
  * Control class for the simulation. Holds all the data needed for a simulation. 

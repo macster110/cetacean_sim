@@ -82,6 +82,31 @@ public class SimpleOdontocete {
 		probDetSimSettings.minHeight=maxDepth; 
 	}
 	
+	
+	/**
+	 * Constructor for simple odontocetes. 
+	 * @param sourceLevel - source level distribution of the animal. 
+	 * @param vertAngles - vertical angles of the animal for different depth limits. 
+	 * @param horzAngle - horizontal angles of the animal.  
+	 * @param beamProfileRaw - raw beam profile measurements [horzAngle (-180, 180 (RAD)), -90 ->90 (RAD), Transmission Loss (dB)]
+	 * @param depthDist - the depth distribution of the animal. 
+	 */
+	public SimpleOdontocete (SimVariable sourceLevel, SimVariable[] vertAngles, SimVariable horzAngle, 
+			SimVariable depthDist, double[][] beamProfileRaw, double maxDepth) {
+		this.sourceLevel=sourceLevel;
+		this.vertAngles= new ArrayList<SimVariable>(Arrays.asList(vertAngles));
+		this.horzAngle=horzAngle;
+		this.depthDistribution=depthDist;
+		
+		beamProfile = new BeamProfile("Custom Beam", beamProfileRaw); 
+
+		beamSurface = SurfaceUtils.generateSurface(beamProfile.getRawBeamMeasurments());
+		
+		//bit of a hack but works 
+		ProbDetSimSettings probDetSimSettings = new ProbDetSimSettings(); 
+		probDetSimSettings.minHeight=maxDepth; 
+	}
+	
 
 //	/**
 //	 * Constructor for the animal with intial starting values. Used primarily to call from MATLAB 
