@@ -18,6 +18,7 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -87,12 +88,12 @@ public class ProbDetSimView implements SimulationView {
 	private VBox progressVBox;
 
 	/**
-	 * Label which shows progress information on total number of bootstraps for the simualtion
+	 * Label which shows progress information on total number of bootstraps for the simulation
 	 */
 	private Label customLabel;
 
 	/**
-	 * Label which shows progress information on total number of bootstraps for the simualtion
+	 * Label which shows progress information on total number of bootstraps for the simulation
 	 */
 	private Label progressLabel1;
 
@@ -145,10 +146,9 @@ public class ProbDetSimView implements SimulationView {
 		HBox hBox= new HBox();
 		hBox.setSpacing(5); 
 
-		//button to start thge simualtion 
+		//button to start the simulation 
 		play = new Button(); 
 		setPlayButtonGraphic(false);
-
 		play.setOnAction((action)->{
 			if (this.probDetSim.isRunning()) {
 				probDetSim.runSim(false); 
@@ -157,7 +157,9 @@ public class ProbDetSimView implements SimulationView {
 				probDetSim.runSim(true); 
 			}
 		});
+		play.setTooltip(new Tooltip("Run the simulation"));
 
+		//File choose for exporting data. 
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Open Resource File");
 		fileChooser.getExtensionFilters().addAll(
@@ -171,6 +173,8 @@ public class ProbDetSimView implements SimulationView {
 				probDetSim.saveProbDetData(selectedFile);
 			}
 		});
+		export.setTooltip(new Tooltip("Export the probability surface and the settings for the simulation as .mat files."));
+
 
 		//progress bars for the simulation.
 		progressBar1= new ProgressBar(); 
@@ -309,8 +313,10 @@ public class ProbDetSimView implements SimulationView {
 	 */
 	public void setParams(ProbDetSimSettings settings) {
 		settingsPane.setParams(settings); 
+		this.animalPane.setParams(settings.simpleOdontocete, false);
+		this.recieverPane.setParams(settings.recievers, false);
 
-	}
+}
 
 	/**
 	 * Get all parameters in the view before the simulation is run. 
@@ -430,6 +436,8 @@ public class ProbDetSimView implements SimulationView {
 
 		animalDialog.showAndWait().ifPresent(response -> {
 			if (response!=null) {
+				//System
+				System.out.println("ProbDetSimView: setting animal settings: " + response.getBeamProfile().getName());
 				this.probDetSim.getProbDetSettings().simpleOdontocete=response;
 			}
 		});

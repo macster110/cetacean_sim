@@ -25,7 +25,7 @@ public class SimpleOdontocete {
 	 * Order of each elements {horizontal angle (degrees), vertical angle (degrees), transmission loss dB}
 	 *  
 	 */
-	public BeamProfile beamProfile = DefaultBeamProfiles.getDefaultBeams().get(0); 
+	private BeamProfile beamProfile = DefaultBeamProfiles.getDefaultBeams().get(2); 
 
 	/******Variables which are used *****/
 	
@@ -107,6 +107,23 @@ public class SimpleOdontocete {
 		probDetSimSettings.minHeight=maxDepth; 
 	}
 	
+	/**
+	 * Set the beam profile. 
+	 * @param bemaProfile - the beam profile. 
+	 */
+	public void setBeamProfile(BeamProfile bemaProfile) {
+		this.beamProfile=bemaProfile;
+		beamSurface = SurfaceUtils.generateSurface(beamProfile.getRawBeamMeasurments());
+	}
+	
+	/**
+	 * Get the beam profile. 
+	 * @return the beam profile. 
+	 */
+	public BeamProfile getBeamProfile() {
+		return beamProfile;
+	}
+	
 
 //	/**
 //	 * Constructor for the animal with intial starting values. Used primarily to call from MATLAB 
@@ -179,7 +196,9 @@ public class SimpleOdontocete {
 				+ "source level: " + sourceLevel.toString() +" dB re 1uPa \n"
 				+ vertAnglesString
 				+ "horizontal angle: " + horzAngle.toString() +" rad \n"
-				+ "depth distribution: " + depthDistribution.toString() + " m");
+				+ "depth distribution: " + depthDistribution.toString() + " m \n")
+				+ "beam profile: " + this.beamProfile.getName();
+		
 		
 		
 		return animalString;

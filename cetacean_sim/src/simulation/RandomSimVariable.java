@@ -38,6 +38,13 @@ public class RandomSimVariable implements SimVariable {
 		this.max=max; 
 	}
 
+	public RandomSimVariable(String name, double min, double max, double[] simLims) {
+		this.name=name;
+		this.min=min;
+		this.max=max; 
+		this.limits=simLims;
+	}
+
 	@Override
 	public String getName() {
 		return name;

@@ -68,6 +68,21 @@ public class CustomSimVar implements SimVariable {
 	}
 	
 	/**
+	 * Custom sim variable. 
+	 * @param name - the name
+	 * @param probData - the probability data
+	 * @param min - the minimum value.
+	 * @param max - the maximum value. 
+	 * @param simLims - the distirbution limits; 
+	 * @param simLims 
+	 */
+	public CustomSimVar(String name, double[] probData, Double min, Double max, double[] simLims) {
+		this.name=name; 
+		this.limits=simLims;
+		setDistirbution(probData, min,max); 
+	}
+	
+	/**
 	 */
 	public CustomSimVar(double[] probData, Double min, Double max) {
 		setDistirbution(probData, min,max); 

@@ -41,6 +41,15 @@ public class LogNormalSimVar implements SimVariable {
 		logNormalDist=new LogNormalDistribution(scale, shape); 
 	}
 
+	public LogNormalSimVar(String name, double scale, double shape, double truncation, boolean negative, 
+			double[] simLims) {
+		this.name=name; 
+		this.truncation=truncation; 
+		this.negative=negative; 
+		logNormalDist=new LogNormalDistribution(scale, shape); 
+		this.limits=simLims;
+	}
+
 	@Override
 	public DistributionType getType() {
 		return DistributionType.LOGNORMAL;

@@ -143,7 +143,10 @@ public class SimpleOdontocetePane extends BorderPane implements SettingsPane<Sim
 	@Override
 	public SimpleOdontocete getParams() {
 				
-		simpleOdontocete.beamProfile=this.defaultBeamProfiles.get(currentBeamProfile);
+		simpleOdontocete.setBeamProfile(this.defaultBeamProfiles.get(currentBeamProfile));
+		
+		System.out.println("SimpleOdontocetesPane.Beam index: " + currentBeamProfile); 
+		
 		simpleOdontocete.horzAngle=this.horzAngle.getSimVariable(); 
 		simpleOdontocete.vertAngles=this.vertAngle.getSimVariable(); 
 		simpleOdontocete.depthDistribution=this.depthDistribution.getSimVariable(); 
@@ -159,10 +162,15 @@ public class SimpleOdontocetePane extends BorderPane implements SettingsPane<Sim
 
 		//if (clone) this.simpleOdontocete=settingsData.clone();		
 		//set the controls. 
+		
+		System.out.println("SimpleOdontocetesPane.Settings the params: "+ settingsData.vertAngles.size());
+		
 		this.horzAngle.setSimVariable(settingsData.horzAngle); 
 		this.vertAngle.setSimVariables(settingsData.vertAngles); 
 		this.sourceLevel.setSimVariable(settingsData.sourceLevel); 
 		this.depthDistribution.setSimVariable(settingsData.depthDistribution); 
+		
+		//TODO- set the beam profile. 
 
 	}
 

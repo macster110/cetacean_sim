@@ -15,6 +15,7 @@ import animal.SimpleOdontocete;
 import edu.mines.jtk.dsp.Sampling;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import layout.ResultConverter;
 import layout.utils.Utils3D;
 import propogation.SimplePropogation;
 import reciever.HydrophoneArray;
@@ -28,7 +29,11 @@ import simulation.probdetsim.ProbDetMonteCarlo.ProbDetResult;
 import utils.Hist3;
 
 /**
- * Export probability fo detection data to a .mat file
+ * Export probability fo detection data to a .mat file. This allows the program to interact with 
+ * the MATLAB library. 
+ * <p>
+ * Note that in MATLAB settings are stored in degrees but in Java they are stored as Radians. 
+ * 
  * @author Jamie Macaulay 
  *
  */
@@ -55,10 +60,10 @@ public class ProbDetMTExport {
 
 	/**
 	 * Convert results to a MATLAB structure.
-	 * @param probResult - probvability of detection results. 
+	 * @param probResult - probability of detection results. 
 	 * @return the results. 
 	 */
-	public MLArray  resultsToStruct(ArrayList<ProbDetResult> probResult) {
+	public MLArray resultsToStruct(ArrayList<ProbDetResult> probResult) {
 
 		MLStructure mlStruct = new MLStructure("prob_det", new int[] {probResult.size(),1}); 
 
@@ -111,15 +116,14 @@ public class ProbDetMTExport {
 	 * @param settings - the MATLAB structure with simulation settings
 	 * @return the probability settings class. 
 	 */
-	public static ProbDetSimSettings structToSettings(MLStructure settings) {
+	public ProbDetSimSettings structToSettings(MLStructure mlArrayRetrived) {
 
-		MatFileReader mfr = null; 
+//		MatFileReader mfr = null; 
 		try {
-			mfr = new MatFileReader( "C:\\Users\\macst\\Desktop\\testImportSettings.mat" );
-
-
-			//get array of a name "my_array" from file
-			MLStructure mlArrayRetrived = (MLStructure) mfr.getMLArray( "settings" );
+//			mfr = new MatFileReader( "C:\\Users\\macst\\Desktop\\testImportSettings.mat" );
+//
+//			//get array of a name "my_array" from file
+//			MLStructure mlArrayRetrived = (MLStructure) mfr.getMLArray( "settings" );
 
 //			MLChar speciesML = (MLChar) mlArrayRetrived.getField("species", 0); 
 //			String species = speciesML.getString(0); 
@@ -152,13 +156,13 @@ public class ProbDetMTExport {
 			MLDouble beamraw = 		(MLDouble) mlArrayRetrived.getField("beamraw", 0);
 
 			SimVariable sourceLevel= 	mlStruct2SimVariable(sourceLevelML, "Source Level",0); 
-			SimVariable horzangle= 	mlStruct2SimVariable(horzangleML, "Horz Angle",0); 
+			SimVariable horzangle= 	mlStruct2SimVariable(horzangleML, "Horz Angle",0, new Degrees2Radians()); 
 			SimVariable depthdist= 	mlStruct2SimVariable(depthdistML, "Depth Dist",0); 
 			
 			//there can be multiple vertical angles. 
 			SimVariable[] vertangle= new SimVariable[vertangleML.getM()]; 
 			for (int i=0; i<vertangle.length; i++ ) {
-				 vertangle[i]= 	mlStruct2SimVariable(vertangleML, ("Vert Angle" + i), i); 
+				 vertangle[i]= 	mlStruct2SimVariable(vertangleML, ("Vert Angle" + i), i, new Degrees2Radians()); 
 			}
 			
 			//now create a ProbDetSimSettings object
@@ -186,7 +190,7 @@ public class ProbDetMTExport {
 			
 			//Animal
 			probDetSimSettings.simpleOdontocete= new SimpleOdontocete(sourceLevel, vertangle, horzangle, 
-					depthdist, beamraw.getArray(), maxDepth.get(0)); 
+					depthdist, Utils3D.beam2Radians(beamraw.getArray()), maxDepth.get(0)); 
 
 			
 			/***Print this stuff out***/
@@ -208,14 +212,21 @@ public class ProbDetMTExport {
 				System.out.println("Hydrophone: " + i + " " + hydrophones.get(i, 0) + "  " + hydrophones.get(i, 1) + " " +
 						hydrophones.get(i, 2) ); 
 			}
+			System.out.println("--------------------------"); 
 			//now print sim-variables. 
 			System.out.println(sourceLevel.toString()); 
 			System.out.println(horzangle.toString()); 
 			System.out.println(depthdist.toString()); 
-			System.out.println(vertangle.toString()); 
+			System.out.println("Vert Angle");
+			for (int i=0; i<vertangle.length; i++ ) {
+				System.out.println(vertangle.toString()); 
+			}
+			System.out.println("--------------------------"); 
 			/***************************/
+			
+			return probDetSimSettings;
 
-		} catch (IOException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -263,54 +274,63 @@ public class ProbDetMTExport {
 		mlStruct.setField("sourcelevel", simVar2MLStrcut(null, settings.simpleOdontocete.sourceLevel),0);
 
 		//horizontal angle 
-		mlStruct.setField("horzangle",  simVar2MLStrcut(null, settings.simpleOdontocete.horzAngle),0); 
+		mlStruct.setField("horzangle",  simVar2MLStrcut(null, settings.simpleOdontocete.horzAngle, new Radians2Degrees()),0); 
 
 		//TODO
-		mlStruct.setField("vertangle",  simVar2MLStrcut(null, settings.simpleOdontocete.vertAngles.get(0)),0); 
+		mlStruct.setField("vertangle",  simVar2MLStrcut(null, settings.simpleOdontocete.vertAngles.get(0), new Radians2Degrees()),0); 
 
 		mlStruct.setField("depthdist",  simVar2MLStrcut(null, settings.simpleOdontocete.depthDistribution),0); 
 
 
-		Sampling x = new Sampling(settings.simpleOdontocete.beamProfile.getHorzGrid()); 
-		Sampling y = new Sampling(settings.simpleOdontocete.beamProfile.getVertGrid()); 
-		float[][] grid = settings.simpleOdontocete.beamProfile.getSurface().grid(x, y);
+		Sampling x = new Sampling(settings.simpleOdontocete.getBeamProfile().getHorzGrid()); 
+		Sampling y = new Sampling(settings.simpleOdontocete.getBeamProfile().getVertGrid()); 
+		float[][] grid = settings.simpleOdontocete.getBeamProfile().getSurface().grid(x, y);
 
 
-		float[][] horzGrid = Hist3.getXYSurface(settings.simpleOdontocete.beamProfile.getHorzGrid(), 
-				settings.simpleOdontocete.beamProfile.getVertGrid(), true, false); 
+		float[][] horzGrid = Hist3.getXYSurface(settings.simpleOdontocete.getBeamProfile().getHorzGrid(), 
+				settings.simpleOdontocete.getBeamProfile().getVertGrid(), true, false); 
 
-		float[][] vertGrid = Hist3.getXYSurface(settings.simpleOdontocete.beamProfile.getHorzGrid(), 
-				settings.simpleOdontocete.beamProfile.getVertGrid(), false, false); 
+		float[][] vertGrid = Hist3.getXYSurface(settings.simpleOdontocete.getBeamProfile().getHorzGrid(), 
+				settings.simpleOdontocete.getBeamProfile().getVertGrid(), false, false); 
 
 		mlStruct.setField("horzbeam",  new MLDouble(null, Utils3D.float2double(horzGrid)),0);
 		mlStruct.setField("vertbeam",  new MLDouble(null, Utils3D.float2double(vertGrid)),0);
 		mlStruct.setField("tlBeam",    new MLDouble(null, Utils3D.float2double(grid)),0);
+		mlStruct.setField("beamRaw",    new MLDouble(null, Utils3D.beam2Degrees(settings.simpleOdontocete.getBeamProfile().getRawBeamMeasurments())));
+
 
 		return mlStruct; 
 	}
 
+
+	public SimVariable mlStruct2SimVariable(MLStructure structure, String name, int index) {
+		return mlStruct2SimVariable( structure,  name,  index,  new ResultConverter());
+	}
 	/**
 	 * Convert an ML structure into a sim variable. 
 	 * @param structure - the structure. This can be a single struct or a list
 	 * @param index - the index of the structure if an array. 
 	 * @return the sim variable. 
 	 */
-	public static SimVariable mlStruct2SimVariable(MLStructure structure, String name, int index) {
+	public SimVariable mlStruct2SimVariable(MLStructure structure, String name, int index, ResultConverter resultsConverter) {
 
 		MLChar typeML = (MLChar) structure.getField("type", index); 
 		String type = typeML.getString(0); 
+		
+		MLDouble limits = (MLDouble) structure.getField("limits", index); 
+		double[] simLims=limits.getArray()[0];
 
 		SimVariable simVar = null; 
 		switch (type) {
 		case "normal":
 			MLDouble meanML = (MLDouble) structure.getField("mean", index); 
 			MLDouble stdML = (MLDouble) structure.getField("std", index); 
-			simVar = new NormalSimVariable(name, meanML.get(0), stdML.get(0)); 
+			simVar = new NormalSimVariable(name, resultsConverter.convert2Value(meanML.get(0)), resultsConverter.convert2Value(stdML.get(0)), simLims ); 
 			break; 
 		case "uniform":
 			MLDouble minML = (MLDouble) structure.getField("min", index); 
 			MLDouble maxML = (MLDouble) structure.getField("max", index); 
-			simVar = new RandomSimVariable(name, minML.get(0), maxML.get(0)); 
+			simVar = new RandomSimVariable(name, resultsConverter.convert2Value(minML.get(0)), resultsConverter.convert2Value(maxML.get(0)), simLims); 
 			break; 
 		case "log-normal":
 			MLDouble shape = (MLDouble) structure.getField("shape", index); 
@@ -318,26 +338,41 @@ public class ProbDetMTExport {
 			MLDouble truncation = (MLDouble) structure.getField("truncation", index); 
 			MLDouble flipnegative = (MLDouble) structure.getField("flipnegative", index); 
 			boolean flipNegBool = flipnegative.get(0)==1 ? true : false; 
-			simVar = new LogNormalSimVar(name, scale.get(0), shape.get(0), truncation.get(0), flipNegBool); 
+			simVar = new LogNormalSimVar(name, resultsConverter.convert2Value(scale.get(0)), resultsConverter.convert2Value(shape.get(0)), 
+					resultsConverter.convert2Value(truncation.get(0)), flipNegBool, simLims); 
 			break; 
 		case "custom":
 			MLDouble minMLC = (MLDouble) structure.getField("min", index); 
 			MLDouble maxMLC = (MLDouble) structure.getField("max", index); 
 			MLDouble customArray = (MLDouble) structure.getField("customp", index); 
-			simVar = new CustomSimVar(name, customArray.getArray()[0], minMLC.get(0), maxMLC.get(0)); 
+			simVar = new CustomSimVar(name, customArray.getArray()[0], resultsConverter.convert2Value(minMLC.get(0)), 
+					resultsConverter.convert2Value(maxMLC.get(0)), simLims); 
 			break; 
 		}
-
+		
 		//System.out.println(type.getString(0)); 		
 		return simVar; 
 	}
 
-
 	/**
-	 * Create a sim variable structure in MATLAB from and a sim variable. 
-	 * @return a matlab structure representing the 
+	 * Create a sim variable structure in MATLAB from a sim variable object. 
+	 * @param name - the name of the structure. Can be null
+	 * @param the sim variable to convert
+	 * @return a MATLAB structure representing the sim variable
 	 */
 	public MLStructure simVar2MLStrcut(String name, SimVariable simVar) {
+		return simVar2MLStrcut(name, simVar, new ResultConverter());
+	}
+
+
+	/**
+	 * Create a sim variable structure in MATLAB from a sim variable object. 
+	 * @param name - the name of the structure. Can be null
+	 * @param the sim variable to convert
+	 * @param the results converter e.g. for degrees to radians or vice versa. 
+	 * @return a MATLAB structure representing the sim variable.
+	 */
+	public MLStructure simVar2MLStrcut(String name, SimVariable simVar, ResultConverter resultsConvert) {
 
 		//define the MATLAB structure
 		MLStructure mlStruct = new MLStructure(name, new int[] {1,1});
@@ -359,30 +394,30 @@ public class ProbDetMTExport {
 		case CUSTOM:
 			CustomSimVar customSimVar = (CustomSimVar) simVar; 
 			mlStruct.setField("customp", new MLDouble(null, customSimVar.getProbData(), customSimVar.getProbData().length), 0);
-			mlStruct.setField("min", mlDouble(customSimVar.getMin()), 0); 
-			mlStruct.setField("max", mlDouble(customSimVar.getMax()), 0); 
+			mlStruct.setField("min", mlDouble(resultsConvert.convert2Value(customSimVar.getMin())), 0); 
+			mlStruct.setField("max", mlDouble(resultsConvert.convert2Value(customSimVar.getMax())), 0); 
 			break;
 		case LOGNORMAL:
+			//FIXME not sure about results converter here- need to take log?
 			LogNormalSimVar logNormal = (LogNormalSimVar) simVar; 
-			mlStruct.setField("scale", mlDouble(logNormal.getScale()), 0);
-			mlStruct.setField("shape", mlDouble(logNormal.getShape()), 0); 
-			mlStruct.setField("truncation", mlDouble(logNormal.getTruncation()), 0); 
+			mlStruct.setField("scale", mlDouble(resultsConvert.convert2Value(logNormal.getScale())), 0);
+			mlStruct.setField("shape", mlDouble(resultsConvert.convert2Value(logNormal.getShape())), 0); 
+			mlStruct.setField("truncation", mlDouble(resultsConvert.convert2Value(logNormal.getTruncation())), 0); 
 			mlStruct.setField("negative", logNormal.isNegative() ? mlDouble(1) : mlDouble(0), 0); 
 
 			break;
 		case NORMAL:
 			NormalSimVariable normalSim = (NormalSimVariable) simVar; 
-			mlStruct.setField("mean", mlDouble(normalSim.getMean()), 0);
-			mlStruct.setField("std", mlDouble(normalSim.getStd()), 0); 
+			mlStruct.setField("mean", mlDouble(resultsConvert.convert2Value(normalSim.getMean())), 0);
+			mlStruct.setField("std", mlDouble(resultsConvert.convert2Value(normalSim.getStd())), 0); 
 			break;
 		case UNIFORM:
 			RandomSimVariable uniformSim = (RandomSimVariable) simVar; 
-			mlStruct.setField("min", mlDouble(uniformSim.getMin()), 0);
-			mlStruct.setField("max", mlDouble(uniformSim.getMax()), 0); 
+			mlStruct.setField("min", mlDouble(resultsConvert.convert2Value(uniformSim.getMin())), 0);
+			mlStruct.setField("max", mlDouble(resultsConvert.convert2Value(uniformSim.getMax())), 0); 
 			break;
 		default:
 			break;
-
 		}
 
 		if (simVar.getLimits()!=null) {
@@ -392,7 +427,30 @@ public class ProbDetMTExport {
 		//MATLAB structure
 		return mlStruct;
 	}
-
+	
+	/**
+	 * Results converter for converting degrees to radians. 
+	 * @author Jamie Macaulay
+	 *
+	 */
+	private class Degrees2Radians extends ResultConverter {
+		
+		public double convert2Value(double value) {
+			return Math.toRadians(value); 
+		}
+	}
+	
+	/**
+	 * Results converter for converting radians to degrees. 
+	 * @author Jamie Macaulay
+	 *
+	 */
+	private class Radians2Degrees extends ResultConverter {
+		
+		public double convert2Value(double value) {
+			return Math.toDegrees(value); 
+		}
+	}
 
 
 	/**
@@ -405,7 +463,8 @@ public class ProbDetMTExport {
 	}
 
 	public static void main(String[] args) {
-		structToSettings(null); 
+		ProbDetMTExport probDetMTExport = new ProbDetMTExport(); 
+		probDetMTExport.structToSettings(null); 
 	}
 
 }

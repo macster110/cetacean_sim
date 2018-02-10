@@ -1,5 +1,7 @@
 package layout.simulation;
 
+import java.io.File;
+
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.materialicons.MaterialIcon;
 import javafx.geometry.Pos;
@@ -7,12 +9,15 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 import layout.CetSimView;
 import layout.animal.SimpleOdontocetePane;
 import propogation.SimplePropogation;
@@ -127,8 +132,23 @@ public class ProbDetSettingsPane extends BorderPane {
 		simTypes.getSelectionModel().select(probDetSim.getProbDetTypeIndex());
 		row++;
 		
-		GridPane.setColumnSpan(simTypes, 5);
-		mainPane.add(simTypes, 0, row);
+		//import button
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle("Open Resource File");
+		fileChooser.getExtensionFilters().addAll(
+				new ExtensionFilter("MATLAB Files", "*.mat"));
+		
+		Button button = new Button(); 
+		button.setGraphic(GlyphsDude.createIcon(MaterialIcon.FILE_DOWNLOAD, "25"));
+		button.setTooltip(new Tooltip("Import a .mat settings file"));
+		button.setOnAction((action)->{
+			File file = fileChooser.showOpenDialog(mainPane.getScene().getWindow());
+			probDetSim.importProbDetData(file);
+		});
+		
+		GridPane.setColumnSpan(simTypes, 4);
+		mainPane.add(simTypes, 0, row);		
+		mainPane.add(button, 4, row);
 		row++;
 		
 		GridPane.setColumnSpan(probDetTypeHolder, 6);
@@ -308,12 +328,27 @@ public class ProbDetSettingsPane extends BorderPane {
 	}
 	
 	/**
-	 * Set all paramter in the view. 
+	 * Set all parameter in the view. 
 	 * @param settings - the parameter class to set.
 	 */
 	public void setParams(ProbDetSimSettings settings) {
-		//TODO
+		
+		nBootSpinner.getValueFactory().setValue(settings.nBootStraps);
+		nRunnerSpinner.getValueFactory().setValue(settings.nRuns);
 
+		depthBin.getValueFactory().setValue(settings.depthBin);
+		maxDepth.getValueFactory().setValue(settings.minHeight);
+		
+		rangeBin.getValueFactory().setValue(settings.rangeBin);
+		maxRange.getValueFactory().setValue(settings.maxRange);
+		
+		minNoise.getValueFactory().setValue(settings.noiseThreshold);
+		minRecievers.getValueFactory().setValue(settings.minRecievers);
+		
+		//TODO- eventually this will have it's own pane. 
+		spreading.getValueFactory().setValue(((SimplePropogation) settings.propogation).spreading);
+		absorbption.getValueFactory().setValue(((SimplePropogation) settings.propogation).absorption);
+		
 	}
 	
 	/**
@@ -338,6 +373,8 @@ public class ProbDetSettingsPane extends BorderPane {
 		
 		//TODO - eventually propogation will have it's own pane etc. 
 		settings.propogation = new SimplePropogation(this.spreading.getValue(), this.absorbption.getValue());
+		
+		//TODO
 
 		return settings; 
 	}

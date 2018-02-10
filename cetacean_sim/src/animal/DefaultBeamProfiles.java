@@ -56,6 +56,20 @@ public class DefaultBeamProfiles {
 			{Math.toRadians(0),		Math.toRadians(-3),		-1.5},
 			{Math.toRadians(0),		Math.toRadians(0),		0}};
 	
+	public static double[][] uniform(){
+			double[][] beam = new double[200][3]; 
+			
+			int n=0; 
+			for (double i = -Math.PI; i <Math.PI; i=i+Math.PI/10.) {
+				for (double j = -Math.PI/2; j <Math.PI/2; j=j+Math.PI/10.) {
+					beam[n][0]=i;
+					beam[n][1]=j;
+					n++;
+				}
+			}
+			
+			return beam;
+	}
 	
 	
 	/**
@@ -67,6 +81,7 @@ public class DefaultBeamProfiles {
 		ArrayList<BeamProfile> beamProfiles = new ArrayList<BeamProfile>(); 
 		beamProfiles.add(new BeamProfile("Porpoise", porpBeam1));
 		beamProfiles.add(new BeamProfile("Porpoise Back End", porpBackEnd));
+		beamProfiles.add(new BeamProfile("Uniform", uniform()));
 
 		return beamProfiles;
 		
