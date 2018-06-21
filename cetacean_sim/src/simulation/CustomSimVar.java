@@ -62,7 +62,7 @@ public class CustomSimVar implements SimVariable {
 	 * @param min - the minimum value.
 	 * @param max - the maximum value. 
 	 */
-	public CustomSimVar(String name, double[] probData, Double min, Double max) {
+	public CustomSimVar(String name, double[] probData, double min, double max) {
 		this.name=name; 
 		setDistirbution(probData, min,max); 
 	}
@@ -76,7 +76,7 @@ public class CustomSimVar implements SimVariable {
 	 * @param simLims - the distirbution limits; 
 	 * @param simLims 
 	 */
-	public CustomSimVar(String name, double[] probData, Double min, Double max, double[] simLims) {
+	public CustomSimVar(String name, double[] probData, double min, double max, double[] simLims) {
 		this.name=name; 
 		this.limits=simLims;
 		setDistirbution(probData, min,max); 
@@ -84,7 +84,7 @@ public class CustomSimVar implements SimVariable {
 	
 	/**
 	 */
-	public CustomSimVar(double[] probData, Double min, Double max) {
+	public CustomSimVar(double[] probData, double min, double max) {
 		setDistirbution(probData, min,max); 
 	}
 

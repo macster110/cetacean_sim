@@ -73,7 +73,13 @@ public class ProbDetMonteCarlo {
 	 */
 	private double[][] angles;
 	
-	
+	/**
+	 * A prefix whihc can be addded to progress reported. This allows users to keep a track of different 
+	 * simulations.
+	 */
+	private String prefix=""; 
+
+
 	/**
 	 * Constructor for the Monte Carlo simulation 
 	 */
@@ -210,7 +216,7 @@ public class ProbDetMonteCarlo {
 //				//print out some of the progress. 
 				if (j%5000==0) {
 					notifyStatusListeners(StatusListener.SIM_RUNNING, i, (j/(double) simSettings.nRuns) ); 
-					if (this.print)	System.out.println("Progress: Sim: " + i + " of "  + simSettings.nBootStraps 
+					if (this.print)	System.out.println(prefix + "Progress: Sim: " + i + " of "  + simSettings.nBootStraps 
 							+"   " + String.format("%.1f", (100.*j/(double) simSettings.nRuns)) + "%"); 
 //					System.out.println("Progress: Sim: " + i + " of "  + simSettings.nBootStraps 
 //							+"   " + String.format("%.1f", (100.*j/(double) simSettings.nRuns)) + "%" +  
@@ -560,25 +566,6 @@ public class ProbDetMonteCarlo {
 	}
 	
 	
-	
-	
-	
-	/**
-	 * Run the simulation without a GUI. 
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		ProbDetSimSettings simSettings = new ProbDetSimSettings(); 
-		//simSettings.simpleOdontocete.setUpAnimal(0, simSettings);
-		ProbDetMonteCarlo monteCarloSimulation = new ProbDetMonteCarlo(); 
-		
-		//now run the simulation 
-		monteCarloSimulation.setUpMonteCarlo(simSettings); 
-		monteCarloSimulation.runMonteCarlo(simSettings); 
-		
-	}
-	
-	
 //	/**
 //	 * A convenicne function for calling the simualtion from MATLAB. Creates a settings class and runs the simualtion. 
 //	 * @param vertMean - the mean vertical angle in RADIANS. 
@@ -626,6 +613,44 @@ public class ProbDetMonteCarlo {
 		if (angles==null) return null; 
 		else return angles; 
 	}
+	
+	/**
+	 * Get the prefix which is printed before progress reporting. 
+	 * @return the prefix string. 
+	 */
+	public String getPrefix() {
+		return prefix;
+	}
+
+
+	/**
+	 * Set the prefix string. This is printed before progress printing if the print
+	 * value is set to true. 
+	 * @param prefix - the string prefix for progress printing. 
+	 */
+	public void setPrefix(String prefix) {
+		this.prefix = prefix;
+	}
+	
+	
+	
+	
+	
+	/**
+	 * Run the simulation without a GUI. 
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		ProbDetSimSettings simSettings = new ProbDetSimSettings(); 
+		//simSettings.simpleOdontocete.setUpAnimal(0, simSettings);
+		ProbDetMonteCarlo monteCarloSimulation = new ProbDetMonteCarlo(); 
+		
+		//now run the simulation 
+		monteCarloSimulation.setUpMonteCarlo(simSettings); 
+		monteCarloSimulation.setPrefix("Test Sim:");
+		monteCarloSimulation.run(simSettings, true);
+	}
+	
 
 	
 }
