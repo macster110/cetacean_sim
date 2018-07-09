@@ -13,7 +13,16 @@ import reciever.SimpleHydrophoneArray;
  *
  */
 public class ProbDetSimSettings implements Cloneable {
-
+	
+	/**
+	 * Flag used by evenXy to distribute simulation points evenly in X and Y
+	 */
+	public final static int UNIFORM_XY = 0 ;
+	
+	/**
+	 * Flag used by evenXY to distribute simulation points so there is a uniform range distribution. 
+	 */
+	public final static int UNIFORM_HORZ_RANGE = 1; 
 
 	/**
 	 * The number of runs
@@ -24,6 +33,13 @@ public class ProbDetSimSettings implements Cloneable {
 	 * The number of bootstraps 
 	 */
 	public int nBootStraps=10;
+	
+	/**
+	 * True to use evenly distributed x y points. If false then the horizontal 
+	 * range is even. If set to true then there is no need to multiply the
+	 * probability of detection in 2D by the triangular step function. 
+	 */
+	public int evenXY=UNIFORM_XY;
 
 
 	/************Dimensions*************/
@@ -133,6 +149,7 @@ public class ProbDetSimSettings implements Cloneable {
 		System.out.println("General: ");
 		System.out.println("no. runs: "+ this.nRuns);
 		System.out.println("no. bootstraps: "+ this.nBootStraps);
+		System.out.println("even x y: "+ this.evenXY);
 		System.out.println("max range: "+ this.maxRange);
 		System.out.println("max depth: "+ this.minHeight);
 		System.out.println("range bin: "+ this.rangeBin);

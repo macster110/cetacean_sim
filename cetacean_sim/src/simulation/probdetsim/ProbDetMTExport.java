@@ -9,6 +9,7 @@ import com.jmatio.io.MatFileWriter;
 import com.jmatio.types.MLArray;
 import com.jmatio.types.MLChar;
 import com.jmatio.types.MLDouble;
+import com.jmatio.types.MLInt32;
 import com.jmatio.types.MLStructure;
 
 import animal.SimpleOdontocete;
@@ -132,6 +133,8 @@ public class ProbDetMTExport {
 			MLDouble maxDepth=(MLDouble) mlArrayRetrived.getField("maxdepth", 0);
 			MLDouble depthbin=(MLDouble) mlArrayRetrived.getField("depthbin", 0);
 			MLDouble rangebin=(MLDouble) mlArrayRetrived.getField("rangebin", 0);
+			MLInt32 evenXY=(MLInt32) mlArrayRetrived.getField("evenxy", 0);
+
 
 			MLDouble nBootStraps=(MLDouble) mlArrayRetrived.getField("n", 0);
 			MLDouble nRuns=(MLDouble) mlArrayRetrived.getField("N", 0);
@@ -175,6 +178,7 @@ public class ProbDetMTExport {
 			probDetSimSettings.rangeBin=rangebin.get(0).intValue();
 			probDetSimSettings.nBootStraps=nBootStraps.get(0).intValue();
 			probDetSimSettings.nRuns=nRuns.get(0).intValue();
+			probDetSimSettings.evenXY=evenXY.get(0).intValue(); 
 			
 			//noise
 			probDetSimSettings.noiseThreshold=thresh.get(0);
@@ -227,7 +231,6 @@ public class ProbDetMTExport {
 			return probDetSimSettings;
 
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -249,6 +252,9 @@ public class ProbDetMTExport {
 		mlStruct.setField("maxdepth", mlDouble(-settings.minHeight), 0);
 		mlStruct.setField("depthbin", mlDouble(settings.depthBin), 0);
 		mlStruct.setField("rangebin", mlDouble(settings.rangeBin), 0);
+		mlStruct.setField("evenxy", new MLInt32(null, new int[]{settings.evenXY}, 1), 0); //TODO
+
+		
 		mlStruct.setField("thresh", mlDouble(settings.noiseThreshold), 0);
 		mlStruct.setField("minhydrophones", mlDouble(settings.minRecievers), 0);
 		mlStruct.setField("hydrophones", new MLDouble(null, settings.recievers.getArrayXYZ()), 0);

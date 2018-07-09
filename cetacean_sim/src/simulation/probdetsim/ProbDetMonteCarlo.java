@@ -154,7 +154,15 @@ public class ProbDetMonteCarlo {
 				
 				//create random position for animal
 				bearing = Math.random()*2*Math.PI;
-				range = Math.random()*simSettings.maxRange;
+				
+				//calculate range either to have uniform distribution of ranges or
+				//to have even spacing between points in the x and y plane. 
+				if (simSettings.evenXY==ProbDetSimSettings.UNIFORM_HORZ_RANGE) 
+					range = Math.random()*simSettings.maxRange;
+				else if (simSettings.evenXY==ProbDetSimSettings.UNIFORM_XY) 
+					range = simSettings.maxRange * Math.sqrt(Math.random());
+				else range = Math.random()*simSettings.maxRange; //just in case something goes wrong in flags. 
+
 				//depth is from the animal depth distribution. 
 				depth = simSettings.simpleOdontocete.depthDistribution.getNextRandom(); 
 				

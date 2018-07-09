@@ -6,6 +6,7 @@ import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.materialicons.MaterialIcon;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
@@ -84,7 +85,9 @@ public class ProbDetSettingsPane extends BorderPane {
 	/**
 	 * The minimum number of recievers to ensonify
 	 */
-	private Spinner<Integer> minRecievers; 
+	private Spinner<Integer> minRecievers;
+
+	private CheckBox evenXY; 
 	
 	/**
 	 * Default width of the spinner. 
@@ -203,6 +206,10 @@ public class ProbDetSettingsPane extends BorderPane {
 		depthBin= new Spinner<Integer>(0,50000000,10,2); 
 		styleSpinner(depthBin);
 		mainPane.add(depthBin, 3, row);
+		
+		row++;
+		mainPane.add(evenXY = new CheckBox("Evenly spaced x and y points"), 0, row);
+		GridPane.setColumnSpan(evenXY, 3);
 		
 		/****Receiver****/
 
@@ -349,6 +356,9 @@ public class ProbDetSettingsPane extends BorderPane {
 		spreading.getValueFactory().setValue(((SimplePropogation) settings.propogation).spreading);
 		absorbption.getValueFactory().setValue(((SimplePropogation) settings.propogation).absorption);
 		
+		if (settings.evenXY==ProbDetSimSettings.UNIFORM_XY) this.evenXY.setSelected(true);
+		else evenXY.setSelected(false);
+		
 	}
 	
 	/**
@@ -370,6 +380,10 @@ public class ProbDetSettingsPane extends BorderPane {
 		settings.noiseThreshold=this.minNoise.getValue(); 
 		
 		settings.minRecievers=this.minRecievers.getValue();
+	
+		
+		if (evenXY.isSelected()) settings.evenXY=ProbDetSimSettings.UNIFORM_XY; 
+		else settings.evenXY=ProbDetSimSettings.UNIFORM_HORZ_RANGE; 
 		
 		//TODO - eventually propogation will have it's own pane etc. 
 		settings.propogation = new SimplePropogation(this.spreading.getValue(), this.absorbption.getValue());
