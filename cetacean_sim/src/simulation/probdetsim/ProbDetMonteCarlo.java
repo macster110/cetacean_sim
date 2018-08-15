@@ -189,8 +189,6 @@ public class ProbDetMonteCarlo {
 				for (int k=0; k<nRecievers; k++) {
 					//now have position of the animal position need to figure out what the source level, transmission loss due to
 					//beam profile and the transmission loss in general. 
-
-					//the 
 					recievedLevels[k] = sourceLevel+CetSimUtils.tranmissionTotalLoss(simSettings.recievers.getArrayXYZ()[k], 
 							animalPos, animalAngle, simSettings.simpleOdontocete.beamSurface, simSettings.propogation); 
 					if (recievedLevels[k]> simSettings.noiseThreshold){

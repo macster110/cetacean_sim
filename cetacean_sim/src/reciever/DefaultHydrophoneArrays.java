@@ -76,6 +76,25 @@ public class DefaultHydrophoneArrays {
         { 0.2065 +2.84,   0.0125-8.108,    -2.643}   
 	}; 		
 	
+	/**
+	 * The Meygen tidal turbine in the Pentalnd Firth. 
+	 */
+	public static double[][] meygenTurbines = new double[][] 
+	{
+		{3.54700000000000,	3.54700000000000,	-30.1220000000000},
+		{3.50400000000000,	3.44200000000000,	-30.2190000000000},
+		{3.60600000000000,	3.54500000000000,	-30.2590000000000},
+		{3.46300000000000,	3.58500000000000,	-30.2390000000000},
+		{3.54700000000000,	-3.54700000000000,	-30.1220000000000},
+		{3.60600000000000,	-3.54500000000000,	-30.2590000000000},
+		{3.50400000000000,	-3.44200000000000,	-30.2190000000000},
+		{3.46300000000000,	-3.58500000000000,	-30.2390000000000},
+		{-6.97500000000000,	0.0480000000000000,	-30.6900000000000},
+		{-6.86900000000000,	0.0480000000000000,	-30.7320000000000},
+		{-7.01300000000000,	0.0480000000000000	,-30.7320000000000},
+		{-6.94100000000000,	-0.0822000000000000	,-30.7110000000000},
+	}; 
+	
 	
 	/**
 	 * Get a list of default hydrophone arrays.
@@ -88,6 +107,8 @@ public class DefaultHydrophoneArrays {
 		 hydrophonesArrays.add(new SimpleHydrophoneArray("Vertical Array Long", VerticalArrayLong)); 
 		 hydrophonesArrays.add(new SimpleHydrophoneArray("Vertical Array Short", VerticalArrayShort)); 
 		 hydrophonesArrays.add(new SimpleHydrophoneArray("Vertical Array Long Quad", VerticalArrayLongQuad)); 
+		 hydrophonesArrays.add(new SimpleHydrophoneArray("Meygen Turbine", meygenTurbines)); 
+
 		 return hydrophonesArrays; 
 	}
 	
