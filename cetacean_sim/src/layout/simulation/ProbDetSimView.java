@@ -135,6 +135,8 @@ public class ProbDetSimView implements SimulationView {
 		//the reciever pane. 
 		this.recieverPane = new ArrayPane(); 
 		recieverPane.setParams(probDetSim.getProbDetSettings().recievers, false);
+		
+		setParams(probDetSim.getProbDetSettings());
 	}
 	
 	

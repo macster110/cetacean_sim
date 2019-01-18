@@ -4,14 +4,12 @@ import java.io.File;
 
 import cetaceanSim.CetSimControl;
 import de.jensd.fx.glyphs.GlyphsDude;
-import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.materialicons.MaterialIcon;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.Tooltip;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
@@ -59,7 +57,7 @@ public class CustomSimPane  implements SimTypePane {
 	/**
 	 * Constructor for the custom sim pane
 	 */
-	CustomSimPane(){
+	public CustomSimPane(){
 		//this.name=name;
 	}
 
@@ -154,11 +152,15 @@ public class CustomSimPane  implements SimTypePane {
 	@Override
 	public void setSimVariable(SimVariable simVar) {
 		CustomSimVar customSimVar=(CustomSimVar) simVar; 
+		
+//		System.out.println("Set Sim Variable: Custom sim variable: " + simVar + "  " + this );
 		if (customSimVar==null) {
 			customSimVar = new CustomSimVar(); 
 		}
+//		System.out.println("Set Sim Variable: Custom sim variable: " + simVar +  " min: " +customSimVar.getMin() +" max: " + customSimVar.getMax()+ "  " + this );
+
 		this.minSpinner.getValueFactory().setValue(customSimVar.getMin());
-		this.minSpinner.getValueFactory().setValue(customSimVar.getMax());
+		this.maxSpinner.getValueFactory().setValue(customSimVar.getMax());
 		this.probData=customSimVar.getProbData(); 
 	}
 
@@ -175,7 +177,11 @@ public class CustomSimPane  implements SimTypePane {
 
 	@Override
 	public SimVariable getSimVariable() {
-		if (probData==null) return new CustomSimVar(minSpinner.getValue(), maxSpinner.getValue()); 
+		if (probData==null) {
+//			System.out.println("HH: New custom sim variable: null"); 
+			return new CustomSimVar(minSpinner.getValue(), maxSpinner.getValue()); 
+		}
+//		System.out.println("HH: Create prob data: " + probData.length + "   " + probData[0]); 
 		return new CustomSimVar(probData, minSpinner.getValue(), maxSpinner.getValue()); 
 	}
 

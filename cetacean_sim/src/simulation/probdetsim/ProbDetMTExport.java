@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import com.jmatio.io.MatFileReader;
 import com.jmatio.io.MatFileWriter;
 import com.jmatio.types.MLArray;
 import com.jmatio.types.MLChar;
@@ -240,7 +239,7 @@ public class ProbDetMTExport {
 
 
 	/**
-	 * Convert the settings class to a structure compatible with MATLAb library  
+	 * Convert the settings class to a structure compatible with MATLAB library  
 	 * @param probDetSDimSettings - prob det sim settings 
 	 * @return structure representing settings. 
 	 */
@@ -282,7 +281,7 @@ public class ProbDetMTExport {
 		//horizontal angle 
 		mlStruct.setField("horzangle",  simVar2MLStrcut(null, settings.simpleOdontocete.horzAngle, new Radians2Degrees()),0); 
 
-		//TODO
+		//TODO - need to set multiple fields here. 
 		mlStruct.setField("vertangle",  simVar2MLStrcut(null, settings.simpleOdontocete.vertAngles.get(0), new Radians2Degrees()),0); 
 
 		mlStruct.setField("depthdist",  simVar2MLStrcut(null, settings.simpleOdontocete.depthDistribution),0); 

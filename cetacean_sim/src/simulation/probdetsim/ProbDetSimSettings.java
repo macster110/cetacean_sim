@@ -1,6 +1,8 @@
 package simulation.probdetsim;
 
 import animal.SimpleOdontocete;
+import detector.Detector;
+import detector.SimpleDetector;
 import propogation.Propogation;
 import propogation.SimplePropogation;
 import reciever.DefaultHydrophoneArrays;
@@ -8,7 +10,9 @@ import reciever.HydrophoneArray;
 import reciever.SimpleHydrophoneArray;
 
 /**
- * Probability of detection settings which can be serialized and saved 
+ * 
+ * Probability of detection settings which can be serialised and saved. 
+ * 
  * @author Jamie Macaulay	
  *
  */
@@ -82,8 +86,17 @@ public class ProbDetSimSettings implements Cloneable {
 
 	/****Noise to test****/
 
+	/**
+	 * The noise level 
+	 */
 	public double noiseThreshold = 100; //dB
-
+	
+	/****The Classifier***/
+	
+	/**
+	 * The detector
+	 */
+	public Detector detector = new SimpleDetector();  
 
 	/****The animal*****/
 
@@ -100,21 +113,22 @@ public class ProbDetSimSettings implements Cloneable {
 	}
 
 	/**
-	 * Create a settings class with intial settings values. Used primarily to call from MATLAB. 
-	 * @param simpleAnimal - animal calss
-	 * @param hydrophoneReceivers - list of hydrophone recievers
+	 * Create a settings class with initial settings values. Used primarily to call from MATLAB. 
+	 * @param simpleAnimal - animal class
+	 * @param hydrophoneReceivers - list of hydrophone recievers.
 	 * @param nRuns - the number of runs
 	 * @param nBootStraps - the number of bootstraps.
 	 * @param maxRange - the maximum range
 	 * @param maxDepth - the maximum depth
 	 * @param rangeBin - the number of range bins
 	 * @param depthBin - the number of depth bins
-	 * @param noiseThreshold - the noisethreshold in dB 
-	 * @param spreadingCoeff - the spreading coefficient using in (spreading coeff)*log10(range) + (absorption coeff)*R
-	 * @param absorptionCoeff - the absorption coefficient using in (spreading coeff)*log10(range) + (absorption coeff)*R
+	 * @param noiseThreshold - the noise threshold in dB 
+	 * @param spreadingCoeff - the spreading coefficient using in (spreading coefficient)*log10(range) + (absorption coefficient)*R
+	 * @param absorptionCoeff - the absorption coefficient using in (spreading coefficient)*log10(range) + (absorption coefficient)*R
 	 */
 	public ProbDetSimSettings(SimpleOdontocete simpleAnimal, double[][] hydrophoneReceivers, int nRuns, int nBootStraps,
-			double maxRange, double maxDepth, int rangeBin, int depthBin, double noiseThreshold, double spreadingCoeff, double absorptionCoeff){
+			double maxRange, double maxDepth, int rangeBin, int depthBin, double noiseThreshold, double spreadingCoeff, 
+			double absorptionCoeff){
 		this.simpleOdontocete=simpleAnimal;
 		this.recievers=new SimpleHydrophoneArray(hydrophoneReceivers); 
 		this.nRuns=nRuns; 
@@ -155,8 +169,6 @@ public class ProbDetSimSettings implements Cloneable {
 		System.out.println("range bin: "+ this.rangeBin);
 		System.out.println("depth bin: "+ this.depthBin);
 		System.out.println("noise threshold: "+ this.noiseThreshold);
-
-
 
 	}
 

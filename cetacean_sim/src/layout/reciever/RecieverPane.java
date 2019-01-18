@@ -12,8 +12,9 @@ import reciever.RecieverModel;
 
 /**
  * 
- * Pane which shows a list 
- * @author macst
+ * Pane which shows a list.
+ *  
+ * @author Jamie Macaulay
  *
  */
 public class RecieverPane extends BorderPane {

@@ -107,6 +107,7 @@ public class SurveySimView implements SimulationView {
 		Label recieverTitle=new Label("Reciever Model");
 		animalTitle.setFont(new Font("Ubuntu",CetSimView.titleFontSize));
 		sidePane.getChildren().addAll(recieverTitle, recieverPane= new RecieverPane(surveySim.getRecieverManager(), cetSimView)); 
+
 	}
 
 

@@ -12,7 +12,8 @@ import utils.SurfaceData;
 import utils.SurfaceUtils;
 
 /**
- * Very simple clicking odontocete for probability of detection simulations 
+ * Very simple clicking odontocete for probability of detection simulations.
+ * 
  * @author Jamie Macaulay
  *
  */
@@ -38,7 +39,7 @@ public class SimpleOdontocete {
 	public ArrayList<SimVariable> vertAngles = new ArrayList<SimVariable>(Arrays.asList(new NormalSimVariable("Vertical Angle", 0, Math.toRadians(21), new double[] {-10000,0})));
 	
 	//horizontal angle
-	public SimVariable horzAngle = new RandomSimVariable("Horizontal Angle", Math.toRadians(180), Math.toRadians(180));
+	public SimVariable horzAngle = new RandomSimVariable("Horizontal Angle", Math.toRadians(-180), Math.toRadians(180));
 	//orientation 
 	
 	//depth distribution
