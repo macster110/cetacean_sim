@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
+
+import detector.Detector;
 import simulation.StatusListener;
 import utils.CetSimUtils;
 import utils.Hist3;
@@ -177,8 +179,7 @@ public class ProbDetMonteCarlo {
 				
 				//calculate the horizontal anlfe of the animal 
 				horzAngle = simSettings.simpleOdontocete.horzAngle.getNextRandom();
-				
-
+			
 				animalAngle = new double[] {horzAngle, vertAngle};
 
 				//calculate the source level
@@ -191,7 +192,8 @@ public class ProbDetMonteCarlo {
 					//beam profile and the transmission loss in general. 
 					recievedLevels[k] = sourceLevel+CetSimUtils.tranmissionTotalLoss(simSettings.recievers.getArrayXYZ()[k], 
 							animalPos, animalAngle, simSettings.simpleOdontocete.beamSurface, simSettings.propogation); 
-					if (recievedLevels[k]> simSettings.noiseThreshold){
+					if (recievedLevels[k] > (simSettings.noise+simSettings.snrThreshold) &&
+							wasClassified(simSettings.detector, simSettings.snrThreshold)){
 						aboveThresh++;
 					}
 					meanRecievedLvl+=recievedLevels[k]; 
@@ -202,8 +204,7 @@ public class ProbDetMonteCarlo {
 				//now count the number of receiver levels that are above the 
 				simResults[j][0]=range; 
 				simResults[j][1]=depth; 
-
-
+			
 				if (aboveThresh>=simSettings.minRecievers) {
 					simResults[j][2]=1; 
 					//record angles if required. 
@@ -268,6 +269,21 @@ public class ProbDetMonteCarlo {
 		return 1; 
 	}
 	
+	/**
+	 * Works out the probability that a detection will be automatically classified based on 
+	 * it's SNR and return a true or false based on that probability. Will therefore give different
+	 * results on different class with the same input. 
+	 * @param detector - the detector object
+	 * @param SNR - the SNR
+	 * @return true of detector. False if not detected. 
+	 */
+	private boolean wasClassified(Detector detector, double SNR) {
+		//simSettings.detector.getProbClassified(SNR); 
+		double p = detector.getProbClassified(SNR);
+		double rand = Math.random(); 
+		if (rand>p) return false;
+		else return true; 
+	}
 	
 	
 	/**
@@ -303,7 +319,7 @@ public class ProbDetMonteCarlo {
 				//calc mean
 				mean=mean/results.size();
 				averageHist[i][j]=mean; 
-				//calc std;
+				//calc std
 				stdHist[i][j]=stdCalculator.evaluate(meanArray, mean); 
 			}
 		}

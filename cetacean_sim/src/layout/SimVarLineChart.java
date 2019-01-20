@@ -53,6 +53,10 @@ public class SimVarLineChart extends BorderPane{
 		
 		lineChart.getData().add(series);
 		
+		System.out.println("The chart series name is: " + simVariable.getName()); 
+		xAxis.setLabel(simVariable.getName());
+		yAxis.setLabel("Probability (Normalised)");
+		
 		double[] minMax = CetSimUtils.getMinAndMax(dataVals[0]); 
 		
 		double inset= Math.abs((minMax[1]-minMax[0])*0.2);

@@ -14,7 +14,6 @@ import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -22,7 +21,6 @@ import javafx.scene.text.Font;
 import layout.CetSimView;
 import layout.CustomSimPane;
 import layout.SimVarLineChart;
-import layout.SimVariablePane;
 import layout.utils.SettingsPane;
 import simulation.CustomSimVar;
 
@@ -46,7 +44,7 @@ public class SimpleDetectionPane extends BorderPane implements SettingsPane<Dete
 	private CheckBox perfectDetectorBox;
 
 	/**
-	 * The distirbution line chart
+	 * The distribution line chart
 	 */
 	private SimVarLineChart lineChart;
 
@@ -135,7 +133,7 @@ public class SimpleDetectionPane extends BorderPane implements SettingsPane<Dete
 
 
 	/**
-	 * Enable or disable the sim variable pane.
+	 * Enable or disable the sim-variable pane.
 	 * @param enable - true to enable
 	 */
 	private void enableSimVar(boolean enable) {
@@ -157,10 +155,10 @@ public class SimpleDetectionPane extends BorderPane implements SettingsPane<Dete
 	public void setParams(Detector settingsData, boolean clone) {
 		SimpleDetector simpleDetector = (SimpleDetector) settingsData; 
 	
-		System.out.println("Set params: " + simpleDetector.getDetectoDistribution() 
-		+ " MIN: " + simpleDetector.getDetectoDistribution().getMin()+ " MAX: " + simpleDetector.getDetectoDistribution().getMax()); 
+		System.out.println("Set params: " + simpleDetector.getDetectionDistribution() 
+		+ " MIN: " + simpleDetector.getDetectionDistribution().getMin()+ " MAX: " + simpleDetector.getDetectionDistribution().getMax()); 
 		
-		customSimPane.setSimVariable(simpleDetector.getDetectoDistribution());
+		customSimPane.setSimVariable(simpleDetector.getDetectionDistribution());
 		
 		//customSimPane.setSimVariable(simpleDetector.getDetectoDistribution());
 		perfectDetectorBox.setSelected(simpleDetector.isPerfectDetector());

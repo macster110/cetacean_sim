@@ -300,7 +300,7 @@ public class SimVariablePane extends BorderPane {
 	public void setSimVariable(SimVariable simVar) {
 
 		//find which type of var to set. 
-		DistributionType distType = simVar.getType(); 
+//		DistributionType distType = simVar.getType(); 
 
 		//System.out.println(simVar.getName() + " " + simVar.getType());
 

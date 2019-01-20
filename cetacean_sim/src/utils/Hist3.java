@@ -2,6 +2,7 @@ package utils;
 
 /**
  * Holds a 3D histogram of data. 
+ * 
  * @author Jamie Macaulay
  *
  */
@@ -93,6 +94,9 @@ public class Hist3 {
 				if (findValue==null) histogram[i][j]=histcount; //just standard histogram 
 				else  {
 					if (histcount==0) histogram[i][j]=0;
+					//Note: Do not divide this by the bin number because this negates the depth distribution. i.e. dividing a small
+					//number of sim results with a small number of sim attempts makes a much bigger number. Must divide 
+					//by simResults.length to maintain fair comparison across bins. 
 					else histogram[i][j]=histvalue/ (double) simResults.length; //the percentage of values which equal findValue;
 				}
 			}

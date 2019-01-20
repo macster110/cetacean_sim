@@ -27,13 +27,40 @@ public class SimpleDetector implements Detector {
 	/**
 	 * Custom simulation variable. 
 	 */
-	private CustomSimVar simVar = new CustomSimVar("Detection probability", defaultDetProb, 0, 100); 
+	private CustomSimVar simVar = new CustomSimVar("SNR", defaultDetProb, 0, 110); 
+	
+	/**
+	 * Constructor for a simple detector
+	 * @param probDet - the detection efficiency with equal sized bins between minSNR and maxSNR
+	 * @param minSNR - the minimum signal to noise ratio ofg probDet
+	 * @param maxSNR - the maximum signal to noise ratio ofg probDet
+	 * @param perfDet - true for a perfect detector (note if true negates the previous variables)
+	 */
+	public SimpleDetector(double[] probDet, double minSNR, double maxSNR, boolean perfDet) {
+		simVar = new CustomSimVar("SNR", probDet, minSNR, maxSNR); 
+		this.perfectDetector=perfDet;
+	}
+
+	
+	public SimpleDetector() {
+		//nothing to set. 
+	}
+	
+	/**
+	 * Constructor for the a SImple detector
+	 * @param customSimVar - the detection efficiency versus SNR
+	 * @param perfectDetector - true to be a perfect detector (negating customSimVar).
+	 */
+	public SimpleDetector(SimVariable customSimVar, boolean perfectDetector) {
+		setDetectorDistribution(customSimVar);
+		setPerfectDetector(perfectDetector);
+	}
 
 	
 	@Override
 	public double getProbClassified(double SNR) {
 		if (perfectDetector) return 1.; //it's a perfect detector, p = 1. 
-		return simVar.getNextRandom(); //get probability from distribution. 
+		return simVar.getProbability(SNR); //get probability from distribution. 
 	}
 
 	/**
@@ -64,8 +91,15 @@ public class SimpleDetector implements Detector {
 	 * Set the detector distribution. 
 	 * @return customSimVar - the simulation variable. 
 	 */
-	public CustomSimVar getDetectoDistribution() {
+	public CustomSimVar getDetectionDistribution() {
 		return this.simVar;
+	}
+	
+	@Override 
+	public String toString() {
+		if (perfectDetector) return "Perfect detector!"; 
+		else return "Simple detector: prob. det. from  "+  simVar.getProbData()[0] 
+				+ " to "+ simVar.getProbData()[simVar.getProbData().length-1];
 	}
 	
 }

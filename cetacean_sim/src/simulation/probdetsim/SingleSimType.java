@@ -8,7 +8,7 @@ import simulation.probdetsim.ProbDetMonteCarlo.ProbDetResult;
 public class SingleSimType implements ProbDetSimType {
 
 	/**
-	 * The curerent type of simualtion. 
+	 * The current type of simulation. 
 	 */
 	private ProbDetSim probDetSim;
 

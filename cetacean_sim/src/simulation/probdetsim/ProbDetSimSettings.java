@@ -89,7 +89,12 @@ public class ProbDetSimSettings implements Cloneable {
 	/**
 	 * The noise level 
 	 */
-	public double noiseThreshold = 100; //dB
+	public double noise = 85; //dB re 1uPa
+	
+	/**
+	 * the SNR threshold for a click
+	 */
+	public double snrThreshold = 16; //dB 
 	
 	/****The Classifier***/
 	
@@ -98,7 +103,7 @@ public class ProbDetSimSettings implements Cloneable {
 	 */
 	public Detector detector = new SimpleDetector();  
 
-	/****The animal*****/
+	/****The Animal*****/
 
 	/**
 	 * The animal model
@@ -115,19 +120,20 @@ public class ProbDetSimSettings implements Cloneable {
 	/**
 	 * Create a settings class with initial settings values. Used primarily to call from MATLAB. 
 	 * @param simpleAnimal - animal class
-	 * @param hydrophoneReceivers - list of hydrophone recievers.
+	 * @param hydrophoneReceivers - list of hydrophone receivers.
 	 * @param nRuns - the number of runs
 	 * @param nBootStraps - the number of bootstraps.
 	 * @param maxRange - the maximum range
 	 * @param maxDepth - the maximum depth
 	 * @param rangeBin - the number of range bins
 	 * @param depthBin - the number of depth bins
-	 * @param noiseThreshold - the noise threshold in dB 
+	 * @param noise - the noise threshold in dB re 1uPa
+	 * @param snr - the minimum signal to noise ratio required in dB
 	 * @param spreadingCoeff - the spreading coefficient using in (spreading coefficient)*log10(range) + (absorption coefficient)*R
 	 * @param absorptionCoeff - the absorption coefficient using in (spreading coefficient)*log10(range) + (absorption coefficient)*R
 	 */
 	public ProbDetSimSettings(SimpleOdontocete simpleAnimal, double[][] hydrophoneReceivers, int nRuns, int nBootStraps,
-			double maxRange, double maxDepth, int rangeBin, int depthBin, double noiseThreshold, double spreadingCoeff, 
+			double maxRange, double maxDepth, int rangeBin, int depthBin, double noise, double snrThresh, double spreadingCoeff, 
 			double absorptionCoeff){
 		this.simpleOdontocete=simpleAnimal;
 		this.recievers=new SimpleHydrophoneArray(hydrophoneReceivers); 
@@ -137,7 +143,8 @@ public class ProbDetSimSettings implements Cloneable {
 		this.minHeight=maxDepth; 
 		this.rangeBin=rangeBin;
 		this.depthBin=depthBin;
-		this.noiseThreshold=noiseThreshold;
+		this.noise=noise;
+		this.snrThreshold=snrThresh;
 		this.propogation=new SimplePropogation(spreadingCoeff, absorptionCoeff);
 	}
 	
@@ -159,6 +166,8 @@ public class ProbDetSimSettings implements Cloneable {
 		System.out.println("---------------");
 		System.out.println("Propogation: ");
 		System.out.println(propogation.toString()); 
+		System.out.println("Detection Efficiency: ");
+		System.out.println(detector.toString()); 
 		System.out.println("---------------");
 		System.out.println("General: ");
 		System.out.println("no. runs: "+ this.nRuns);
@@ -168,7 +177,7 @@ public class ProbDetSimSettings implements Cloneable {
 		System.out.println("max depth: "+ this.minHeight);
 		System.out.println("range bin: "+ this.rangeBin);
 		System.out.println("depth bin: "+ this.depthBin);
-		System.out.println("noise threshold: "+ this.noiseThreshold);
+		System.out.println("noise threshold: "+ this.noise);
 
 	}
 

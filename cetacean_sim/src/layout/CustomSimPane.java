@@ -6,6 +6,8 @@ import cetaceanSim.CetSimControl;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.materialicons.MaterialIcon;
 import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
@@ -125,14 +127,26 @@ public class CustomSimPane  implements SimTypePane {
 		return false; 
 	}
 	
+	private void showAlertDialog() {
+		Alert alert = new Alert(AlertType.INFORMATION);
+		alert.setTitle("Feature not yet supported in the GUI");
+		alert.setHeaderText("Information Alert");
+		String s ="This feature is not yet supported. On the TODO list";
+		alert.setContentText(s);
+		alert.show();
+	}
+	
+	
 	private boolean loadCSV(File selectedFile) {
-		//TODO
+		//TODO - need to implement importing of data. 
+		showAlertDialog();
 		return false; 
 	}
 	
 	
 	private boolean loadMAT(File selectedFile) {
-		//TODO
+		//TODO - need to implement importing of data. 
+		showAlertDialog();
 		return false; 
 	}
 
@@ -162,6 +176,7 @@ public class CustomSimPane  implements SimTypePane {
 		this.minSpinner.getValueFactory().setValue(customSimVar.getMin());
 		this.maxSpinner.getValueFactory().setValue(customSimVar.getMax());
 		this.probData=customSimVar.getProbData(); 
+		this.name= customSimVar.getName();
 	}
 
 	@Override
@@ -178,11 +193,11 @@ public class CustomSimPane  implements SimTypePane {
 	@Override
 	public SimVariable getSimVariable() {
 		if (probData==null) {
-//			System.out.println("HH: New custom sim variable: null"); 
+
 			return new CustomSimVar(minSpinner.getValue(), maxSpinner.getValue()); 
 		}
-//		System.out.println("HH: Create prob data: " + probData.length + "   " + probData[0]); 
-		return new CustomSimVar(probData, minSpinner.getValue(), maxSpinner.getValue()); 
+		System.out.println("HH: Create prob data: " + probData.length + "   " + probData[0]); 
+		return new CustomSimVar(this.name, probData, minSpinner.getValue(), maxSpinner.getValue()); 
 	}
 
 

@@ -23,6 +23,7 @@ import layout.detector.SimpleDetectionPane;
 import layout.propogation.SimplePropogationPane;
 import simulation.probdetsim.ProbDetSim;
 import simulation.probdetsim.ProbDetSimSettings;
+import simulation.probdetsim.ProbDetSimType;
 
 /**
  * Settings pane for the probability of detection
@@ -72,7 +73,7 @@ public class ProbDetSettingsPane extends BorderPane {
 	private Spinner<Double> absorbption;
 
 	/**
-	 * Reference to the porbability of detection view. 
+	 * Reference to the probability of detection view. 
 	 */
 	private ProbDetSim probDetSim;
 	
@@ -82,10 +83,13 @@ public class ProbDetSettingsPane extends BorderPane {
 	private BorderPane probDetTypeHolder;
 
 	/**
-	 * The minimum number of recievers to ensonify
+	 * The minimum number of receivers to ensonify
 	 */
 	private Spinner<Integer> minRecievers;
 
+	/**
+	 * Check box for the distribution of random points, even in Cartesian or even in polar co-ordinates. 
+	 */
 	private CheckBox evenXY;
 
 	/**
@@ -96,7 +100,12 @@ public class ProbDetSettingsPane extends BorderPane {
 	/**
 	 * The simple detection pane. 
 	 */
-	private SimpleDetectionPane detectorPane; 
+	private SimpleDetectionPane detectorPane;
+
+	/**
+	 * The signal to noise ratio required for a detection.
+	 */
+	private Spinner<Double> snrNoise; 
 	
 	/**
 	 * Default width of the spinner. 
@@ -138,12 +147,13 @@ public class ProbDetSettingsPane extends BorderPane {
 		} 
 		simTypes.setOnAction((action)->{
 			probDetSim.setSimIndex(simTypes.getSelectionModel().getSelectedIndex()); 
-		
 			probDetTypeHolder.setCenter(probDetSim.getCurrentSimType().getSettingsNode());
+			enableControls();
 		}); 
 		simTypes.getSelectionModel().select(probDetSim.getProbDetTypeIndex());
 		row++;
 		
+
 		//import button
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Open Resource File");
@@ -269,15 +279,21 @@ public class ProbDetSettingsPane extends BorderPane {
 
 		row++; 
 		mainPane.add(new Label("Noise Threshold"), 0, row);
-
 		minNoise = new Spinner<Double>(0.,300.,100.,1.); 
 		mainPane.add(minNoise, 1, row);
 		styleSpinner(minNoise);
 		
 		Label noiseUnits =new Label(SimpleOdontocetePane.dB); 
-		GridPane.setRowSpan(noiseUnits, 2);
+		GridPane.setColumnSpan(noiseUnits, 2);
 		mainPane.add(noiseUnits, 2, row);
+		
+		row++;
+		mainPane.add(new Label("SNR Threshold"), 0, row);
 
+		snrNoise = new Spinner<Double>(0.,300.,100.,1.); 
+		mainPane.add(snrNoise, 1, row);
+		styleSpinner(snrNoise);
+		mainPane.add(new Label("dB"), 2, row);
 		
 		/*******Animal*******/
 		row++; 
@@ -309,12 +325,28 @@ public class ProbDetSettingsPane extends BorderPane {
 
 		VBox sidePane = new VBox(); 
 		sidePane.setSpacing(5);
-		sidePane.getChildren().add(mainPane); 
+		sidePane.getChildren().add(mainPane);
+		
+		enableControls();
 		
 		return sidePane; 
 
 	}
 	
+	/**
+	 * Enable and disable controls based on current settings
+	 */
+	private void enableControls() {
+		
+		if (probDetSim.getCurrentSimType().getName()=="Noise Variation") {
+			this.minNoise.setDisable(true);
+		}
+		else {
+			this.minNoise.setDisable(false);
+		}
+		
+	}
+
 	/**
 	 * Set default spinner look and size. 
 	 * @param spinner - the spinner to set look and feel for. 
@@ -332,6 +364,7 @@ public class ProbDetSettingsPane extends BorderPane {
 	
 	/**
 	 * Set all parameter in the view. 
+	 * 
 	 * @param settings - the parameter class to set.
 	 */
 	public void setParams(ProbDetSimSettings settings) {
@@ -345,7 +378,9 @@ public class ProbDetSettingsPane extends BorderPane {
 		rangeBin.getValueFactory().setValue(settings.rangeBin);
 		maxRange.getValueFactory().setValue(settings.maxRange);
 		
-		minNoise.getValueFactory().setValue(settings.noiseThreshold);
+		minNoise.getValueFactory().setValue(settings.noise);
+		snrNoise.getValueFactory().setValue(settings.snrThreshold);
+
 		minRecievers.getValueFactory().setValue(settings.minRecievers);
 		
 		propogationPane.setParams(settings.propogation, false);
@@ -355,10 +390,13 @@ public class ProbDetSettingsPane extends BorderPane {
 		if (settings.evenXY==ProbDetSimSettings.UNIFORM_XY) this.evenXY.setSelected(true);
 		else evenXY.setSelected(false);
 		
+		enableControls() ;
+		
 	}
 	
 	/**
-	 * Get all parameters from the settings pane . 
+	 * Get all parameters from the settings pane.
+	 * 
 	 * @param settings - the parameter class to setting in
 	 * @return the changed parameter class. 
 	 */
@@ -373,8 +411,9 @@ public class ProbDetSettingsPane extends BorderPane {
 		settings.rangeBin=this.rangeBin.getValue();
 		settings.maxRange=this.maxRange.getValue();
 		
-		settings.noiseThreshold=this.minNoise.getValue(); 
-		
+		settings.noise=this.minNoise.getValue();
+		settings.snrThreshold=this.snrNoise.getValue(); 
+
 		settings.minRecievers=this.minRecievers.getValue();
 		
 		if (evenXY.isSelected()) settings.evenXY=ProbDetSimSettings.UNIFORM_XY; 

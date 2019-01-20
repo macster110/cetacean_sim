@@ -96,7 +96,7 @@ public class NoiseSimType implements ProbDetSimType {
 		
 			System.out.println("Calculating for values for noise " + noiseValues[i]); 
 
-			probDetSettings.noiseThreshold=noiseValues[i];
+			probDetSettings.noise=noiseValues[i];
 			
 			probDetSim.getMonteCarloSim().run(probDetSettings);
 			
