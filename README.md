@@ -17,11 +17,11 @@ Note:The GUI is still in Beta and some features have not been implemented.
 <center><img src="resources/screenshot.png" width="512"></center>
 An example of the CetSim GUI showing a finished probability of detection simulation. 
 
-# Builds #
+## Builds ##
 A .jar file is and bin file is located in the cetacean_sim_builds folder. Double click the bin file to start the GUI. 
 
-# MATLAB #
+## MATLAB ##
 Copy the .jar file into the same folder as the sim_prob_det_java.m function to use in MATLAB. Note that MATLAB should be running on Java 8 for function to work. clickmethod_settings_jm.m creates a default settings structure for input into sim_prob_det_java.m. This settings structure can also be imported using the CetSim GUI. 
 
-# Developer Notes #
+## Developer Notes ##
 CetSim is based on Java 8
