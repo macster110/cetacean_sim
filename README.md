@@ -1,5 +1,5 @@
 # CetSim
-A program to calculate the probability of detecting vocalisations of marine mammals at different ranges and depths
+A program to calculate the probability of detecting vocalisations of marine mammals at different ranges and depths.
 
 # Introduction #
 
@@ -16,6 +16,8 @@ Note:The GUI is still in Beta and some features have not been implemented.
 
 <center><img src="resources/screenshot.png" width="512"></center>
 An example of the CetSim GUI showing a finished probability of detection simulation. 
+
+Note: the CetSim GUI is in beta and some features still have to be implemented. 
 
 ## Builds ##
 A .jar file is and bin file is located in the cetacean_sim_builds folder. Double click the bin file to start the GUI. 
