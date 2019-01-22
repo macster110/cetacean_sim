@@ -7,7 +7,7 @@ When surveying any vocalising animal using passive acoustic monitoring one of th
 
 Frasier, K. E., Wiggins, S. M., Harris, D., Marques, T. A., Thomas, L., and Hildebrand J. A. (2016). “Delphinid echolocation click detection probability on near-seafloor sensors,” J. Acoust. Soc. Am. 140, 1918–1930. https://doi.org/10.1121/1.4962279
 
-A Mprobability of detection Monte Carlo simulation basically places an animal at a random point in space then draws it’s direction, depth, and source levels from pre-defined probability distributions. For every receiver in the simulation the received level is calculated and if it is above a threshold on a minimum number of receivers the animal is detected, otherwise it is not detected. This process is repeated many tens or hundreds of thousands of times. The proportion of positive detections in binned ranges and depth is then the probability of detection. 
+A probability of detection Monte Carlo simulation basically places an animal at a random point in space then draws it’s direction, depth, and source levels from pre-defined probability distributions. For every receiver in the simulation the received level is calculated and if it is above a threshold on a minimum number of receivers the animal is detected, otherwise it is not detected. This process is repeated many tens or hundreds of thousands of times. The proportion of positive detections in binned ranges and depth is then the probability of detection. 
 
 # CetSim #
 
