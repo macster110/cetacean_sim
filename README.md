@@ -14,6 +14,11 @@ A Mprobability of detection Monte Carlo simulation basically places an animal at
 CetSim is java library tom perform these simulations. Originally programmed in MATLAB simulations were taking 30 days. CetSim increases the speed of simulation by around 30 times. A MATLAB function can access the jar file allowing construction of scripts for data handling, plotting etc. CetSim also comes with it’s own JavaFX based GUI allowing users to play around with the simulation. Users can change settings, import and export settings in .mat file, run simualations and export the data as .mat files. 
 Note:The GUI is still in Beta and some features have not been implemented. 
 
-
 <center><img src="resources/screenshot.png" width="512"></center>
-An example of the program displaying a few thousand clips. 
+An example of the CetSim GUI showing a finished probability of detection simulation. 
+
+# Builds #
+A .jar file is and bin file is located in the cetacean_sim_builds folder. Double click the bin file to start the GUI. Copy the .jar file into the same folder as the sim_prob_det_java.m function to use in MATLAB. Note that MATLAB should be running on Java 8 for function to work. 
+
+# Developer Notes #
+CetSim is based on Java 8
