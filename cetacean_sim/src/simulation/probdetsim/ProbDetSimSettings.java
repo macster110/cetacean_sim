@@ -166,6 +166,7 @@ public class ProbDetSimSettings implements Cloneable {
 		System.out.println("---------------");
 		System.out.println("Propogation: ");
 		System.out.println(propogation.toString()); 
+		System.out.println("---------------");
 		System.out.println("Detection Efficiency: ");
 		System.out.println(detector.toString()); 
 		System.out.println("---------------");

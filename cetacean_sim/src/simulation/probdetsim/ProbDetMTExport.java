@@ -207,7 +207,8 @@ public class ProbDetMTExport {
 			//Hydrophones
 			HydrophoneArray hydrophoneArray =new SimpleHydrophoneArray(hydrophones.getArray()); 
 			probDetSimSettings.recievers = hydrophoneArray; 
-			
+			probDetSimSettings.minRecievers = minhydrophones.get(0).intValue();
+
 			//Propagation
 			SimplePropogation propogation = new SimplePropogation(spreading_coeff.get(0)
 					, abs_coeff.get(0)); 
@@ -294,7 +295,7 @@ public class ProbDetMTExport {
 		mlStruct.setField("minhydrophones", mlDouble(settings.minRecievers), 0);
 		mlStruct.setField("hydrophones", new MLDouble(null, settings.recievers.getArrayXYZ()), 0);
 		mlStruct.setField("spreading_coeff", mlDouble(((SimplePropogation) settings.propogation).getSpreadingCoeff()), 0);
-		mlStruct.setField("abs_coeff",  mlDouble(((SimplePropogation) settings.propogation).getSpreadingCoeff()), 0);
+		mlStruct.setField("abs_coeff",  mlDouble(((SimplePropogation) settings.propogation).getAbsorptionCoeff()), 0);
 		mlStruct.setField("n",  mlDouble(settings.nBootStraps), 0);
 		mlStruct.setField("N",  mlDouble(settings.nRuns), 0);
 		

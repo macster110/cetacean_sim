@@ -63,10 +63,14 @@ public class Hist3 {
 	}
 
 	/**
-	 * Generate a 3D histogram data. 
+	 * Generate a 3D histogram data. Either simply bins the data into a 2D histogram. If findValue is not null then
+	 * will find all points which are within 2D histogram and then results for which the third column is equals
+	 * findValue are found and returned as the percentage of total number of result sin that bin. 
+	 * 
 	 * @param simResults - 3D data
 	 * @param xbinEdges - edges of the x bins
 	 * @param ybinEdges - edges of the y bins. 
+	 * @param findValue - the value to find. 
 	 */
 	private double[][] generateHist3D(double[][] simResults, double[] xbinEdges, double[] ybinEdges, Double findValue) {
 		double[][] histogram = new double[xbinEdges.length-1][ybinEdges.length-1]; 
@@ -78,7 +82,7 @@ public class Hist3 {
 				histcount=0;
 				histvalue=0; 
 				for (int n=0; n<simResults.length; n++) {
-//					if (n%100==0) {
+//					if (n%1000==0) {
 //						System.out.println("Histograming: " + simResults[n][0] + " "+   simResults[n][1] + " " + simResults[n][2] + " " +(findValue!=null && findValue.doubleValue()==simResults[n][2]));
 //					}
 					if (simResults[n][0]>xbinEdges[i] && simResults[n][0]<=xbinEdges[i+1] &&

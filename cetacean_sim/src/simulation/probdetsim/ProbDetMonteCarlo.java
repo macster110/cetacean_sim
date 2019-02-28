@@ -187,13 +187,18 @@ public class ProbDetMonteCarlo {
 				
 				aboveThresh=0; 
 				meanRecievedLvl=0; 
+				double transloss; 
 				for (int k=0; k<nRecievers; k++) {
 					//now have position of the animal position need to figure out what the source level, transmission loss due to
 					//beam profile and the transmission loss in general. 
-					recievedLevels[k] = sourceLevel+CetSimUtils.tranmissionTotalLoss(simSettings.recievers.getArrayXYZ()[k], 
+					transloss = CetSimUtils.tranmissionTotalLoss(simSettings.recievers.getArrayXYZ()[k], 
 							animalPos, animalAngle, simSettings.simpleOdontocete.beamSurface, simSettings.propogation); 
+					recievedLevels[k] = sourceLevel+transloss;
+					
+					//System.out.println("Recieved level: " + recievedLevels[k] + "dB" + " srclevel: " + sourceLevel + " transloss: " + transloss);
 					if (recievedLevels[k] > (simSettings.noise+simSettings.snrThreshold) &&
-							wasClassified(simSettings.detector, simSettings.snrThreshold)){
+							wasClassified(simSettings.detector, recievedLevels[k]-simSettings.noise)){
+						//System.out.println("Was recieved: Recieved level: " + recievedLevels[k] + "dB" + " srclevel: " + sourceLevel + " transloss: " + transloss + "Min recievers: " +simSettings.minRecievers );
 						aboveThresh++;
 					}
 					meanRecievedLvl+=recievedLevels[k]; 
@@ -208,6 +213,7 @@ public class ProbDetMonteCarlo {
 				if (aboveThresh>=simSettings.minRecievers) {
 					simResults[j][2]=1; 
 					//record angles if required. 
+					//System.out.println("Positive: " + ndet); 
 					if (recordAngles && i==simSettings.nBootStraps-1) {
 						angles[ndet][0]=range; 
 						angles[ndet][1]=depth; 
@@ -242,6 +248,8 @@ public class ProbDetMonteCarlo {
 
 			//now must split these results into a 3D chart. 
 			results.add(new Hist3(simResults, this.xBinEdges, this.yBinEdges, new Double(1))); 
+			
+			
 			//printResult(results.get(i).getHistogram());
 
 		}
@@ -259,7 +267,7 @@ public class ProbDetMonteCarlo {
 		
 		//create the result object
 		this.result = new ProbDetResult(histResults, simSettings); 
-		
+				
 		//set the running flag to false. 
 		isRunning=false;
 		
@@ -281,6 +289,8 @@ public class ProbDetMonteCarlo {
 		//simSettings.detector.getProbClassified(SNR); 
 		double p = detector.getProbClassified(SNR);
 		double rand = Math.random(); 
+		
+		//System.out.println("SNR: " + SNR +" p: " + p);
 		if (rand>p) return false;
 		else return true; 
 	}
@@ -292,7 +302,10 @@ public class ProbDetMonteCarlo {
 	 */
 	private Hist3[] averageHistograms(ArrayList<Hist3> results) {
 		
-		if (results==null) return null; 
+		if (results==null) {
+			System.out.println("averageHistograms: The results are NULL"); 
+			return null; 
+		}
 		
 		int histWidth=results.get(0).getHistogram().length; 
 		int histHeight=results.get(0).getHistogram()[0].length; 

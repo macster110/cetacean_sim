@@ -42,15 +42,15 @@ public class CetSimUtils extends SurfaceUtils {
 		
 		double range = distance(recieverPos, animalPos); 
 		
-		//System.out.println("Distance: " + range); 
+//		System.out.println("Distance: " + range); 
 		
-		//find the absolute horizontal and verical angle between the reciever and the animal. 
+		//find the absolute horizontal and vertical angle between the reciever and the animal. 
 		
 		//horizontal angle,
-		//just as many trig functions is you do this vector formalisation
+		//just as many trig functions if you do this vector formalisation
 		double horzAngle=Math.atan2(recieverPos[0]-animalPos[0], recieverPos[1]-animalPos[1]);
 		horzAngle=MathUtils.normalizeAngle(horzAngle+animalAngle[0], 0.0); //normalise the angle between -Pi and Pi
-		//System.out.println("horzAngle: " + Math.toDegrees(horzAngle)); 
+//		System.out.println("horzAngle: " + Math.toDegrees(horzAngle)); 
 
 		
 		//vertical angle
@@ -60,9 +60,9 @@ public class CetSimUtils extends SurfaceUtils {
 		if (vertAngle<-Math.PI/2 || vertAngle>Math.PI/2) {
 			vertAngle= (vertAngle<-Math.PI/2 ? -Math.PI: Math.PI) - vertAngle; 
 		}		
-		//System.out.println("vertAngle: " + Math.toDegrees(vertAngle)); 
+//		System.out.println("vertAngle: " + Math.toDegrees(vertAngle)); 
 		
-		//System.out.println("Find sureface for " + ((float) horzAngle));
+		//System.out.println("Find surface for " + ((float) horzAngle));
 	
 		return animalBeamProfile.grid.interpolate((float) horzAngle, (float) vertAngle); 
 	}

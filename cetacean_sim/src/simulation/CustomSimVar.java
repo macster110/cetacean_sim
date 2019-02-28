@@ -104,6 +104,8 @@ public class CustomSimVar implements SimVariable {
 	 * @param value - the x axis value. 
 	 */
 	public double getProbability(double value) {
+		if (value>max) return discreteProbabilities[discreteProbabilities.length-1]; 
+		else if (value<min) return discreteProbabilities[0]; 
 		return interpFunction.value(value);
 	}
 
