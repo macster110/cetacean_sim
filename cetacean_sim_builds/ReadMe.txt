@@ -6,3 +6,8 @@ You must have java 8 installed for this to work, ideally version 191. You may ne
 in the .bar file to your java 8 jre or jdk folder. To do this open the file in notepad, change the path, 
 save and then double click the file again 
 
+cetsim_0.9 - first build
+
+
+cetsim_0.91 - fixed some .mat import bugs. 
+
