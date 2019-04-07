@@ -12,7 +12,6 @@ import com.jmatio.types.MLInt32;
 import com.jmatio.types.MLStructure;
 
 import animal.SimpleOdontocete;
-import detector.Detector;
 import detector.SimpleDetector;
 import edu.mines.jtk.dsp.Sampling;
 import javafx.scene.control.Alert;
@@ -75,6 +74,8 @@ public class ProbDetMTExport {
 			MLStructure probDetStdStruct = surfaceToStruct(probResult.get(i).probSurfaceMean,  "prob_det_std");
 			MLStructure settingsStruct = settingsToStrcut(probResult.get(i).simSettings);
 
+			System.out.println("Noise: " + probResult.get(i).simSettings.noise); 
+			
 			mlStruct.setField("prob_det_mean", probDetMeanStruct, i);
 			mlStruct.setField("prob_det_std", probDetStdStruct, i);
 			mlStruct.setField("settings", settingsStruct, i);

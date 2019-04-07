@@ -23,10 +23,10 @@ import layout.detector.SimpleDetectionPane;
 import layout.propogation.SimplePropogationPane;
 import simulation.probdetsim.ProbDetSim;
 import simulation.probdetsim.ProbDetSimSettings;
-import simulation.probdetsim.ProbDetSimType;
 
 /**
- * Settings pane for the probability of detection
+ * Settings pane for the probability of detection.
+ * 
  * @author Jamie Macaulay 
  *
  */

@@ -181,6 +181,17 @@ public class ProbDetSimSettings implements Cloneable {
 		System.out.println("noise threshold: "+ this.noise);
 
 	}
+	
+	@Override 
+	public ProbDetSimSettings clone() {
+		try {
+			return (ProbDetSimSettings) super.clone();
+		}
+		catch (CloneNotSupportedException ex) {
+			ex.printStackTrace();
+		}
+		return null;
+	}
 
 
 

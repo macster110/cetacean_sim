@@ -98,7 +98,7 @@ public class NoiseSimType implements ProbDetSimType {
 
 			probDetSettings.noise=noiseValues[i];
 			
-			probDetSim.getMonteCarloSim().run(probDetSettings);
+			probDetSim.getMonteCarloSim().run(probDetSettings.clone());
 			
 			if (probDetSim.getMonteCarloSim().isCancelled()) return null; 
 			
