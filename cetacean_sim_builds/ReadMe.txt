@@ -9,5 +9,5 @@ save and then double click the file again
 cetsim_0.9 - first build
 
 
-cetsim_0.91 - fixed some .mat import bugs. 
+cetsim_0.91 - fixed some .mat import bugs and noise values not woriting properly to settings when multiple simulations run 
 
