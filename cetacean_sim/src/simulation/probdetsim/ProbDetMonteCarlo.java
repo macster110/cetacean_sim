@@ -7,6 +7,7 @@ import java.util.Arrays;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 
 import detector.Detector;
+import simulation.RandomSimVariable;
 import simulation.StatusListener;
 import utils.CetSimUtils;
 import utils.Hist3;
@@ -114,6 +115,8 @@ public class ProbDetMonteCarlo {
 		//System.out.println("Is this cancelled? " + this.cancel); 
 		
 		notifyStatusListeners(StatusListener.SIM_STARTED, 0, 0 ); 
+		
+		simSettings.simpleOdontocete.depthDistribution = new RandomSimVariable("Depth", simSettings.minHeight, 0);
 
 		isRunning=true;
 		

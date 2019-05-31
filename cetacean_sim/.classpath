@@ -8,5 +8,6 @@
 	<classpathentry kind="lib" path="src/jars/fontawesomefx-8.9.jar"/>
 	<classpathentry kind="lib" path="src/jars/fxyz.jar"/>
 	<classpathentry kind="lib" path="src/jars/matfilerw-master-3.1.0.jar"/>
+	<classpathentry kind="lib" path="jars/Jama-1.0.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
