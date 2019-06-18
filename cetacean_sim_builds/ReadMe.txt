@@ -11,3 +11,5 @@ cetsim_0.9 - first build
 
 cetsim_0.91 - fixed some .mat import bugs and noise values not woriting properly to settings when multiple simulations run 
 
+
+cetsim_0.92 - fixed orientation bug when simulated animals are near vertical. Slightly changes probability of detection results. 
