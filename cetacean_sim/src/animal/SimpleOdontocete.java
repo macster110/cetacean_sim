@@ -23,10 +23,10 @@ public class SimpleOdontocete {
 	
 	/**
 	 * The beam profile. Non uniform points on the beam profile surface.
-	 * Order of each elements {horizontal angle (degrees), vertical angle (degrees), transmission loss dB}
-	 *  
+	 * Order of each elements {horizontal angle (degrees), vertical angl
+	 *  (degrees), transmission loss dB}
 	 */
-	private BeamProfile beamProfile = DefaultBeamProfiles.getDefaultBeams().get(2); 
+	private BeamProfile beamProfile = DefaultBeamProfiles.getDefaultBeams().get(0); 
 
 	/******Variables which are used *****/
 	
@@ -34,10 +34,10 @@ public class SimpleOdontocete {
 	public SurfaceData beamSurface;
 	
 	//source level
-	public SimVariable sourceLevel = null;//new NormalSimVariable("Source Level", 180, 10);
+	public SimVariable sourceLevel = new NormalSimVariable("Source Level", 180, 10);
 	
 	//orientation 
-	public ArrayList<SimVariable> vertAngles = new ArrayList<SimVariable>(Arrays.asList(new NormalSimVariable("Vertical Angle", +Math.PI/2, Math.toRadians(21), new double[] {-10000,0})));
+	public ArrayList<SimVariable> vertAngles = new ArrayList<SimVariable>(Arrays.asList(new NormalSimVariable("Vertical Angle", 0, Math.toRadians(21), new double[] {-10000,0})));
 	
 	//horizontal angle
 	public SimVariable horzAngle = new RandomSimVariable("Horizontal Angle", Math.toRadians(-180), Math.toRadians(180));
@@ -49,7 +49,7 @@ public class SimpleOdontocete {
 	/************************************/
 	
 	/**
-	 * Constructor for the animal. 
+	 * Constructor for a default animal. 
 	 */
 	public SimpleOdontocete () {
 		beamSurface = SurfaceUtils.generateSurface(beamProfile.getRawBeamMeasurments());

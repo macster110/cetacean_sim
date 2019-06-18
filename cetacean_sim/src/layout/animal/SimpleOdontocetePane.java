@@ -163,7 +163,7 @@ public class SimpleOdontocetePane extends BorderPane implements SettingsPane<Sim
 		//if (clone) this.simpleOdontocete=settingsData.clone();		
 		//set the controls. 
 		
-		System.out.println("SimpleOdontocetesPane.Settings the params: "+ settingsData.vertAngles.size());
+		System.out.println("SimpleOdontocetesPane.Settings the params: "+ settingsData.vertAngles.size() + "  SRC: " + settingsData.sourceLevel);
 		
 		this.horzAngle.setSimVariable(settingsData.horzAngle); 
 		this.vertAngle.setSimVariables(settingsData.vertAngles); 

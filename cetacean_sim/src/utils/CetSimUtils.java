@@ -30,7 +30,7 @@ public class CetSimUtils extends SurfaceUtils {
 		return Math.sqrt(Math.pow(point1[0]-point2[0],2) + Math.pow(point1[1]-point2[1],2) + Math.pow(point1[2]-point2[2],2)); 
 	}
 	
-
+	@Deprecated
 	public static double[] getRelativeAngle(double[] recieverPos, double[] animalPos, double[] animalAngle) {
 		
 		double range = distance(recieverPos, animalPos); 
@@ -53,6 +53,7 @@ public class CetSimUtils extends SurfaceUtils {
 		if (vertAngle<-Math.PI/2 || vertAngle>Math.PI/2) {
 			vertAngle= (vertAngle<-Math.PI/2 ? -Math.PI: Math.PI) - vertAngle; 
 		}		
+		
 		vertAngle = MathUtils.normalizeAngle(vertAngle, 0.);
 		
 		double[] relAngle = {horzAngle, vertAngle};
@@ -68,7 +69,7 @@ public class CetSimUtils extends SurfaceUtils {
 	 */
 	public static double beamLoss(double[] recieverPos, double[] animalPos, double[] animalAngle, SurfaceData animalBeamProfile) {
 		
-		double range = distance(recieverPos, animalPos); 
+		//double range = distance(recieverPos, animalPos); 
 		
 //		System.out.println("Distance: " + range); 
 		
@@ -90,11 +91,12 @@ public class CetSimUtils extends SurfaceUtils {
 //		}		
 //		System.out.println("vertAngle: " + Math.toDegrees(vertAngle)); 
 //		animalAngle[0] = Math.PI; 
-		animalAngle[1] = 0;
+//		animalAngle[1] = 0;
+		
 		double[] relativeAngles = TestAngles.getRelativeAngles(recieverPos, animalPos, animalAngle);
 //		relativeAngles[0] = relativeAngles[1] = 0;
 		
-		//System.out.println("Find surface for " + ((float) horzAngle));
+		//System.out.println("Find surface for horz: " + ((float) relativeAngles[0]) + "  vert: " + (float) relativeAngles[1]);
 	
 		return animalBeamProfile.grid.interpolate((float) relativeAngles[0], (float) relativeAngles[1]); 
 	}

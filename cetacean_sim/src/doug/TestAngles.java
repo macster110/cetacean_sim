@@ -1,7 +1,5 @@
 package doug;
 
-import java.text.DecimalFormat;
-
 import Jama.Matrix;
 import utils.CetSimUtils;
 
@@ -26,6 +24,13 @@ public class TestAngles {
 
 	}
 	
+	/**
+	 * Get relative angles between a rotated animal and receiver. 
+	 * @param hPhone - the receiver position in Cartesian 3D [x, y, z] where z is height (not depth)
+	 * @param animalPos - the receiver position in Cartesian 3D [x, y, z] where z is height (not depth) 
+	 * @param animalAngles - the horizontal and vertical angle [horz, vert] in RADIANS
+	 * @return the arelative horz and vertical angle in RADIANS. 
+	 */
 	public static double[] getRelativeAngles(double[] hPhone, double[] animalPos, double[] animalAngles) {
 		
 		Matrix m = getRotationMatrixQ(animalAngles);

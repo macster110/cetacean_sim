@@ -323,6 +323,8 @@ public class SimVariablePane extends BorderPane {
 //			break;
 //		}
 		//System.out.println("NamE: " + simVar.getName() + " " + simVar.getType() +  " index: "  + index); 
+		
+		//xsaSystem.out.println("TEST: " + simChoiceBox + "  " + simVar);
 
 		simChoiceBox.getSelectionModel().select(simVar.getType().toString());		
 		

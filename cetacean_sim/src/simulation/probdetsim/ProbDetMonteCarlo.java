@@ -116,7 +116,7 @@ public class ProbDetMonteCarlo {
 		
 		notifyStatusListeners(StatusListener.SIM_STARTED, 0, 0 ); 
 		
-		simSettings.simpleOdontocete.depthDistribution = new RandomSimVariable("Depth", simSettings.minHeight, 0);
+		//simSettings.simpleOdontocete.depthDistribution = new RandomSimVariable("Depth", simSettings.minHeight, 0);
 
 		isRunning=true;
 		

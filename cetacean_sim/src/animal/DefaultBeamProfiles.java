@@ -33,7 +33,7 @@ public class DefaultBeamProfiles {
 	
 	
 	/**
-	 * The beam profile of a harbour porpoise from Koblitz et al. 2012. 
+	 * The beam profile of a harbour porpoise from Koblitz et al. 2012 with a back end added for fun.
 	 */
 	public static double[][] porpBackEnd={
 			{Math.toRadians(-180), 	Math.toRadians(-90),	 -50},
