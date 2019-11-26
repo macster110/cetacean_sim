@@ -44,7 +44,7 @@ public class DougsMonteCarlo {
 
 	private void run() {
 		SimpleOdontocete animal = new SimpleOdontocete();
-		animal.setBeamProfile(DefaultBeamProfiles.getDefaultBeams().get(0));
+		animal.setBeamProfile(new DefaultBeamProfiles().getDefaultBeams().get(0));
 		animal.sourceLevel = new NormalSimVariable("Source Level", sourceLevel, 0);
 		
 		

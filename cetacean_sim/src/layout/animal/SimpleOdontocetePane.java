@@ -115,7 +115,7 @@ public class SimpleOdontocetePane extends BorderPane implements SettingsPane<Sim
 		beamProfile.setPadding(new Insets(5,5,5,5)); 
 
 		ComboBox<String> beamProfileBox = new ComboBox<String>();
-		defaultBeamProfiles = DefaultBeamProfiles.getDefaultBeams();
+		defaultBeamProfiles = new DefaultBeamProfiles().getDefaultBeams();
 		for (int i=0; i<defaultBeamProfiles.size(); i++) {
 			beamProfileBox.getItems().add(defaultBeamProfiles.get(i).getName()); 
 		}

@@ -26,9 +26,12 @@ public class SimpleOdontocete {
 	 * Order of each elements {horizontal angle (degrees), vertical angl
 	 *  (degrees), transmission loss dB}
 	 */
-	private BeamProfile beamProfile = DefaultBeamProfiles.getDefaultBeams().get(0); 
 
 	/******Variables which are used *****/
+	
+	DefaultBeamProfiles defaultBeamProfiles = new DefaultBeamProfiles(); 
+	
+	BeamProfile beamProfile; 
 	
 	//beam surface
 	public SurfaceData beamSurface;
@@ -45,6 +48,8 @@ public class SimpleOdontocete {
 	
 	//depth distribution
 	public SimVariable depthDistribution = new RandomSimVariable("Depth", -200, 0);
+
+	private ArrayList<BeamProfile> beamProfiles;
 	
 	/************************************/
 	
@@ -52,7 +57,10 @@ public class SimpleOdontocete {
 	 * Constructor for a default animal. 
 	 */
 	public SimpleOdontocete () {
-		beamSurface = SurfaceUtils.generateSurface(beamProfile.getRawBeamMeasurments());
+		
+		beamProfiles = defaultBeamProfiles.getDefaultBeams(); 
+
+		beamSurface = SurfaceUtils.generateSurface(beamProfiles.get(0).getRawBeamMeasurments());
 	}
 	
 	/**
@@ -73,7 +81,7 @@ public class SimpleOdontocete {
 		//setup the beam profile
 		switch(beamType) {
 		case "porp":
-			beamProfile = DefaultBeamProfiles.getDefaultBeams().get(0); 
+			beamProfile = beamProfiles.get(0); 
 			break;
 		}
 		
