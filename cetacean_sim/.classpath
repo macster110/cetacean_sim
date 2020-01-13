@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.8.0_144"/>
 	<classpathentry kind="lib" path="src/jars/commons-math3-3.6.1.jar"/>
 	<classpathentry kind="lib" path="src/jars/controlsfx-8.40.11.jar"/>
 	<classpathentry kind="lib" path="src/jars/edu-mines-jtk-1.0.0.jar"/>
