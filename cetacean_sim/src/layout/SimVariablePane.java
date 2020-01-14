@@ -25,7 +25,6 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
-import layout.SimVariablePane.SimTypePane;
 import layout.simulation.ProbDetSettingsPane;
 import simulation.LogNormalSimVar;
 import simulation.NormalSimVariable;
@@ -36,7 +35,9 @@ import simulation.SimVariable.DistributionType;
 
 /** 
  * 
- * Pane win which a simulation varibale distribution can be selected and then the values fvor that distribution set. 
+ * Pane win which a simulation variable distribution can be selected and then the values
+ *  for that distribution set. 
+ *  
  * @author Jamie Macaulay 
  *
  */
@@ -99,6 +100,21 @@ public class SimVariablePane extends BorderPane {
 
 
 	/**
+	 * Constructor for sim varibale pane
+	 * @param name - the name of the variable 
+	 * @param units - the units. 
+	 * @param simVariablePanes -
+	 */
+	public SimVariablePane(String name,  String units, SimTypePane... simVariablePanes) {
+		this.name = name;
+		this.units=units; 
+		for (int i=0; i<simVariablePanes.length; i++) {
+			simVarTypePane.add(simVariablePanes[i]);
+		}
+		this.setCenter(createPane(DistributionType.CUSTOM));
+	}
+
+	/**
 	 * 
 	 * @param name
 	 */
@@ -149,7 +165,7 @@ public class SimVariablePane extends BorderPane {
 		this.setCenter(createPane(type)); 
 	}
 
-	
+
 	/**
 	 * Get sim limits from the pane. 
 	 * @return the limits of the sim. 
@@ -175,7 +191,7 @@ public class SimVariablePane extends BorderPane {
 		GridPane holder = new GridPane(); 
 		holder.setHgap(5);
 		holder.setVgap(5);
-		
+
 		int row=0; 
 
 		if (name!=null) {
@@ -191,8 +207,8 @@ public class SimVariablePane extends BorderPane {
 		BorderPane simHolder= new BorderPane(); 
 
 		simChoiceBox = new ChoiceBox<String>();
-		for (int i=0; i<DistributionType.values().length; i++) {
-			simChoiceBox.getItems().add(SimVariable.getSimVarName(DistributionType.values()[i]));
+		for (int i=0; i<simVarTypePane.size(); i++) {			
+			simChoiceBox.getItems().add(simVarTypePane.get(i).getSimVarType().toString()); 
 		}
 
 		simChoiceBox.setOnAction((action)->{
@@ -200,11 +216,11 @@ public class SimVariablePane extends BorderPane {
 			simHolder.setCenter(simVarTypePane.get(currentSimVarIndex).getPane());
 		});
 		simChoiceBox.getSelectionModel().select(getDistTypeIndex(type));
-		
+
 		// add all children 
 		hBox.setAlignment(Pos.CENTER_LEFT);
 		hBox.getChildren().addAll(simHolder, new Label(units)); 
-		
+
 		//button for showing chart
 		Button graphButton = new Button(); 
 		graphButton.setGraphic(GlyphsDude.createIcon(FontAwesomeIcon.LINE_CHART, "18"));
@@ -218,7 +234,7 @@ public class SimVariablePane extends BorderPane {
 		HBox limHBox = new HBox(); 
 		limHBox.setAlignment(Pos.CENTER_LEFT);
 		limHBox.setSpacing(5);
-		
+
 		//create section of the pane to input limits. 
 		minLim= new Spinner<Double>(-10000000.,10000000.,0.,5.); 
 		minLim.setEditable(true);
@@ -234,11 +250,14 @@ public class SimVariablePane extends BorderPane {
 				new Label("Max"), maxLim, new Label(this.limUnits));
 
 		//add everything together 
-		holder.add(simChoiceBox, 0, row);
-		holder.add(hBox, 1, row);
+		int column = 0;
+		if (simChoiceBox.getItems().size()>1) {
+			holder.add(simChoiceBox, 0, row);
+		}
+		holder.add(hBox, ++column, row);
 		GridPane.setHgrow(hBox, Priority.ALWAYS);
 		//GridPane.setRowSpan(hBox, 2);
-		holder.add(graphButton, 2, row);
+		holder.add(graphButton, ++column, row);
 		row++; 
 
 		if (showLims) {
@@ -246,7 +265,7 @@ public class SimVariablePane extends BorderPane {
 			GridPane.setColumnSpan(limHBox, 3);
 			row++; 
 		}
-		
+
 		//holder.setMaxWidth(350);
 
 		return holder; 
@@ -281,32 +300,35 @@ public class SimVariablePane extends BorderPane {
 	public void setSimVariable(SimVariable simVar) {
 
 		//find which type of var to set. 
-		DistributionType distType = simVar.getType(); 
+//		DistributionType distType = simVar.getType(); 
 
 		//System.out.println(simVar.getName() + " " + simVar.getType());
 
-		int index=0; 
-		switch (distType) {
-		case LOGNORMAL:
-			index=2; 
-			break;
-		case NORMAL:
-			index=1; 
-			break;
-		case UNIFORM:
-			index=0; 
-			break;
-		case CUSTOM:
-			index=3;
-			break;
-		default:
-			index=0; 
-			break;
-		}
+//		int index=0; 
+//		switch (distType) {
+//		case LOGNORMAL:
+//			index=2; 
+//			break;
+//		case NORMAL:
+//			index=1; 
+//			break;
+//		case UNIFORM:
+//			index=0; 
+//			break;
+//		case CUSTOM:
+//			index=3;
+//			break;
+//		default:
+//			index=0; 
+//			break;
+//		}
 		//System.out.println("NamE: " + simVar.getName() + " " + simVar.getType() +  " index: "  + index); 
+		
+		//xsaSystem.out.println("TEST: " + simChoiceBox + "  " + simVar);
 
-		simChoiceBox.getSelectionModel().select(index);		
-		this.simVarTypePane.get(index).setSimVariable(simVar); 
+		simChoiceBox.getSelectionModel().select(simVar.getType().toString());		
+		
+		simVarTypePane.get(simChoiceBox.getSelectionModel().getSelectedIndex()).setSimVariable(simVar); 
 
 		if (simVar.getLimits()!=null && this.showLims) {
 			//set limits
@@ -432,6 +454,8 @@ public class SimVariablePane extends BorderPane {
 
 		@Override
 		public void setSimVariable(SimVariable simVar) {
+			
+			//System.out.println("Min value for: " +simVar.getName() + "  " + minSpinner);
 			min = ((RandomSimVariable) simVar).getMin(); 
 			max = ((RandomSimVariable) simVar).getMax(); 
 
@@ -480,8 +504,8 @@ public class SimVariablePane extends BorderPane {
 		}
 
 	}
-	
-	
+
+
 	/**
 	 * LogNormal distribution sim pane. 
 	 * @author Jamie Macaulay 
@@ -490,17 +514,22 @@ public class SimVariablePane extends BorderPane {
 	public class LogNormalSimPane extends  AbstractSimPane {
 
 		private Spinner<Double> truncationSpinner;
-		
+
 		private CheckBox flipNegative; 
 
-	
+
 		public LogNormalSimPane() {
 			super(); 
 		}
 
 		@Override
+		public DistributionType getSimVarType() {
+			return DistributionType.LOGNORMAL;
+		}
+		
+		@Override
 		public SimVariable getSimVariable() {
-			
+
 			double var1=resultConverter.convert2Value(meanSpinner.getValue()); 
 			double var2=resultConverter.convert2Value(stdSpinner.getValue()); 
 			double truncation=resultConverter.convert2Value(truncationSpinner.getValue());
@@ -514,7 +543,7 @@ public class SimVariablePane extends BorderPane {
 
 		@Override
 		public void setSimVariable(SimVariable simVar) {
-			
+
 			double var1 = ((LogNormalSimVar) simVar).getScale(); 
 			double var2 = ((LogNormalSimVar) simVar).getShape(); 
 			double truncation = ((LogNormalSimVar) simVar).getTruncation(); 
@@ -525,16 +554,16 @@ public class SimVariablePane extends BorderPane {
 			truncationSpinner.getValueFactory().setValue(resultConverter.convert2Control(truncation));
 			flipNegative.setSelected(neg);
 		}
-		
+
 		@Override
 		protected Pane createNormalPane() {
 			Pane pane = super.createNormalPane(); 
-			
+
 			//set defaults to more standard normal values. 
 			meanSpinner.getValueFactory().setValue(2.);
 			((DoubleSpinnerValueFactory) meanSpinner.getValueFactory()).setAmountToStepBy(0.2);
 			stdSpinner.getValueFactory().setValue(1.5);
-			
+
 			//set this
 			stdSpinner.getValueFactory().setValue(3.);
 			((DoubleSpinnerValueFactory) stdSpinner.getValueFactory()).setAmountToStepBy(0.2);
@@ -543,14 +572,14 @@ public class SimVariablePane extends BorderPane {
 			truncationSpinner= new Spinner<Double>(0.,50000000.,150,5.); 
 			truncationSpinner.setEditable(true);
 			ProbDetSettingsPane.styleSpinner(truncationSpinner);
-			
+
 			HBox truncBox= new HBox();
 			truncBox.setSpacing(5);
 			truncBox.getChildren().addAll(new Label("Truncation"), truncationSpinner, this.flipNegative= new CheckBox("Negative")); 
 			truncBox.setAlignment(Pos.CENTER_LEFT);
-			
-			
-		    VBox vBox = new VBox();
+
+
+			VBox vBox = new VBox();
 			vBox.setSpacing(5); 
 			vBox.getChildren().addAll(pane, truncBox);
 
@@ -569,7 +598,7 @@ public class SimVariablePane extends BorderPane {
 
 	}
 
-	
+
 	/**
 	 * Opens a dialog with a chart showing the distribution 
 	 */
@@ -587,7 +616,7 @@ public class SimVariablePane extends BorderPane {
 		ButtonType buttonTypeOk = new ButtonType("Okay", ButtonData.OK_DONE);
 		chartDialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
 		chartDialog.setResizable(true);
-		
+
 		chartDialog.show();
 	}
 

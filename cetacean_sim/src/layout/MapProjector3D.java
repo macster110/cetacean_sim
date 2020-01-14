@@ -3,7 +3,9 @@ package layout;
 import utils.LatLong;
 
 /**
- * Handles the converstion between pixels on the 3D map and latitude, longitude, x, y and z meters. 
+ * Handles the conversation between pixels on the 3D map and latitude, longitude, 
+ * x, y and z meters. 
+ * 
  * @author Jamie Macaulay
  *
  */

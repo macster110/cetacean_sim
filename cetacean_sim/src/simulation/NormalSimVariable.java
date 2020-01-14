@@ -44,7 +44,7 @@ public class NormalSimVariable implements SimVariable {
 		this.std=std; 
 		this.limits=depthLims;
 	}
-
+	
 	@Override
 	public String getName() {
 		return name;

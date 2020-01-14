@@ -4,14 +4,15 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import com.jmatio.io.MatFileReader;
 import com.jmatio.io.MatFileWriter;
 import com.jmatio.types.MLArray;
 import com.jmatio.types.MLChar;
 import com.jmatio.types.MLDouble;
+import com.jmatio.types.MLInt32;
 import com.jmatio.types.MLStructure;
 
 import animal.SimpleOdontocete;
+import detector.SimpleDetector;
 import edu.mines.jtk.dsp.Sampling;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -73,17 +74,24 @@ public class ProbDetMTExport {
 			MLStructure probDetStdStruct = surfaceToStruct(probResult.get(i).probSurfaceMean,  "prob_det_std");
 			MLStructure settingsStruct = settingsToStrcut(probResult.get(i).simSettings);
 
+			System.out.println("Noise: " + probResult.get(i).simSettings.noise); 
+			
 			mlStruct.setField("prob_det_mean", probDetMeanStruct, i);
 			mlStruct.setField("prob_det_std", probDetStdStruct, i);
 			mlStruct.setField("settings", settingsStruct, i);
 		}
+		
+//		//may not have run anything
+//		if (probResult.size()==0) {
+//			mlStruct.setField("settings", settingsStruct);
+//		}
 
 		return mlStruct;
 	}
 
 
 	/**
-	 * Convert a probability fo detection surface to MATLAB structure with fields p, range and depth 
+	 * Convert a probability for detection surface to MATLAB structure with fields p, range and depth 
 	 * which are all 2D matrices representing a surface. 
 	 * @param hist3 - the surface
 	 */
@@ -132,12 +140,15 @@ public class ProbDetMTExport {
 			MLDouble maxDepth=(MLDouble) mlArrayRetrived.getField("maxdepth", 0);
 			MLDouble depthbin=(MLDouble) mlArrayRetrived.getField("depthbin", 0);
 			MLDouble rangebin=(MLDouble) mlArrayRetrived.getField("rangebin", 0);
+			MLInt32 evenXY=(MLInt32) mlArrayRetrived.getField("evenxy", 0);
+
 
 			MLDouble nBootStraps=(MLDouble) mlArrayRetrived.getField("n", 0);
 			MLDouble nRuns=(MLDouble) mlArrayRetrived.getField("N", 0);
 
 			//threshold
-			MLDouble thresh=(MLDouble) mlArrayRetrived.getField("thresh", 0);
+			MLDouble noise=(MLDouble) mlArrayRetrived.getField("noise", 0);
+			MLDouble snrThresh=(MLDouble) mlArrayRetrived.getField("snr_thresh", 0);
 
 			//hydrophones
 			MLDouble hydrophones=(MLDouble) mlArrayRetrived.getField("hydrophones", 0);
@@ -146,7 +157,14 @@ public class ProbDetMTExport {
 			//propogation
 			MLDouble spreading_coeff=(MLDouble) mlArrayRetrived.getField("spreading_coeff", 0);
 			MLDouble abs_coeff=(MLDouble) mlArrayRetrived.getField("abs_coeff", 0);
-
+			
+			//detector 
+			MLInt32 perfectDetector		=(MLInt32) mlArrayRetrived.getField("perfect_detector", 0);
+			
+			MLStructure detectionEfficiency	=(MLStructure) mlArrayRetrived.getField("det_efficiency", 0);
+			
+			
+			//animal info
 			MLStructure sourceLevelML = 	(MLStructure) mlArrayRetrived.getField("sourcelevel", 0);
 			MLStructure horzangleML = 		(MLStructure) mlArrayRetrived.getField("horzangle", 0);
 			MLStructure depthdistML = 		(MLStructure) mlArrayRetrived.getField("depthdist", 0);
@@ -154,10 +172,16 @@ public class ProbDetMTExport {
 
 			//beam profile
 			MLDouble beamraw = 		(MLDouble) mlArrayRetrived.getField("beamraw", 0);
-
+		
 			SimVariable sourceLevel= 	mlStruct2SimVariable(sourceLevelML, "Source Level",0); 
 			SimVariable horzangle= 	mlStruct2SimVariable(horzangleML, "Horz Angle",0, new Degrees2Radians()); 
 			SimVariable depthdist= 	mlStruct2SimVariable(depthdistML, "Depth Dist",0); 
+			
+			SimVariable detectionEffDist = 	mlStruct2SimVariable(detectionEfficiency, "SNR",0); 
+			
+			System.out.println("detectionEffDist: " + detectionEffDist + " field: " + detectionEfficiency
+					);
+
 			
 			//there can be multiple vertical angles. 
 			SimVariable[] vertangle= new SimVariable[vertangleML.getM()]; 
@@ -175,18 +199,25 @@ public class ProbDetMTExport {
 			probDetSimSettings.rangeBin=rangebin.get(0).intValue();
 			probDetSimSettings.nBootStraps=nBootStraps.get(0).intValue();
 			probDetSimSettings.nRuns=nRuns.get(0).intValue();
+			probDetSimSettings.evenXY=evenXY.get(0).intValue(); 
 			
 			//noise
-			probDetSimSettings.noiseThreshold=thresh.get(0);
+			probDetSimSettings.noise=noise.get(0);
+			probDetSimSettings.snrThreshold=snrThresh.get(0);
 			
 			//Hydrophones
 			HydrophoneArray hydrophoneArray =new SimpleHydrophoneArray(hydrophones.getArray()); 
 			probDetSimSettings.recievers = hydrophoneArray; 
-			
+			probDetSimSettings.minRecievers = minhydrophones.get(0).intValue();
+
 			//Propagation
 			SimplePropogation propogation = new SimplePropogation(spreading_coeff.get(0)
 					, abs_coeff.get(0)); 
 			probDetSimSettings.propogation=propogation; 
+			
+			//Detector 
+			boolean perfdet = perfectDetector.get(0) == 1. ? true : false; 
+			probDetSimSettings.detector = new SimpleDetector(detectionEffDist, perfdet); 
 			
 			//Animal
 			probDetSimSettings.simpleOdontocete= new SimpleOdontocete(sourceLevel, vertangle, horzangle, 
@@ -201,10 +232,14 @@ public class ProbDetMTExport {
 			System.out.println("nBootStraps: " + nBootStraps.get(0)); 
 			System.out.println("nRuns: " + nRuns.get(0)); 
 			System.out.println("--------------------------"); 
-			System.out.println("thresh: " + thresh.get(0)); 
+			System.out.println("noise: " + noise.get(0)); 
+			System.out.println("snr_thresh: " + snrThresh.get(0)); 
 			System.out.println("--------------------------"); 
 			System.out.println("spreading_coeff: " + spreading_coeff.get(0)); 
 			System.out.println("abs_coeff: " + abs_coeff.get(0)); 
+			System.out.println("--------------------------"); 
+			System.out.println("perfect_detector: " + spreading_coeff.get(0)); 
+			System.out.println(detectionEffDist.toString());
 			System.out.println("--------------------------"); 
 			System.out.println("minhydrophones: " + minhydrophones.get(0)); 
 			//print out hydrophones
@@ -214,12 +249,15 @@ public class ProbDetMTExport {
 			}
 			System.out.println("--------------------------"); 
 			//now print sim-variables. 
+			System.out.println("Source Level:"); 
 			System.out.println(sourceLevel.toString()); 
+			System.out.println("Horz Angle:"); 
 			System.out.println(horzangle.toString()); 
+			System.out.println("Depth distribution:"); 
 			System.out.println(depthdist.toString()); 
 			System.out.println("Vert Angle");
 			for (int i=0; i<vertangle.length; i++ ) {
-				System.out.println(vertangle.toString()); 
+				System.out.println(vertangle[i].toString()); 
 			}
 			System.out.println("--------------------------"); 
 			/***************************/
@@ -227,7 +265,6 @@ public class ProbDetMTExport {
 			return probDetSimSettings;
 
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -237,7 +274,7 @@ public class ProbDetMTExport {
 
 
 	/**
-	 * Convert the settings class to a structure compatible with MATLAb library  
+	 * Convert the settings class to a structure compatible with MATLAB library  
 	 * @param probDetSDimSettings - prob det sim settings 
 	 * @return structure representing settings. 
 	 */
@@ -249,13 +286,25 @@ public class ProbDetMTExport {
 		mlStruct.setField("maxdepth", mlDouble(-settings.minHeight), 0);
 		mlStruct.setField("depthbin", mlDouble(settings.depthBin), 0);
 		mlStruct.setField("rangebin", mlDouble(settings.rangeBin), 0);
-		mlStruct.setField("thresh", mlDouble(settings.noiseThreshold), 0);
+		mlStruct.setField("evenxy", new MLInt32(null, new int[]{settings.evenXY}, 1), 0); //TODO
+
+		
+		mlStruct.setField("noise", mlDouble(settings.noise), 0);
+		mlStruct.setField("snr_thresh", mlDouble(settings.snrThreshold), 0);
+
+		
 		mlStruct.setField("minhydrophones", mlDouble(settings.minRecievers), 0);
 		mlStruct.setField("hydrophones", new MLDouble(null, settings.recievers.getArrayXYZ()), 0);
 		mlStruct.setField("spreading_coeff", mlDouble(((SimplePropogation) settings.propogation).getSpreadingCoeff()), 0);
-		mlStruct.setField("abs_coeff",  mlDouble(((SimplePropogation) settings.propogation).getSpreadingCoeff()), 0);
+		mlStruct.setField("abs_coeff",  mlDouble(((SimplePropogation) settings.propogation).getAbsorptionCoeff()), 0);
 		mlStruct.setField("n",  mlDouble(settings.nBootStraps), 0);
 		mlStruct.setField("N",  mlDouble(settings.nRuns), 0);
+		
+		//detector
+		int perfDet = ((SimpleDetector) settings.detector).isPerfectDetector() ? 1 : 0; 
+		mlStruct.setField("perfect_detector",  new MLInt32(null, new int[]{perfDet}, 1), 0, 0);
+		mlStruct.setField("det_efficiency", simVar2MLStrcut(null, ((SimpleDetector) settings.detector).getDetectionDistribution()),0);
+
 
 		//		//animal 
 		//		//vert angle 
@@ -270,13 +319,13 @@ public class ProbDetMTExport {
 		//			mlStruct.setField("vertmax", mlDouble(Math.toDegrees(((RandomSimVariable) settings.simpleOdontocete.vertAngle).getMax())), 0);
 		//		}
 
-		//src level
+		//source level
 		mlStruct.setField("sourcelevel", simVar2MLStrcut(null, settings.simpleOdontocete.sourceLevel),0);
 
 		//horizontal angle 
 		mlStruct.setField("horzangle",  simVar2MLStrcut(null, settings.simpleOdontocete.horzAngle, new Radians2Degrees()),0); 
 
-		//TODO
+		//TODO - need to set multiple fields here. 
 		mlStruct.setField("vertangle",  simVar2MLStrcut(null, settings.simpleOdontocete.vertAngles.get(0), new Radians2Degrees()),0); 
 
 		mlStruct.setField("depthdist",  simVar2MLStrcut(null, settings.simpleOdontocete.depthDistribution),0); 
@@ -296,7 +345,7 @@ public class ProbDetMTExport {
 		mlStruct.setField("horzbeam",  new MLDouble(null, Utils3D.float2double(horzGrid)),0);
 		mlStruct.setField("vertbeam",  new MLDouble(null, Utils3D.float2double(vertGrid)),0);
 		mlStruct.setField("tlBeam",    new MLDouble(null, Utils3D.float2double(grid)),0);
-		mlStruct.setField("beamRaw",    new MLDouble(null, Utils3D.beam2Degrees(settings.simpleOdontocete.getBeamProfile().getRawBeamMeasurments())));
+		mlStruct.setField("beamraw",    new MLDouble(null, Utils3D.beam2Degrees(settings.simpleOdontocete.getBeamProfile().getRawBeamMeasurments())));
 
 
 		return mlStruct; 
@@ -318,21 +367,26 @@ public class ProbDetMTExport {
 		String type = typeML.getString(0); 
 		
 		MLDouble limits = (MLDouble) structure.getField("limits", index); 
-		double[] simLims=limits.getArray()[0];
+		double[] simLims=new double[2];
+		for (int i=0; i<2; i++) {
+			simLims[i]= limits.getArray()[i][0];
+		}
+		
+		//System.out.println("LIMITS!!!!: " + simLims.length);
 
 		SimVariable simVar = null; 
 		switch (type) {
-		case "normal":
+		case "Normal":
 			MLDouble meanML = (MLDouble) structure.getField("mean", index); 
 			MLDouble stdML = (MLDouble) structure.getField("std", index); 
 			simVar = new NormalSimVariable(name, resultsConverter.convert2Value(meanML.get(0)), resultsConverter.convert2Value(stdML.get(0)), simLims ); 
 			break; 
-		case "uniform":
+		case "Uniform":
 			MLDouble minML = (MLDouble) structure.getField("min", index); 
 			MLDouble maxML = (MLDouble) structure.getField("max", index); 
 			simVar = new RandomSimVariable(name, resultsConverter.convert2Value(minML.get(0)), resultsConverter.convert2Value(maxML.get(0)), simLims); 
 			break; 
-		case "log-normal":
+		case "Log-normal":
 			MLDouble shape = (MLDouble) structure.getField("shape", index); 
 			MLDouble scale = (MLDouble) structure.getField("scale", index); 
 			MLDouble truncation = (MLDouble) structure.getField("truncation", index); 
@@ -341,11 +395,20 @@ public class ProbDetMTExport {
 			simVar = new LogNormalSimVar(name, resultsConverter.convert2Value(scale.get(0)), resultsConverter.convert2Value(shape.get(0)), 
 					resultsConverter.convert2Value(truncation.get(0)), flipNegBool, simLims); 
 			break; 
-		case "custom":
+		case "Custom":
 			MLDouble minMLC = (MLDouble) structure.getField("min", index); 
 			MLDouble maxMLC = (MLDouble) structure.getField("max", index); 
 			MLDouble customArray = (MLDouble) structure.getField("customp", index); 
-			simVar = new CustomSimVar(name, customArray.getArray()[0], resultsConverter.convert2Value(minMLC.get(0)), 
+			
+			
+			//System.out.println("Custom array length: " + customArray.getArray().length + " " +  customArray.getArray()[0].length);
+			
+			double[] customp = new double[customArray.getArray().length]; 
+			for (int i=0; i<+ customArray.getArray().length; i++) {
+				customp[i]=customArray.getArray()[i][0];
+			}
+			
+			simVar = new CustomSimVar(name, customp, resultsConverter.convert2Value(minMLC.get(0)), 
 					resultsConverter.convert2Value(maxMLC.get(0)), simLims); 
 			break; 
 		}

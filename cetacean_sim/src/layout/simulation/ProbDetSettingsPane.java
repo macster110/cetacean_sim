@@ -4,15 +4,14 @@ import java.io.File;
 
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.materialicons.MaterialIcon;
-import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
@@ -20,12 +19,14 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import layout.CetSimView;
 import layout.animal.SimpleOdontocetePane;
-import propogation.SimplePropogation;
+import layout.detector.SimpleDetectionPane;
+import layout.propogation.SimplePropogationPane;
 import simulation.probdetsim.ProbDetSim;
 import simulation.probdetsim.ProbDetSimSettings;
 
 /**
- * Settings pane for the probability of detection
+ * Settings pane for the probability of detection.
+ * 
  * @author Jamie Macaulay 
  *
  */
@@ -72,7 +73,7 @@ public class ProbDetSettingsPane extends BorderPane {
 	private Spinner<Double> absorbption;
 
 	/**
-	 * Reference to the porbability of detection view. 
+	 * Reference to the probability of detection view. 
 	 */
 	private ProbDetSim probDetSim;
 	
@@ -82,9 +83,29 @@ public class ProbDetSettingsPane extends BorderPane {
 	private BorderPane probDetTypeHolder;
 
 	/**
-	 * The minimum number of recievers to ensonify
+	 * The minimum number of receivers to ensonify
 	 */
-	private Spinner<Integer> minRecievers; 
+	private Spinner<Integer> minRecievers;
+
+	/**
+	 * Check box for the distribution of random points, even in Cartesian or even in polar co-ordinates. 
+	 */
+	private CheckBox evenXY;
+
+	/**
+	 * The simple propagation pane. 
+	 */
+	private SimplePropogationPane propogationPane;
+
+	/**
+	 * The simple detection pane. 
+	 */
+	private SimpleDetectionPane detectorPane;
+
+	/**
+	 * The signal to noise ratio required for a detection.
+	 */
+	private Spinner<Double> snrNoise; 
 	
 	/**
 	 * Default width of the spinner. 
@@ -126,12 +147,13 @@ public class ProbDetSettingsPane extends BorderPane {
 		} 
 		simTypes.setOnAction((action)->{
 			probDetSim.setSimIndex(simTypes.getSelectionModel().getSelectedIndex()); 
-		
 			probDetTypeHolder.setCenter(probDetSim.getCurrentSimType().getSettingsNode());
+			enableControls();
 		}); 
 		simTypes.getSelectionModel().select(probDetSim.getProbDetTypeIndex());
 		row++;
 		
+
 		//import button
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Open Resource File");
@@ -176,7 +198,7 @@ public class ProbDetSettingsPane extends BorderPane {
 		nBootSpinner.setPrefWidth(100);
 		mainPane.add(nBootSpinner, 1, row);
 		
-		/******Sim Dimensions*****/
+		/******Simulation Dimensions*****/
 
 		row++; 
 		Label coOrds = new Label("Dimensions"); 
@@ -203,6 +225,10 @@ public class ProbDetSettingsPane extends BorderPane {
 		depthBin= new Spinner<Integer>(0,50000000,10,2); 
 		styleSpinner(depthBin);
 		mainPane.add(depthBin, 3, row);
+		
+		row++;
+		mainPane.add(evenXY = new CheckBox("Evenly spaced x and y points"), 0, row);
+		GridPane.setColumnSpan(evenXY, 3);
 		
 		/****Receiver****/
 
@@ -240,30 +266,9 @@ public class ProbDetSettingsPane extends BorderPane {
 
 		/******Propagation*****/
 		row++;		
-		Label propogationLabel = new Label("Propogation"); 
-		propogationLabel.setFont(new Font(CetSimView.titleFontSize));
-		GridPane.setColumnSpan(propogationLabel, 4);
-		mainPane.add(propogationLabel, 0, row);
-
-		row++;
-		HBox propogationHolder = new HBox();
-		propogationHolder.setAlignment(Pos.CENTER);
-		propogationHolder.setSpacing(5); 
-//		mainPane.add(new Label(" Spreading = "), 0, row);
-		spreading = new Spinner<Double>(0.,20.,20.,0.5); 
-		styleSpinner(spreading);
-//		mainPane.add(spreading, 1, row);
-//		mainPane.add(new Label("*log10(R) +"), 2, row);
-		absorbption= new Spinner<Double>(0.000000001,300.,0.04,0.01); 
-		styleSpinner(absorbption);
-//		mainPane.add(absorbption, 3, row);
-//		mainPane.add(new Label("*R"), 4, row);
-		
-		propogationHolder.getChildren().addAll(new Label(" Spreading = "), spreading, new Label("*log10(R) +"),
-				absorbption, new Label("*R")); 
-		
-		GridPane.setColumnSpan(propogationHolder, 5);
-		mainPane.add(propogationHolder, 0, row);
+		propogationPane = new SimplePropogationPane(); 
+		GridPane.setColumnSpan(propogationPane, 5);
+		mainPane.add(propogationPane, 0, row);
 
 		/*******Noise*******/
 		row++; 
@@ -274,13 +279,21 @@ public class ProbDetSettingsPane extends BorderPane {
 
 		row++; 
 		mainPane.add(new Label("Noise Threshold"), 0, row);
-
 		minNoise = new Spinner<Double>(0.,300.,100.,1.); 
 		mainPane.add(minNoise, 1, row);
 		styleSpinner(minNoise);
 		
-		mainPane.add(new Label(SimpleOdontocetePane.dB), 2, row);
+		Label noiseUnits =new Label(SimpleOdontocetePane.dB); 
+		GridPane.setColumnSpan(noiseUnits, 2);
+		mainPane.add(noiseUnits, 2, row);
+		
+		row++;
+		mainPane.add(new Label("SNR Threshold"), 0, row);
 
+		snrNoise = new Spinner<Double>(0.,300.,100.,1.); 
+		mainPane.add(snrNoise, 1, row);
+		styleSpinner(snrNoise);
+		mainPane.add(new Label("dB"), 2, row);
 		
 		/*******Animal*******/
 		row++; 
@@ -293,30 +306,52 @@ public class ProbDetSettingsPane extends BorderPane {
 		Button animals = new Button("Animal"); 		
 		animals.setOnAction((action)->{
 			//open the animal pane. 
-			
+			probDetSim.getProbDetSimView().openAnimalDialog(); 
 		});
 		animals.setGraphic(GlyphsDude.createIcon(MaterialIcon.SETTINGS, "25")); 
 		animals.prefWidthProperty().bind(mainPane.widthProperty());
 		animals.setMaxWidth(500);
 		GridPane.setColumnSpan(animals, 5);
 		mainPane.add(animals, 0, row);
-		animals.setOnAction((action)->{
-			probDetSim.getProbDetSimView().openAnimalDialog(); 
-		});
+
+		
+		/******Detector*******/
+		row++;
+		detectorPane = new SimpleDetectionPane(); 
+		GridPane.setColumnSpan(detectorPane, 5);
+		mainPane.add(detectorPane, 0, row);
+		
+		//add to the main pane
 
 		VBox sidePane = new VBox(); 
 		sidePane.setSpacing(5);
-		sidePane.getChildren().add(mainPane); 
+		sidePane.getChildren().add(mainPane);
+		
+		enableControls();
 		
 		return sidePane; 
 
 	}
 	
 	/**
+	 * Enable and disable controls based on current settings
+	 */
+	private void enableControls() {
+		
+		if (probDetSim.getCurrentSimType().getName()=="Noise Variation") {
+			this.minNoise.setDisable(true);
+		}
+		else {
+			this.minNoise.setDisable(false);
+		}
+		
+	}
+
+	/**
 	 * Set default spinner look and size. 
 	 * @param spinner - the spinner to set look and feel for. 
 	 */
-	public static void styleSpinner(Spinner spinner) {
+	public static void styleSpinner(@SuppressWarnings("rawtypes") Spinner spinner) {
 		spinner.setEditable(true);
 		spinner.setPrefWidth(spinnerWidth);
 		//HACK: spinner don;t change value when typed in. This forces change
@@ -329,6 +364,7 @@ public class ProbDetSettingsPane extends BorderPane {
 	
 	/**
 	 * Set all parameter in the view. 
+	 * 
 	 * @param settings - the parameter class to set.
 	 */
 	public void setParams(ProbDetSimSettings settings) {
@@ -342,18 +378,26 @@ public class ProbDetSettingsPane extends BorderPane {
 		rangeBin.getValueFactory().setValue(settings.rangeBin);
 		maxRange.getValueFactory().setValue(settings.maxRange);
 		
-		minNoise.getValueFactory().setValue(settings.noiseThreshold);
+		minNoise.getValueFactory().setValue(settings.noise);
+		snrNoise.getValueFactory().setValue(settings.snrThreshold);
+
 		minRecievers.getValueFactory().setValue(settings.minRecievers);
 		
-		//TODO- eventually this will have it's own pane. 
-		spreading.getValueFactory().setValue(((SimplePropogation) settings.propogation).spreading);
-		absorbption.getValueFactory().setValue(((SimplePropogation) settings.propogation).absorption);
+		propogationPane.setParams(settings.propogation, false);
+
+		detectorPane.setParams(settings.detector, false);
+
+		if (settings.evenXY==ProbDetSimSettings.UNIFORM_XY) this.evenXY.setSelected(true);
+		else evenXY.setSelected(false);
+		
+		enableControls() ;
 		
 	}
 	
 	/**
-	 * Get all params from the settings pane . 
-	 * @param settings - the paramter class to setting in
+	 * Get all parameters from the settings pane.
+	 * 
+	 * @param settings - the parameter class to setting in
 	 * @return the changed parameter class. 
 	 */
 	public ProbDetSimSettings getParams(ProbDetSimSettings settings) {
@@ -367,14 +411,21 @@ public class ProbDetSettingsPane extends BorderPane {
 		settings.rangeBin=this.rangeBin.getValue();
 		settings.maxRange=this.maxRange.getValue();
 		
-		settings.noiseThreshold=this.minNoise.getValue(); 
-		
+		settings.noise=this.minNoise.getValue();
+		settings.snrThreshold=this.snrNoise.getValue(); 
+
 		settings.minRecievers=this.minRecievers.getValue();
 		
-		//TODO - eventually propogation will have it's own pane etc. 
-		settings.propogation = new SimplePropogation(this.spreading.getValue(), this.absorbption.getValue());
+		if (evenXY.isSelected()) settings.evenXY=ProbDetSimSettings.UNIFORM_XY; 
+		else settings.evenXY=ProbDetSimSettings.UNIFORM_HORZ_RANGE; 
 		
-		//TODO
+		//get the propagation pane
+		settings.propogation = propogationPane.getParams();
+		
+		//get the detector pane.
+		settings.detector = detectorPane.getParams();
+		
+		//TODO - eventually 
 
 		return settings; 
 	}

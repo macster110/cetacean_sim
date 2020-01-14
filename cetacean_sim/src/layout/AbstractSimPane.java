@@ -8,8 +8,6 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import layout.SimVariablePane.SimTypePane;
 import layout.simulation.ProbDetSettingsPane;
-import simulation.NormalSimVariable;
-import simulation.SimVariable;
 import simulation.SimVariable.DistributionType;
 
 /**

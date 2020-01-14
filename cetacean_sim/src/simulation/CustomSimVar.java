@@ -1,9 +1,12 @@
 package simulation;
 
+import org.apache.commons.math3.analysis.interpolation.LinearInterpolator;
+import org.apache.commons.math3.analysis.polynomials.PolynomialSplineFunction;
 import org.apache.commons.math3.distribution.EnumeratedIntegerDistribution;
 
 /**
- * A custom distribution. 
+ * A custom probability distribution. 
+ * 
  * @author Jamie Macaulay 
  *
  */
@@ -48,7 +51,12 @@ public class CustomSimVar implements SimVariable {
 	/**
 	 * The string name. 
 	 */
-	private String name=""; 
+	private String name="";
+	
+	/**
+	 * Function for interpolating the distribution input values. 
+	 */
+	private PolynomialSplineFunction interpFunction; 
 
 	
 	public CustomSimVar() {
@@ -56,27 +64,26 @@ public class CustomSimVar implements SimVariable {
 	}
 	
 	/**
-	 * Custom sim variable. 
-	 * @param name - the name
-	 * @param probData - the probability data
+	 * Custom simulation variable. 
+	 * @param name - the name of the simulation variable. 
+	 * @param probData - the probability data. 
 	 * @param min - the minimum value.
 	 * @param max - the maximum value. 
 	 */
-	public CustomSimVar(String name, double[] probData, Double min, Double max) {
+	public CustomSimVar(String name, double[] probData, double min, double max) {
 		this.name=name; 
 		setDistirbution(probData, min,max); 
 	}
 	
 	/**
-	 * Custom sim variable. 
+	 * Custom simulation variable. 
 	 * @param name - the name
 	 * @param probData - the probability data
 	 * @param min - the minimum value.
 	 * @param max - the maximum value. 
-	 * @param simLims - the distirbution limits; 
-	 * @param simLims 
+	 * @param simLims - the distribution limits; 
 	 */
-	public CustomSimVar(String name, double[] probData, Double min, Double max, double[] simLims) {
+	public CustomSimVar(String name, double[] probData, double min, double max, double[] simLims) {
 		this.name=name; 
 		this.limits=simLims;
 		setDistirbution(probData, min,max); 
@@ -84,31 +91,58 @@ public class CustomSimVar implements SimVariable {
 	
 	/**
 	 */
-	public CustomSimVar(double[] probData, Double min, Double max) {
+	public CustomSimVar(double[] probData, double min, double max) {
 		setDistirbution(probData, min,max); 
 	}
 
 	public CustomSimVar(Double value, Double value2) {
 		setDistirbution(defaultProb, min,max); 
 	}
+	
+	/**
+	 * Get the probability value for a specific portion of the distribution. 
+	 * @param value - the x axis value. 
+	 */
+	public double getProbability(double value) {
+		if (value>max) return discreteProbabilities[discreteProbabilities.length-1]; 
+		else if (value<min) return discreteProbabilities[0]; 
+		return interpFunction.value(value);
+	}
 
 	/**
 	 * Set the custom distribution 
 	 * @param discreteProbabilities
-	 * @param minVal
-	 * @param maxVal
+	 * @param minVal - the minimum value of the distribution. 
+	 * @param maxVal - the maximum value of the distribution.
 	 */
 	private void setDistirbution(double[] discreteProbabilities, double minVal, double maxVal) {
 		this.min=minVal;
 		this.max=maxVal; 
 		this.discreteProbabilities=discreteProbabilities; 
 		
+		//System.out.println("Custom sim variable: " + this);
+
+		
 		int[] numsToGenerate    = new int[discreteProbabilities.length]; 
 		for (int i=0; i<discreteProbabilities.length; i++) {
 			numsToGenerate[i]=i;
 		}
+		
 		integerDistirbution = 
 		    new EnumeratedIntegerDistribution(numsToGenerate, discreteProbabilities);
+		
+		LinearInterpolator interpolator= new LinearInterpolator(); 
+		
+		//build a function interpolate the custom values. 
+		double[] xVals = new double[discreteProbabilities.length];
+		double snrBin = (maxVal - minVal) / (double) (discreteProbabilities.length-1);
+		for (int i=0; i<discreteProbabilities.length; i++) {
+			xVals[i]=minVal+snrBin*i; 
+			//System.out.println(xVals[i]);
+		} 
+	
+		interpFunction = interpolator.interpolate(xVals,
+				 discreteProbabilities);
 	}
 
 	@Override
@@ -148,8 +182,8 @@ public class CustomSimVar implements SimVariable {
 	}
 	
 	/**
-	 * Get the maximum bound of the distirbution. 
-	 * @return the maximum of the distirbution
+	 * Get the maximum bound of the distribution. 
+	 * @return the maximum of the distribution
 	 */
 	public Double getMax() {
 		return this.max; 
@@ -174,21 +208,11 @@ public class CustomSimVar implements SimVariable {
 
 	/**
 	 * Get the probability data. 
-	 * @return the prob data. 
+	 * @return the probability data. 
 	 */
 	public double[] getProbData() {
 		return discreteProbabilities;
 	}
-	
-	/**
-	 * Get the probability data. 
-	 * @return the prob data. 
-	 */
-	public double[] setProbData() {
-		return discreteProbabilities;
-	}
 
-
-	
 
 }

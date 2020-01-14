@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
+
+import detector.Detector;
+import simulation.RandomSimVariable;
 import simulation.StatusListener;
 import utils.CetSimUtils;
 import utils.Hist3;
@@ -73,7 +76,13 @@ public class ProbDetMonteCarlo {
 	 */
 	private double[][] angles;
 	
-	
+	/**
+	 * A prefix whihc can be addded to progress reported. This allows users to keep a track of different 
+	 * simulations.
+	 */
+	private String prefix=""; 
+
+
 	/**
 	 * Constructor for the Monte Carlo simulation 
 	 */
@@ -106,6 +115,8 @@ public class ProbDetMonteCarlo {
 		//System.out.println("Is this cancelled? " + this.cancel); 
 		
 		notifyStatusListeners(StatusListener.SIM_STARTED, 0, 0 ); 
+		
+		//simSettings.simpleOdontocete.depthDistribution = new RandomSimVariable("Depth", simSettings.minHeight, 0);
 
 		isRunning=true;
 		
@@ -148,7 +159,15 @@ public class ProbDetMonteCarlo {
 				
 				//create random position for animal
 				bearing = Math.random()*2*Math.PI;
-				range = Math.random()*simSettings.maxRange;
+				
+				//calculate range either to have uniform distribution of ranges or
+				//to have even spacing between points in the x and y plane. 
+				if (simSettings.evenXY==ProbDetSimSettings.UNIFORM_HORZ_RANGE) 
+					range = Math.random()*simSettings.maxRange;
+				else if (simSettings.evenXY==ProbDetSimSettings.UNIFORM_XY) 
+					range = simSettings.maxRange * Math.sqrt(Math.random());
+				else range = Math.random()*simSettings.maxRange; //just in case something goes wrong in flags. 
+
 				//depth is from the animal depth distribution. 
 				depth = simSettings.simpleOdontocete.depthDistribution.getNextRandom(); 
 				
@@ -163,8 +182,7 @@ public class ProbDetMonteCarlo {
 				
 				//calculate the horizontal anlfe of the animal 
 				horzAngle = simSettings.simpleOdontocete.horzAngle.getNextRandom();
-				
-
+			
 				animalAngle = new double[] {horzAngle, vertAngle};
 
 				//calculate the source level
@@ -172,14 +190,18 @@ public class ProbDetMonteCarlo {
 				
 				aboveThresh=0; 
 				meanRecievedLvl=0; 
+				double transloss; 
 				for (int k=0; k<nRecievers; k++) {
 					//now have position of the animal position need to figure out what the source level, transmission loss due to
 					//beam profile and the transmission loss in general. 
-
-					//the 
-					recievedLevels[k] = sourceLevel+CetSimUtils.tranmissionTotalLoss(simSettings.recievers.getArrayXYZ()[k], 
+					transloss = CetSimUtils.tranmissionTotalLoss(simSettings.recievers.getArrayXYZ()[k], 
 							animalPos, animalAngle, simSettings.simpleOdontocete.beamSurface, simSettings.propogation); 
-					if (recievedLevels[k]> simSettings.noiseThreshold){
+					recievedLevels[k] = sourceLevel+transloss;
+					
+					//System.out.println("Recieved level: " + recievedLevels[k] + "dB" + " srclevel: " + sourceLevel + " transloss: " + transloss);
+					if (recievedLevels[k] > (simSettings.noise+simSettings.snrThreshold) &&
+							wasClassified(simSettings.detector, recievedLevels[k]-simSettings.noise)){
+						//System.out.println("Was recieved: Recieved level: " + recievedLevels[k] + "dB" + " srclevel: " + sourceLevel + " transloss: " + transloss + "Min recievers: " +simSettings.minRecievers );
 						aboveThresh++;
 					}
 					meanRecievedLvl+=recievedLevels[k]; 
@@ -190,11 +212,11 @@ public class ProbDetMonteCarlo {
 				//now count the number of receiver levels that are above the 
 				simResults[j][0]=range; 
 				simResults[j][1]=depth; 
-
-
+			
 				if (aboveThresh>=simSettings.minRecievers) {
 					simResults[j][2]=1; 
 					//record angles if required. 
+					//System.out.println("Positive: " + ndet); 
 					if (recordAngles && i==simSettings.nBootStraps-1) {
 						angles[ndet][0]=range; 
 						angles[ndet][1]=depth; 
@@ -210,7 +232,7 @@ public class ProbDetMonteCarlo {
 //				//print out some of the progress. 
 				if (j%5000==0) {
 					notifyStatusListeners(StatusListener.SIM_RUNNING, i, (j/(double) simSettings.nRuns) ); 
-					if (this.print)	System.out.println("Progress: Sim: " + i + " of "  + simSettings.nBootStraps 
+					if (this.print)	System.out.println(prefix + "Progress: Sim: " + i + " of "  + simSettings.nBootStraps 
 							+"   " + String.format("%.1f", (100.*j/(double) simSettings.nRuns)) + "%"); 
 //					System.out.println("Progress: Sim: " + i + " of "  + simSettings.nBootStraps 
 //							+"   " + String.format("%.1f", (100.*j/(double) simSettings.nRuns)) + "%" +  
@@ -229,6 +251,8 @@ public class ProbDetMonteCarlo {
 
 			//now must split these results into a 3D chart. 
 			results.add(new Hist3(simResults, this.xBinEdges, this.yBinEdges, new Double(1))); 
+			
+			
 			//printResult(results.get(i).getHistogram());
 
 		}
@@ -246,7 +270,7 @@ public class ProbDetMonteCarlo {
 		
 		//create the result object
 		this.result = new ProbDetResult(histResults, simSettings); 
-		
+				
 		//set the running flag to false. 
 		isRunning=false;
 		
@@ -256,6 +280,23 @@ public class ProbDetMonteCarlo {
 		return 1; 
 	}
 	
+	/**
+	 * Works out the probability that a detection will be automatically classified based on 
+	 * it's SNR and return a true or false based on that probability. Will therefore give different
+	 * results on different class with the same input. 
+	 * @param detector - the detector object
+	 * @param SNR - the SNR
+	 * @return true of detector. False if not detected. 
+	 */
+	private boolean wasClassified(Detector detector, double SNR) {
+		//simSettings.detector.getProbClassified(SNR); 
+		double p = detector.getProbClassified(SNR);
+		double rand = Math.random(); 
+		
+		//System.out.println("SNR: " + SNR +" p: " + p);
+		if (rand>p) return false;
+		else return true; 
+	}
 	
 	
 	/**
@@ -264,7 +305,10 @@ public class ProbDetMonteCarlo {
 	 */
 	private Hist3[] averageHistograms(ArrayList<Hist3> results) {
 		
-		if (results==null) return null; 
+		if (results==null) {
+			System.out.println("averageHistograms: The results are NULL"); 
+			return null; 
+		}
 		
 		int histWidth=results.get(0).getHistogram().length; 
 		int histHeight=results.get(0).getHistogram()[0].length; 
@@ -291,7 +335,7 @@ public class ProbDetMonteCarlo {
 				//calc mean
 				mean=mean/results.size();
 				averageHist[i][j]=mean; 
-				//calc std;
+				//calc std
 				stdHist[i][j]=stdCalculator.evaluate(meanArray, mean); 
 			}
 		}
@@ -560,25 +604,6 @@ public class ProbDetMonteCarlo {
 	}
 	
 	
-	
-	
-	
-	/**
-	 * Run the simulation without a GUI. 
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		ProbDetSimSettings simSettings = new ProbDetSimSettings(); 
-		//simSettings.simpleOdontocete.setUpAnimal(0, simSettings);
-		ProbDetMonteCarlo monteCarloSimulation = new ProbDetMonteCarlo(); 
-		
-		//now run the simulation 
-		monteCarloSimulation.setUpMonteCarlo(simSettings); 
-		monteCarloSimulation.runMonteCarlo(simSettings); 
-		
-	}
-	
-	
 //	/**
 //	 * A convenicne function for calling the simualtion from MATLAB. Creates a settings class and runs the simualtion. 
 //	 * @param vertMean - the mean vertical angle in RADIANS. 
@@ -626,6 +651,44 @@ public class ProbDetMonteCarlo {
 		if (angles==null) return null; 
 		else return angles; 
 	}
+	
+	/**
+	 * Get the prefix which is printed before progress reporting. 
+	 * @return the prefix string. 
+	 */
+	public String getPrefix() {
+		return prefix;
+	}
+
+
+	/**
+	 * Set the prefix string. This is printed before progress printing if the print
+	 * value is set to true. 
+	 * @param prefix - the string prefix for progress printing. 
+	 */
+	public void setPrefix(String prefix) {
+		this.prefix = prefix;
+	}
+	
+	
+	
+	
+	
+	/**
+	 * Run the simulation without a GUI. 
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		ProbDetSimSettings simSettings = new ProbDetSimSettings(); 
+		//simSettings.simpleOdontocete.setUpAnimal(0, simSettings);
+		ProbDetMonteCarlo monteCarloSimulation = new ProbDetMonteCarlo(); 
+		
+		//now run the simulation 
+		monteCarloSimulation.setUpMonteCarlo(simSettings); 
+		monteCarloSimulation.setPrefix("Test Sim:");
+		monteCarloSimulation.run(simSettings, true);
+	}
+	
 
 	
 }

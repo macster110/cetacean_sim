@@ -5,6 +5,7 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.layout.BorderPane;
+import simulation.CustomSimVar;
 import simulation.SimVariable;
 import utils.CetSimUtils;
 
@@ -21,6 +22,14 @@ public class SimVarLineChart extends BorderPane{
 	private SimVariable simVariable;
 
 	private int nSamples=50000; 
+	
+	private LineChart<Number,Number> lineChart; 
+	
+	private XYChart.Series<Number, Number> series;
+
+	private NumberAxis xAxis;
+
+	private NumberAxis yAxis; 
 
 	/**
 	 * Sim variable line chart. 
@@ -30,6 +39,30 @@ public class SimVarLineChart extends BorderPane{
 		this.setCenter(createChart()); 
 		this.getStylesheets().add("resources/darktheme.css");
 	}
+	
+	public void updateChartSeries(double[][] dataVals) {
+		//populating the series with data
+		series = new XYChart.Series<Number, Number>();
+		series.setName("Probability Distribution");
+		lineChart.getData().clear();
+		
+		for (int i=0; i<dataVals[0].length; i++) {
+			//System.out.println("Data Values are: x: " + dataVals[i][0] + " y: "+  dataVals[i][1]);
+			series.getData().add(new XYChart.Data(dataVals[0][i], dataVals[1][i]));
+		}
+		
+		lineChart.getData().add(series);
+		
+		System.out.println("The chart series name is: " + simVariable.getName()); 
+		xAxis.setLabel(simVariable.getName());
+		yAxis.setLabel("Probability (Normalised)");
+		
+		double[] minMax = CetSimUtils.getMinAndMax(dataVals[0]); 
+		
+		double inset= Math.abs((minMax[1]-minMax[0])*0.2);
+		xAxis.setLowerBound(minMax[0]-inset);
+		xAxis.setUpperBound(minMax[1]+inset);
+	}
 
 	/**
 	 * Create the data series. 
@@ -37,48 +70,60 @@ public class SimVarLineChart extends BorderPane{
 	 */
 	private Node createChart() {
 		//defining the axes
-		final NumberAxis xAxis = new NumberAxis();
-		final NumberAxis yAxis = new NumberAxis();
+		xAxis = new NumberAxis();
+		 yAxis = new NumberAxis();
 		xAxis.setLabel(simVariable.getName());
 		yAxis.setLabel("Probability (Normalised)");
 		//creating the chart
-		final LineChart<Number,Number> lineChart = 
+		lineChart = 
 				new LineChart<Number,Number>(xAxis,yAxis);
 
 		lineChart.setTitle(SimVariable.getSimVarName(simVariable.getType()) + " Probability Distribution");
 	    lineChart.setCreateSymbols(false); //hide dots
 	    
 		//defining a series
-		XYChart.Series<Number, Number> series = new XYChart.Series<Number, Number>();
-		series.setName("Probability Disitribution");
+		series = new XYChart.Series<Number, Number>();
+		series.setName("Probability Distribution");
 		
-		//populating the series with data
-		double[][] dataVals = createDataSeries(); 
-		for (int i=0; i<nBins; i++) {
-			//System.out.println("Data Values are: x: " + dataVals[i][0] + " y: "+  dataVals[i][1]);
-			series.getData().add(new XYChart.Data(dataVals[0][i], dataVals[1][i]));
-		}
-		lineChart.getData().add(series);
+		//update the chart series
+		double[][] dataVals = createDistirbutionDataSeries(simVariable); 
+		updateChartSeries(dataVals); 
 		
 		// set limits
 		yAxis.setAutoRanging(true);
 		
 		xAxis.setAutoRanging(true);		
-		double[] minMax = CetSimUtils.getMinAndMax(dataVals[0]); 
-		double inset= Math.abs((minMax[1]-minMax[0])*0.2);
-		xAxis.setLowerBound(minMax[0]-inset);
-		xAxis.setUpperBound(minMax[1]+inset);
+
 
 		return lineChart;
 	}
 
 
 	int nBins=25;
+	
+	
+	/**
+	 * Create the data series from a custom sim variable based on the pre-defined
+	 * probability data point in the variable .
+	 */
+	public double[][] createCustomDataSeries(CustomSimVar simVariable) {
+		int nSamples = 1000; 
+		double binSize = (simVariable.getMax()-simVariable.getMin())/(double) nSamples;
+		double[][] graphData=new double[2][nSamples]; 
+		for (int i=0; i<nSamples; i++) {
+			graphData[0][i]=simVariable.getMin()+i*binSize;
+			//System.out.println("graphData[0][i] " + graphData[0][i] + " binSiz: " + binSize);
+			graphData[1][i]=simVariable.getProbability(graphData[0][i]); 
+		}
+		return graphData; 
+	}
+	
+	
 	/**
 	 * Create the data series from the sim-variable. A bit processor intensive
 	 * but means this code can be kept generic. 
 	 */
-	private double[][] createDataSeries() {
+	private double[][] createDistirbutionDataSeries(SimVariable simVariable) {
 		//samples 
 		double[] samples=new double[nSamples]; 
 		for (int i=0; i<nSamples; i++) {

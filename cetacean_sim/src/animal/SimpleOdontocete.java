@@ -12,7 +12,8 @@ import utils.SurfaceData;
 import utils.SurfaceUtils;
 
 /**
- * Very simple clicking odontocete for probability of detection simulations 
+ * Very simple clicking odontocete for probability of detection simulations.
+ * 
  * @author Jamie Macaulay
  *
  */
@@ -22,35 +23,44 @@ public class SimpleOdontocete {
 	
 	/**
 	 * The beam profile. Non uniform points on the beam profile surface.
-	 * Order of each elements {horizontal angle (degrees), vertical angle (degrees), transmission loss dB}
-	 *  
+	 * Order of each elements {horizontal angle (degrees), vertical angl
+	 *  (degrees), transmission loss dB}
 	 */
-	private BeamProfile beamProfile = DefaultBeamProfiles.getDefaultBeams().get(2); 
 
 	/******Variables which are used *****/
+	
+	DefaultBeamProfiles defaultBeamProfiles = new DefaultBeamProfiles(); 
+	
+	BeamProfile beamProfile; 
 	
 	//beam surface
 	public SurfaceData beamSurface;
 	
 	//source level
 	public SimVariable sourceLevel = new NormalSimVariable("Source Level", 180, 10);
+	
 	//orientation 
 	public ArrayList<SimVariable> vertAngles = new ArrayList<SimVariable>(Arrays.asList(new NormalSimVariable("Vertical Angle", 0, Math.toRadians(21), new double[] {-10000,0})));
 	
 	//horizontal angle
-	public SimVariable horzAngle = new RandomSimVariable("Horizontal Angle", Math.toRadians(180), Math.toRadians(180));
+	public SimVariable horzAngle = new RandomSimVariable("Horizontal Angle", Math.toRadians(-180), Math.toRadians(180));
 	//orientation 
 	
 	//depth distribution
 	public SimVariable depthDistribution = new RandomSimVariable("Depth", -200, 0);
+
+	private ArrayList<BeamProfile> beamProfiles;
 	
 	/************************************/
 	
 	/**
-	 * Constructor for the animal. 
+	 * Constructor for a default animal. 
 	 */
 	public SimpleOdontocete () {
-		beamSurface = SurfaceUtils.generateSurface(beamProfile.getRawBeamMeasurments());
+		
+		beamProfiles = defaultBeamProfiles.getDefaultBeams(); 
+
+		beamSurface = SurfaceUtils.generateSurface(beamProfiles.get(0).getRawBeamMeasurments());
 	}
 	
 	/**
@@ -71,7 +81,7 @@ public class SimpleOdontocete {
 		//setup the beam profile
 		switch(beamType) {
 		case "porp":
-			beamProfile = DefaultBeamProfiles.getDefaultBeams().get(0); 
+			beamProfile = beamProfiles.get(0); 
 			break;
 		}
 		

@@ -230,7 +230,16 @@ public class ProbDetSim  implements SimulationType {
 			mfr = new MatFileReader(file);
 			
 			//get array of a name "my_array" from file
-			MLStructure mlArrayRetrived = (MLStructure) mfr.getMLArray( "settings" );
+			MLStructure mlArrayRetrived;
+			if (mfr.getMLArray("prob_det")!=null) {
+				//if exported by cetsim with sim results. 
+				MLStructure structu = (MLStructure) mfr.getMLArray("prob_det");
+				mlArrayRetrived = (MLStructure)  structu.getField("settings"); 
+			}
+			else mlArrayRetrived = (MLStructure) mfr.getMLArray("settings");
+			
+			//System.out.println(mfr.getContent()); 
+			
 			ProbDetSimSettings probDetSettings = mtExport.structToSettings(mlArrayRetrived);
 			
 			//prob det settings. 
