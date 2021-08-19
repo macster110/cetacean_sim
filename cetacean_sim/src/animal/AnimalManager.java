@@ -11,7 +11,7 @@ public class AnimalManager {
 	 * CLICKING_ODONTOCETE - a more complex animal with beam profile and complex diving behaviour. 
 	 */
 	public enum AnimalTypeEnum {
-		SIMPLE_CETACEAN, SIMPLE_ODONTOCETE, CLICKING_ODONTOCETE
+		SIMPLE_CETACEAN, CLICKING_ODONTOCETE
 	}
 
 	/**
@@ -36,8 +36,6 @@ public class AnimalManager {
 		switch(type){
 		case CLICKING_ODONTOCETE:
 			return new ClickingOdontocete(); 
-		case SIMPLE_CETACEAN:
-			return new SimpleCetacean(); 
 		default:
 			break;
 		}

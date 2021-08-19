@@ -7,7 +7,6 @@ import java.util.Arrays;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 
 import detector.Detector;
-import simulation.RandomSimVariable;
 import simulation.StatusListener;
 import utils.CetSimUtils;
 import utils.Hist3;
@@ -69,6 +68,18 @@ public class ProbDetMonteCarlo {
 	 * Records the angles of detected animals. Note, this can take a lot of memory 
 	 */
 	private boolean recordAngles=true;
+	
+	
+	/**
+	 * Records the [x,y, z and RL] for the last simulation run
+	 */
+	private boolean recordPositions=false;
+	
+	/**
+	 * All [x, y, z, RL] measurements for the last simulation run 
+	 */
+	private float[][] simPositions; 
+
 
 	/*
 	 * Animal horizontal and vertical angles in RADIANS from the last simulation to have run. Note that 
@@ -146,7 +157,14 @@ public class ProbDetMonteCarlo {
 			notifyStatusListeners(StatusListener.SIM_RUNNING, i, 0 ); 
 			
 			//if recording detected angles then allocate an array 
-			if (recordAngles && i==simSettings.nBootStraps-1) angles=new double[simSettings.nRuns][4];
+			if (recordAngles && i==simSettings.nBootStraps-1) {
+				angles=new double[simSettings.nRuns][4];
+			}
+			
+			//if recording detected angles then allocate an array 
+			if (recordPositions && i==simSettings.nBootStraps-1) {
+				simPositions=new float[simSettings.nRuns][4];
+			}
 			ndet=0;
 			
 			for (int j=0; j<simSettings.nRuns; j++) {
@@ -223,12 +241,19 @@ public class ProbDetMonteCarlo {
 						angles[ndet][2]=horzAngle; 
 						angles[ndet][3]=vertAngle; 
 					}
+					
+					if (recordPositions && i==simSettings.nBootStraps-1) {
+						simPositions[ndet][0]=(float) animalPos[0]; 
+						simPositions[ndet][1]=(float) animalPos[1]; ; 
+						simPositions[ndet][2]=(float) animalPos[2]; ; 
+						simPositions[ndet][3]=(float) meanRecievedLvl; 
+					}
 					ndet++; 
 				}
 				else {
 					simResults[j][2]=0; 
 				}
-								
+												
 //				//print out some of the progress. 
 				if (j%5000==0) {
 					notifyStatusListeners(StatusListener.SIM_RUNNING, i, (j/(double) simSettings.nRuns) ); 
@@ -252,14 +277,13 @@ public class ProbDetMonteCarlo {
 			//now must split these results into a 3D chart. 
 			results.add(new Hist3(simResults, this.xBinEdges, this.yBinEdges, new Double(1))); 
 			
-			
 			//printResult(results.get(i).getHistogram());
-
 		}
 		
 		
 		//trim of array 
-		if (recordAngles) angles=Arrays.copyOf(angles, ndet); 
+		if (recordAngles) angles = Arrays.copyOf(angles, ndet); 
+		if (recordPositions) simPositions = Arrays.copyOf(simPositions, ndet); 
 		
 		notifyStatusListeners(StatusListener.SIM_RUNNING,simSettings.nBootStraps, 1.); 
 		if (this.print)	System.out.println("Progress: Sim: " + simSettings.nBootStraps + " of "  + simSettings.nBootStraps 
@@ -673,6 +697,31 @@ public class ProbDetMonteCarlo {
 	
 	
 	
+	/**
+	 * Check whether positions  [x,y, z and RL] for the last simulation run are saved the @see simPositions array 
+	 * @return true of the positions are record
+	 */
+	public boolean isRecordPositions() {
+		return recordPositions;
+	}
+
+	/**
+	 * Set whether positions  [x,y, z and RL] for the last simulation run are saved the @see simPositions array 
+	 * @return true of the positions are record
+	 */
+	public void setRecordPositions(boolean recordPositions) {
+		this.recordPositions = recordPositions;
+	}
+
+
+	/**
+	 * Get all positions  [x,y, z and RL] for the last simulation run if recordPositions was set to true
+	 * @return all positions (x,y,z) and source levels from  the last simualtion run. 
+	 */
+	public float[][] getSimPositions() {
+		return simPositions;
+	}
+
 	
 	/**
 	 * Run the simulation without a GUI. 

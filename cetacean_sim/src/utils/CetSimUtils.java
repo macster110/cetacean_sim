@@ -1,5 +1,7 @@
 package utils;
 
+import java.util.Arrays;
+
 import org.apache.commons.math3.util.MathUtils;
 
 import doug.TestAngles;
@@ -26,9 +28,30 @@ public class CetSimUtils extends SurfaceUtils {
 		return minmax;
 	}
 	
+	/**
+	 * Calculate the distance between two 3D Cartesian points. 
+	 * @param point1 - the first point (x,y,z)
+	 * @param point2 - the first point (x,y,z)
+	 * @return the distance in units of the points. 
+	 */
 	public static double distance(double[] point1, double[] point2) {
 		return Math.sqrt(Math.pow(point1[0]-point2[0],2) + Math.pow(point1[1]-point2[1],2) + Math.pow(point1[2]-point2[2],2)); 
 	}
+	
+	/**
+	 * Equivalent to the linspace function in MATLAB. Creates a series of equally spaced numbers between two limits. 
+	 * @param min - the minimum limit. 
+	 * @param max - the maximum limit. 
+	 * @param N - the number of points. 
+	 * @return N equally spaced numbers between min max with. 
+	 */
+	public static double[] linspace(double min, double max, int N) {  
+	    double[] d = new double[N];  
+	    for (int i = 0; i < N; i++){  
+	        d[i] = min + i * (max - min) / (N - 1);  
+	    }  
+	    return d;  
+	}  
 	
 	@Deprecated
 	public static double[] getRelativeAngle(double[] recieverPos, double[] animalPos, double[] animalAngle) {
@@ -117,5 +140,55 @@ public class CetSimUtils extends SurfaceUtils {
 		return beamLoss(recieverPos, animalPos, animalAngle, animalBeamProfile) + propogation.getTranmissionLoss(recieverPos, animalPos); 
 	
 	}
+	
+	
+	public static final double[] interpLinear(double[] x, double[] y, double[] xi) throws IllegalArgumentException {
+
+        if (x.length != y.length) {
+            throw new IllegalArgumentException("X and Y must be the same length");
+        }
+        if (x.length == 1) {
+            throw new IllegalArgumentException("X must contain more than one value");
+        }
+        double[] dx = new double[x.length - 1];
+        double[] dy = new double[x.length - 1];
+        double[] slope = new double[x.length - 1];
+        double[] intercept = new double[x.length - 1];
+
+        // Calculate the line equation (i.e. slope and intercept) between each point
+        for (int i = 0; i < x.length - 1; i++) {
+            dx[i] = x[i + 1] - x[i];
+            if (dx[i] == 0) {
+                throw new IllegalArgumentException("X must be montotonic. A duplicate " + "x-value was found");
+            }
+            if (dx[i] < 0) {
+                throw new IllegalArgumentException("X must be sorted");
+            }
+            dy[i] = y[i + 1] - y[i];
+            slope[i] = dy[i] / dx[i];
+            intercept[i] = y[i] - x[i] * slope[i];
+        }
+
+        // Perform the interpolation here
+        double[] yi = new double[xi.length];
+        for (int i = 0; i < xi.length; i++) {
+            if ((xi[i] > x[x.length - 1]) || (xi[i] < x[0])) {
+                yi[i] = Double.NaN;
+            }
+            else {
+                int loc = Arrays.binarySearch(x, xi[i]);
+                if (loc < -1) {
+                    loc = -loc - 2;
+                    yi[i] = slope[loc] * xi[i] + intercept[loc];
+                }
+                else {
+                    yi[i] = y[loc];
+                }
+            }
+        }
+
+        return yi;
+    }
+
 
 }

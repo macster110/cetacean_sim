@@ -1,8 +1,14 @@
 package animal;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -12,7 +18,9 @@ import layout.animal.BeamProfile;
 
 public class DefaultBeamProfiles {
 
-	public final URL MEASURED_BEAM_FILE = ClassLoader.getSystemResource("resources/porpoise_beam_profile.csv");
+	private String MEASURED_BEAM_FILE = "/resources/porpoise_beam_profile.csv"; 
+
+	//public final URL MEASURED_BEAM_FILE = ClassLoader.getSystemResource("resources/porpoise_beam_profile.csv");
 
 	/**
 	 * The beam profile of a harbour porpoise from Koblitz et al. 2012. 
@@ -163,22 +171,54 @@ public class DefaultBeamProfiles {
 
 	}
 
-	private double[][] loadBeamFromTextFile(URL file) {
+	private double[][] loadBeamFromTextFile(String fileurl) {
+		
 		BufferedReader in;
+
+		File file = null;
+		URL res = getClass().getResource(fileurl);
+		
+		
+		//hmmmmm this does not seem top work on MACOS....need to figure this out. 
+		if (res.getProtocol().equals("jar")) {
+			try {
+				InputStream input = DefaultBeamProfiles.class.getResourceAsStream(fileurl);
+				file = File.createTempFile("tempfile", ".tmp");
+				OutputStream out = new FileOutputStream(file);
+				int read;
+				byte[] bytes = new byte[1024];
+
+				while ((read = input.read(bytes)) != -1) {
+					out.write(bytes, 0, read);
+				}
+				
+				out.close();
+				file.deleteOnExit();
+			} catch (IOException ex) {
+				ex.printStackTrace();
+			}
+		} else {
+			//this will probably work in your IDE, but not from a JAR
+			file = new File(res.getFile());
+		}
+		
+		//System.out.println(file + "  : " + file.exists()); 
+
 		try {
-			in = new BufferedReader(
-					new InputStreamReader(file.openStream()));
+
+//			InputStream input =new FileInputStream(file); 
+		
+
+			in = new BufferedReader(new FileReader(file)); 
 
 			int count=0; 
 			String inputLine;
 			while ((inputLine = in.readLine()) != null)
 				count++; 
-			//			System.out.println(inputLine);
 			in.close();
 
 			double[][] data = new double[count][3]; 
-			in = new BufferedReader(
-					new InputStreamReader(file.openStream()));
+			in = new BufferedReader(new FileReader(file)); 
 
 			String[] dataS;  
 			count=0; 
@@ -191,6 +231,7 @@ public class DefaultBeamProfiles {
 				count++;
 			}
 
+			System.out.println("Number beam measurments read from .csv: " + count); 
 			in.close();
 
 			return data;
@@ -200,6 +241,7 @@ public class DefaultBeamProfiles {
 			e.printStackTrace();
 			return null; 
 		}
+
 
 	}
 

@@ -1,5 +1,9 @@
 package utils;
 
+import java.util.ArrayList;
+
+import simulation.probdettrack.ProbDetTrack.RecievedInfo;
+
 /**
  * Holds a 3D histogram of data. 
  * 
@@ -7,12 +11,12 @@ package utils;
  *
  */
 public class Hist3 {
-	
+
 	/**
 	 * Edges of the ybins
 	 */
 	private double[] ybinEdges;
-	
+
 	/**
 	 * Edges of the xbins. 
 	 */
@@ -26,22 +30,41 @@ public class Hist3 {
 
 	/**
 	 * Constructor for results
-	 * @param simResults
+	 * @param simResults - the simulation results - x, y and detection status e.g. 0 or 1 for binary detection. 
 	 * @param xbinEdges - the edges of the x bins
 	 * @param ybinEdges - the edges of the y bins
 	 * */
-	public Hist3(double[][] simResults, double[] xbinEdges, double[] ybinEdges) {
+	public Hist3(ArrayList<RecievedInfo> recResults, double[] xbinEdges, double[] ybinEdges, double threshold) {
 		this.xbinEdges=xbinEdges; 
 		this.ybinEdges=ybinEdges; 
+
+		//need to get the data into the standard format. 
+		double[][] simResults = new double[recResults.size()][3]; 
+
+		double distance2D; 
+		for (int i=0; i<recResults.size(); i++) {
+			//require 2D distance. 
+			distance2D = Math.sqrt(Math.pow(recResults.get(i).distance, 2) - Math.pow(recResults.get(i).height,2)); 
+			simResults[i][0] = distance2D; 
+			simResults[i][1] = recResults.get(i).height; 
+
+			if (recResults.get(i).recievedLevel>=threshold) {
+				simResults[i][2] = 1.; 
+			}
+			else {
+				simResults[i][2] = 0.; 
+			}
+		}
+
 		this.histogram=generateHist3D(simResults,xbinEdges,ybinEdges, null);
 	}
-	
+
 	/**
 	 * Constructor for results
-	 * @param simResults
+	 * @param simResults - the simulation results - x, y and detection status e.g. 0 or 1 for binary detection. 
 	 * @param xbinEdges - the edges of the x bins
 	 * @param ybinEdges - the edges of the y bins
-	 * @param findValue - if not null the histogram calulates the percentage of findValue's in each hist bin. 
+	 * @param findValue - if not null the histogram calculates the percentage of findValue's in each hist bin. 
 	 * */
 	public Hist3(double[][] simResults, double[] xbinEdges, double[] ybinEdges, Double findValue) {
 		this.xbinEdges=xbinEdges; 
@@ -49,7 +72,7 @@ public class Hist3 {
 		this.histogram=generateHist3D(simResults,xbinEdges,ybinEdges, findValue);
 	}
 
-	
+
 	/**
 	 * Constructs a Hist3 object with pre-defined histogram 
 	 * @param xbinEdges - the edges of the x bins
@@ -60,6 +83,19 @@ public class Hist3 {
 		this.xbinEdges=xbinEdges; 
 		this.ybinEdges=yBinEdges; 
 		this.histogram=averageHist; 
+	}
+
+
+	/**
+	 * Constructor for results
+	 * @param simResults - the simulation results - x, y and detection status e.g. 0 or 1 for binary detection. 
+	 * @param xbinEdges - the edges of the x bins
+	 * @param ybinEdges - the edges of the y bins
+	 * */
+	public Hist3(double[][] simResults, double[] xbinEdges, double[] ybinEdges) {
+		this.xbinEdges=xbinEdges; 
+		this.ybinEdges=ybinEdges; 
+		this.histogram=generateHist3D(simResults,xbinEdges,ybinEdges, null);
 	}
 
 	/**
@@ -74,7 +110,7 @@ public class Hist3 {
 	 */
 	private double[][] generateHist3D(double[][] simResults, double[] xbinEdges, double[] ybinEdges, Double findValue) {
 		double[][] histogram = new double[xbinEdges.length-1][ybinEdges.length-1]; 
-		
+
 		int histcount=0; 
 		int histvalue = 0; 
 		for (int i=0; i<xbinEdges.length-1; i++) {
@@ -82,9 +118,9 @@ public class Hist3 {
 				histcount=0;
 				histvalue=0; 
 				for (int n=0; n<simResults.length; n++) {
-//					if (n%1000==0) {
-//						System.out.println("Histograming: " + simResults[n][0] + " "+   simResults[n][1] + " " + simResults[n][2] + " " +(findValue!=null && findValue.doubleValue()==simResults[n][2]));
-//					}
+					//					if (n%1000==0) {
+					//						System.out.println("Histograming: " + simResults[n][0] + " "+   simResults[n][1] + " " + simResults[n][2] + " " +(findValue!=null && findValue.doubleValue()==simResults[n][2]));
+					//					}
 					if (simResults[n][0]>xbinEdges[i] && simResults[n][0]<=xbinEdges[i+1] &&
 							simResults[n][1]>ybinEdges[j] && simResults[n][1]<=ybinEdges[j+1]) {
 						histcount++;
@@ -93,8 +129,8 @@ public class Hist3 {
 						}
 					}
 				}
-//				System.out.println("Hist: " + i + " "+ j + " value n: " + histvalue + " total n: " + histcount + " checking for ranges between: " 
-//				+ xbinEdges[i] + " to " + xbinEdges[i+1] + " and depths from " + ybinEdges[j] + " to " + ybinEdges[j+1]);
+				//				System.out.println("Hist: " + i + " "+ j + " value n: " + histvalue + " total n: " + histcount + " checking for ranges between: " 
+				//				+ xbinEdges[i] + " to " + xbinEdges[i+1] + " and depths from " + ybinEdges[j] + " to " + ybinEdges[j+1]);
 				if (findValue==null) histogram[i][j]=histcount; //just standard histogram 
 				else  {
 					if (histcount==0) histogram[i][j]=0;
@@ -107,8 +143,12 @@ public class Hist3 {
 		}
 		return histogram; 
 	}
-	
-	
+
+
+
+
+
+
 	/**
 	 * Generate the bin edges for a histogram 
 	 * @param min - the minimum values 
@@ -124,7 +164,7 @@ public class Hist3 {
 		}
 		return binEdges;
 	}
-	
+
 	/**
 	 * Get the y bin edges.
 	 * @return the y edges. 
@@ -150,20 +190,20 @@ public class Hist3 {
 	public double[][] getHistogram() {
 		return histogram;
 	}
-	
+
 	/**
 	 * Creatre an X or Y surface for plotting the histogram as a surface. The X and y surfaces are the 
 	 * center of each histograqm bin
 	 * @param xbins - the x bins 
 	 * @param ybins - the y bins
 	 * @param x - true for x grid, false for y grid.
- 	 * @return the grid used for drawing surfaces. 
+	 * @return the grid used for drawing surfaces. 
 	 */
 	public static float[][] getXYSurface(double[] xbins, double[] ybins, boolean x){
 		return getXYSurface(xbins, ybins, x, true);
 	}
-	
-	
+
+
 	/**
 	 * Creatre an X or Y surface for plotting the histogram as a surface. The X and y surfaces are the 
 	 * center of each histograqm bin
@@ -171,11 +211,11 @@ public class Hist3 {
 	 * @param ybins - the y bins
 	 * @param x - true for x grid, false for y grid.
 	 * @param binEdges - true if the inputsd are grid edges. Otherwise false
- 	 * @return the grid used for drawing surfaces. 
+	 * @return the grid used for drawing surfaces. 
 	 */
 	public static float[][] getXYSurface(double[] xbins, double[] ybins, boolean x, boolean binEdges){
 		float[][] surface = new float[xbins.length-1][ybins.length-1]; 
-		
+
 		double xbinsSize=xbins[1]-xbins[0]; 
 		double ybinsSize=ybins[1]-ybins[0]; 
 

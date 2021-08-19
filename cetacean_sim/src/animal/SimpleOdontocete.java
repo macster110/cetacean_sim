@@ -23,7 +23,7 @@ public class SimpleOdontocete {
 	
 	/**
 	 * The beam profile. Non uniform points on the beam profile surface.
-	 * Order of each elements {horizontal angle (degrees), vertical angl
+	 * Order of each elements {horizontal angle (degrees), vertical angle
 	 *  (degrees), transmission loss dB}
 	 */
 
@@ -87,9 +87,9 @@ public class SimpleOdontocete {
 		
 		beamSurface = SurfaceUtils.generateSurface(beamProfile.getRawBeamMeasurments());
 		
-		//bit of a hack but works 
-		ProbDetSimSettings probDetSimSettings = new ProbDetSimSettings(); 
-		probDetSimSettings.minHeight=maxDepth; 
+//		//bit of a hack but works 
+//		ProbDetSimSettings probDetSimSettings = new ProbDetSimSettings(); 
+//		probDetSimSettings.minHeight=maxDepth; 
 	}
 	
 	
@@ -112,9 +112,9 @@ public class SimpleOdontocete {
 
 		beamSurface = SurfaceUtils.generateSurface(beamProfile.getRawBeamMeasurments());
 		
-		//bit of a hack but works 
-		ProbDetSimSettings probDetSimSettings = new ProbDetSimSettings(); 
-		probDetSimSettings.minHeight=maxDepth; 
+//		//bit of a hack but works 
+//		ProbDetSimSettings probDetSimSettings = new ProbDetSimSettings(); 
+//		probDetSimSettings.minHeight=maxDepth; 
 	}
 	
 	/**

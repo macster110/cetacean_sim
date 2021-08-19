@@ -1,5 +1,7 @@
 package animal;
 
+import java.util.List;
+
 import animal.AnimalManager.AnimalTypeEnum;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -34,7 +36,17 @@ public class ClickingOdontocete implements AnimalModel, Cloneable {
 	/**
 	 * Inetger property for the number of animals in the simulation. 
 	 */
-	private IntegerProperty nAnimals= new SimpleIntegerProperty( 50); 
+	private IntegerProperty nAnimals= new SimpleIntegerProperty(50); 
+	
+	/**
+	 * A list of animal tracks. 
+	 */
+	public List<AnimalTrack> animalTrack; 
+	
+	/**
+	 * A list of the animal vocalisations.
+	 */
+	public List<AnimalVocalisations> animalVoc; 
 	
 	
 	/**
@@ -44,24 +56,28 @@ public class ClickingOdontocete implements AnimalModel, Cloneable {
 
 	
 	public ClickingOdontocete(){
-		newSettings();
+		beamProfile.createBeamProfile(settings.beamProfile); 
+	}
+	
+
+	/**
+	 * Create a model with just one track. 
+	 * @param trackxyz - the x y and z cartesian co-ordintaes of the track
+	 * @param trackang
+	 * @param vocalsiations
+	 * @param beamProdileRaw
+	 */
+	public ClickingOdontocete(double[] tracktimes, double[][] trackxyz, double[][] trackang, double[] vocTimes, double[] vocAmp, double[][] beamProdileRaw) {
+		beamProfile = new BeamProfile("Custom Beam", beamProdileRaw); 
+		
+		AnimalTrack animalTrack = new AnimalTrack(tracktimes, trackxyz, trackang); 
+		
 	}
 
-	
 	@Override
 	public StringProperty getAnimalName() {
 		return nameProperty;
 	}
-	
-	
-	/**
-	 * Called wehenever settings are changed. 
-	 */
-	private void newSettings(){
-		//create the beam profile. 
-		beamProfile.createBeamProfile(settings.beamProfile); 
-	}
-	
 	
 
 	@Override
@@ -69,30 +85,12 @@ public class ClickingOdontocete implements AnimalModel, Cloneable {
 		return nAnimals;
 	}
 
-	@Override
-	public double[][] getTrack(long timeStart, long longTimeEnd, double[][] bathySurface, double[][] tide) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
-	public double getBeamProfileTL(double horzAngle, double vertAngle) {
-		// TODO Auto-generated method stub
-		return 0;
+	public BeamProfile getBeamProfileTL() {
+		return beamProfile;
 	}
 
-	@Override
-	public double[] getVocWav(double horzAngle, double vertAngle, int sR) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public double[][] getVocSeries(long timeStart, long longTimeEnd) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
 	/**
 	 * The settings pane. Pane to allow settings for the animal to be changedd
 	 * @return the settings pane for the animal. 
@@ -128,6 +126,18 @@ public class ClickingOdontocete implements AnimalModel, Cloneable {
 	@Override
 	public AnimalTypeEnum getAnimalType() {
 		return AnimalTypeEnum.CLICKING_ODONTOCETE;
+	}
+
+
+	@Override
+	public AnimalTrack getTrack(int animalN) {
+		return animalTrack.get(animalN);
+	}
+
+
+	@Override
+	public AnimalVocalisations getVocSeries(int animalN) {
+		return animalVoc.get(animalN);
 	}
 
 }
