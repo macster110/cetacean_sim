@@ -1,5 +1,6 @@
 package animal;
 
+import java.util.Arrays;
 import java.util.List;
 
 import animal.AnimalManager.AnimalTypeEnum;
@@ -21,7 +22,7 @@ public class ClickingOdontocete implements AnimalModel, Cloneable {
 	/**
 	 * Settings whihc can be serialised. 
 	 */
-	private ClickingOdontocetesSettings settings=new ClickingOdontocetesSettings(); 
+	//private ClickingOdontocetesSettings settings=new ClickingOdontocetesSettings(); 
 	
 	/**
 	 * The settings pane for a clicking odontocetes. 
@@ -56,21 +57,30 @@ public class ClickingOdontocete implements AnimalModel, Cloneable {
 
 	
 	public ClickingOdontocete(){
-		beamProfile.createBeamProfile(settings.beamProfile); 
+		beamProfile.createBeamProfile(DefaultBeamProfiles.porpBeam1); 
 	}
 	
 
 	/**
 	 * Create a model with just one track. 
 	 * @param trackxyz - the x y and z cartesian co-ordintaes of the track
-	 * @param trackang
+	 * @param trackang - the horizontal and vertical angles of each trackxyz 
 	 * @param vocalsiations
-	 * @param beamProdileRaw
+	 * @param beamProfileRaw
 	 */
-	public ClickingOdontocete(double[] tracktimes, double[][] trackxyz, double[][] trackang, double[] vocTimes, double[] vocAmp, double[][] beamProdileRaw) {
-		beamProfile = new BeamProfile("Custom Beam", beamProdileRaw); 
+	public ClickingOdontocete(double[] tracktimes, double[][] trackxyz, double[][] trackang, double[] vocTimes, double[] vocAmp, double[][] beamProfileRaw) {
+		beamProfile = new BeamProfile("Custom Beam", beamProfileRaw); 
 		
-		AnimalTrack animalTrack = new AnimalTrack(tracktimes, trackxyz, trackang); 
+		//the animal tracks
+		animalTrack = Arrays.asList(new AnimalTrack(tracktimes, trackxyz, trackang)); 
+		
+		//animal voclaisations
+		animalVoc = Arrays.asList(new ClickingAnimalVoc(vocTimes, vocAmp)); 
+		
+		//the beam profile. 
+		beamProfile = new BeamProfile("Custom Beam", beamProfileRaw); 
+
+		nAnimals.set(1);
 		
 	}
 
@@ -102,9 +112,9 @@ public class ClickingOdontocete implements AnimalModel, Cloneable {
 		return settingsPane; 
 	}
 	
-	public ClickingOdontocetesSettings getSettings() {
-		return settings;
-	}
+//	public ClickingOdontocetesSettings getSettings() {
+//		return settings;
+//	}
 
 
 	public BeamProfile getBeamProfile() {
@@ -138,6 +148,22 @@ public class ClickingOdontocete implements AnimalModel, Cloneable {
 	@Override
 	public AnimalVocalisations getVocSeries(int animalN) {
 		return animalVoc.get(animalN);
+	}
+	
+	@Override
+	public String toString() {
+		String outString = ""; 
+		for (int i =0; i<this.nAnimals.intValue(); i++) {
+			outString += "---Clicking Odontocete---" + i; 
+			outString += "\n"; 
+
+			outString +=  "No. clicks: " + animalVoc.get(i).getVocAmplitudes().length; 
+			outString += "\n"; 
+
+			outString +=  "No. track points: " + animalTrack.get(i).getTrackTimes().length; 
+			outString += "\n"; 
+		}
+		return outString;
 	}
 
 }

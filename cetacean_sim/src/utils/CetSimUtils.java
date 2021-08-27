@@ -38,6 +38,18 @@ public class CetSimUtils extends SurfaceUtils {
 		return Math.sqrt(Math.pow(point1[0]-point2[0],2) + Math.pow(point1[1]-point2[1],2) + Math.pow(point1[2]-point2[2],2)); 
 	}
 	
+	
+	/**
+	 * Calculate 2D (X Y) the distance between two 2D or 3D Cartesian points. 
+	 * @param point1 - the first point (x,y) or (x,y,z)
+	 * @param point2 - the first point (x,y) or (x,y,z)
+	 * @return the distance in units of the points. 
+	 */
+	public static double distance2D(double[] point1, double[] point2) {
+		return Math.sqrt(Math.pow(point1[0]-point2[0],2) + Math.pow(point1[1]-point2[1],2)); 
+	}
+	
+	
 	/**
 	 * Equivalent to the linspace function in MATLAB. Creates a series of equally spaced numbers between two limits. 
 	 * @param min - the minimum limit. 
@@ -116,11 +128,14 @@ public class CetSimUtils extends SurfaceUtils {
 //		animalAngle[0] = Math.PI; 
 //		animalAngle[1] = 0;
 		
+//		System.out.println("Animal angle: " + ((float) animalAngle[0]) + "  vert: " + (float) animalAngle[1]);
+//		System.out.println("Animal pos: x " + ((float) animalPos[0]) + "  y: " + (float) animalPos[1]+ "  z: " + (float) animalPos[2]);
+//		System.out.println("reciever pos: x " + ((float) recieverPos[0]) + "  y: " + (float) recieverPos[1]+ "  z: " + (float) recieverPos[2]);
+
 		double[] relativeAngles = TestAngles.getRelativeAngles(recieverPos, animalPos, animalAngle);
 //		relativeAngles[0] = relativeAngles[1] = 0;
 		
-		//System.out.println("Find surface for horz: " + ((float) relativeAngles[0]) + "  vert: " + (float) relativeAngles[1]);
-	
+//		System.out.println("Find surface for horz: " + ((float) relativeAngles[0]) + "  vert: " + (float) relativeAngles[1]);
 		return animalBeamProfile.grid.interpolate((float) relativeAngles[0], (float) relativeAngles[1]); 
 	}
 	
@@ -141,7 +156,14 @@ public class CetSimUtils extends SurfaceUtils {
 	
 	}
 	
-	
+	/**
+	 * Linear interpolation of data. Similar to MATLAB interp1 function. 
+	 * @param x - the x values. 
+	 * @param y - the y values.
+	 * @param xi - the interpolated x values to find y values for. 
+	 * @return the yi values for corresponding xi values. 
+	 * @throws IllegalArgumentException
+	 */
 	public static final double[] interpLinear(double[] x, double[] y, double[] xi) throws IllegalArgumentException {
 
         if (x.length != y.length) {
@@ -189,6 +211,70 @@ public class CetSimUtils extends SurfaceUtils {
 
         return yi;
     }
+	
+	/**
+	 * Efficient implementation of a binary search algorithm. 
+	 * @param numbers - the numbers to search
+	 * @param start - the start index of the array to search (0 for whole array)
+	 * @param end - the end index of the array to search (numbers.length-1 for whole array )
+	 * @param myNumber - the number to search for. 
+	 * @return the index of the closest number in numbers array to myNumber. 
+	 */
+	private static int nearestNumberBinarySearch(double[] numbers, int start, int end, double myNumber) {
+	    int mid = (start + end) / 2;
+	    if (numbers[mid] == myNumber)
+	        return mid;
+	    if (start == end - 1)
+	        if (Math.abs(numbers[end] - myNumber) >= Math.abs(numbers[start] - myNumber))
+	            return start;
+	        else
+	            return end;
+	     if(numbers[mid]> myNumber)
+	        return nearestNumberBinarySearch(numbers, start,mid, myNumber);
+	     else
+	         return nearestNumberBinarySearch(numbers,mid, end, myNumber);
+
+	}
+
+	
+	/**
+	 * Interpolate using a nearest neighbour search. 
+		 * @param x - the x values. 
+	 * @param y - the y values.
+	 * @param xi - the nearest neighbour x values to find y values for. 
+	 * @return the yi values for corresponding xi values. 
+
+	 * @throws IllegalArgumentException
+	 */
+	public static double[] findClosest(double[] x, double[] y, double[] xi) throws IllegalArgumentException {
+		
+	    if (x.length != y.length) {
+            throw new IllegalArgumentException("X and Y must be the same length");
+        }
+        if (x.length == 1) {
+            throw new IllegalArgumentException("X must contain more than one value");
+        }
+        
+        double[] yi = new double[xi.length];
+
+		for (int i=0; i<xi.length; i++) {
+			//System.out.println("Find closest: " +  i + " of " + xi.length); 
+						//much more efficient methods than  code commented out belwo. 
+			int ind = nearestNumberBinarySearch(x, 0, x.length-1, xi[i]); 
+			yi[i]= y[ind];
+//			double min = Double.MAX_VALUE;
+//			int minind = -1;
+//			for (int j=0; j<x.length; j++) {
+//				if (Math.abs(x[j]-xi[i])<min) {
+//					minind=j; 
+//					min = Math.abs(x[j]-xi[i]); 
+//				}
+//			}
+//			yi[i] = y[minind]; 
+		}
+		
+		return yi;
+	}
 
 
 }

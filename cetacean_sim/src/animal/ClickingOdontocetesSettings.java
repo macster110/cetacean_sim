@@ -1,5 +1,6 @@
 package animal;
 
+@Deprecated
 public class ClickingOdontocetesSettings  implements Cloneable {
 	
 	/*********************Diving************************/

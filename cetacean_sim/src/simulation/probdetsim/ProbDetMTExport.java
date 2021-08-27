@@ -195,8 +195,8 @@ public class ProbDetMTExport {
 			//basic sim settings 
 			probDetSimSettings.maxRange=maxRange.get(0);
 			probDetSimSettings.minHeight=maxDepth.get(0);
-			probDetSimSettings.depthBin=depthbin.get(0).intValue();
-			probDetSimSettings.rangeBin=rangebin.get(0).intValue();
+			probDetSimSettings.numDepthBins=depthbin.get(0).intValue();
+			probDetSimSettings.numRangeBins=rangebin.get(0).intValue();
 			probDetSimSettings.nBootStraps=nBootStraps.get(0).intValue();
 			probDetSimSettings.nRuns=nRuns.get(0).intValue();
 			probDetSimSettings.evenXY=evenXY.get(0).intValue(); 
@@ -284,8 +284,8 @@ public class ProbDetMTExport {
 
 		mlStruct.setField("maxrange", mlDouble(settings.maxRange), 0);
 		mlStruct.setField("maxdepth", mlDouble(-settings.minHeight), 0);
-		mlStruct.setField("depthbin", mlDouble(settings.depthBin), 0);
-		mlStruct.setField("rangebin", mlDouble(settings.rangeBin), 0);
+		mlStruct.setField("depthbin", mlDouble(settings.numDepthBins), 0);
+		mlStruct.setField("rangebin", mlDouble(settings.numRangeBins), 0);
 		mlStruct.setField("evenxy", new MLInt32(null, new int[]{settings.evenXY}, 1), 0); //TODO
 
 		

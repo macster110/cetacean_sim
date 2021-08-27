@@ -27,6 +27,21 @@ public class Hist3 {
 	 */
 	private double[][] histogram;
 
+	/**
+	 * The total number of data points added to the histogram
+	 */
+	private int totalcount;
+
+	/**
+	 * Constructor for a blank histogram. 
+	 * @param xbinEdges
+	 * @param ybinEdges
+	 */
+	public Hist3(double[] xbinEdges, double[] ybinEdges) {
+		this.xbinEdges=xbinEdges; 
+		this.ybinEdges=ybinEdges; 
+	}
+
 
 	/**
 	 * Constructor for results
@@ -39,24 +54,9 @@ public class Hist3 {
 		this.ybinEdges=ybinEdges; 
 
 		//need to get the data into the standard format. 
-		double[][] simResults = new double[recResults.size()][3]; 
+		double[][] simResults = recievedInfo2HistData(recResults, threshold); 
 
-		double distance2D; 
-		for (int i=0; i<recResults.size(); i++) {
-			//require 2D distance. 
-			distance2D = Math.sqrt(Math.pow(recResults.get(i).distance, 2) - Math.pow(recResults.get(i).height,2)); 
-			simResults[i][0] = distance2D; 
-			simResults[i][1] = recResults.get(i).height; 
-
-			if (recResults.get(i).recievedLevel>=threshold) {
-				simResults[i][2] = 1.; 
-			}
-			else {
-				simResults[i][2] = 0.; 
-			}
-		}
-
-		this.histogram=generateHist3D(simResults,xbinEdges,ybinEdges, null);
+		this.histogram=addToHist(simResults, null);
 	}
 
 	/**
@@ -69,7 +69,7 @@ public class Hist3 {
 	public Hist3(double[][] simResults, double[] xbinEdges, double[] ybinEdges, Double findValue) {
 		this.xbinEdges=xbinEdges; 
 		this.ybinEdges=ybinEdges; 
-		this.histogram=generateHist3D(simResults,xbinEdges,ybinEdges, findValue);
+		this.histogram=addToHist(simResults, findValue);
 	}
 
 
@@ -95,7 +95,7 @@ public class Hist3 {
 	public Hist3(double[][] simResults, double[] xbinEdges, double[] ybinEdges) {
 		this.xbinEdges=xbinEdges; 
 		this.ybinEdges=ybinEdges; 
-		this.histogram=generateHist3D(simResults,xbinEdges,ybinEdges, null);
+		this.histogram=addToHist(simResults, null);
 	}
 
 	/**
@@ -108,8 +108,26 @@ public class Hist3 {
 	 * @param ybinEdges - edges of the y bins. 
 	 * @param findValue - the value to find. 
 	 */
-	private double[][] generateHist3D(double[][] simResults, double[] xbinEdges, double[] ybinEdges, Double findValue) {
-		double[][] histogram = new double[xbinEdges.length-1][ybinEdges.length-1]; 
+	@Deprecated
+	private double[][] addToHist(double[][] simResults, double[] xbinEdges, double[] ybinEdges, Double findValue) {
+		return addToHist(simResults,  findValue);
+	}
+
+	/**
+	 * Generate a 3D histogram data. Either simply bins the data into a 2D histogram. If findValue is not null then
+	 * will find all points which are within 2D histogram and then results for which the third column is equals
+	 * findValue are found and returned as the percentage of total number of result sin that bin. 
+	 * 
+	 * @param simResults - 3D data
+	 * @param findValue - the value to find. 
+	 */
+	public double[][] addToHist(double[][] simResults, Double findValue) {
+
+		if (histogram==null) {
+			histogram = new double[xbinEdges.length-1][ybinEdges.length-1]; 
+			totalcount = 0; 
+		}
+		
 
 		int histcount=0; 
 		int histvalue = 0; 
@@ -129,21 +147,42 @@ public class Hist3 {
 						}
 					}
 				}
-				//				System.out.println("Hist: " + i + " "+ j + " value n: " + histvalue + " total n: " + histcount + " checking for ranges between: " 
-				//				+ xbinEdges[i] + " to " + xbinEdges[i+1] + " and depths from " + ybinEdges[j] + " to " + ybinEdges[j+1]);
-				if (findValue==null) histogram[i][j]=histcount; //just standard histogram 
+//				System.out.println("Hist: " + i + " "+ j + " value n: " + histvalue + " total n: " + histcount + " checking for ranges between: " 
+//				+ xbinEdges[i] + " to " + xbinEdges[i+1] + " and depths from " + ybinEdges[j] + " to " + ybinEdges[j+1]);
+				if (findValue==null) histogram[i][j]= histogram[i][j]+histcount; //just standard histogram 
 				else  {
-					if (histcount==0) histogram[i][j]=0;
+					//TODO
+					if (histcount==0) histogram[i][j]=0; 
 					//Note: Do not divide this by the bin number because this negates the depth distribution. i.e. dividing a small
 					//number of sim results with a small number of sim attempts makes a much bigger number. Must divide 
 					//by simResults.length to maintain fair comparison across bins. 
-					else histogram[i][j]=histvalue/ (double) simResults.length; //the percentage of values which equal findValue;
+					
+					//recover the total number of N rather than percentage then add new value and covert back to percentage - a little messy but meh... 
+					else histogram[i][j]=(histogram[i][j]*totalcount + histvalue)/ (totalcount+ simResults.length); //the percentage of values which equal findValue;
 				}
 			}
 		}
+		
+		totalcount=totalcount + simResults.length; 
+
 		return histogram; 
 	}
 
+	/**
+	 * Generate a 3D histogram data. Either simply bins the data into a 2D histogram. If findValue is not null then
+	 * will find all points which are within 2D histogram and then results for which the third column is equals
+	 * findValue are found and returned as the percentage of total number of result sin that bin. 
+	 * 
+	 * @param simResults - 3D data
+	 * @param findValue - the value to find. 
+	 */
+	public double[][] addToHist(ArrayList<RecievedInfo> recResults, Double findValue, double threshold) {
+
+		//need to get the data into the standard format. 
+		double[][] simResults = recievedInfo2HistData(recResults, threshold); 
+
+		return this.histogram=addToHist(simResults, findValue);
+	}
 
 
 
@@ -193,7 +232,7 @@ public class Hist3 {
 
 	/**
 	 * Creatre an X or Y surface for plotting the histogram as a surface. The X and y surfaces are the 
-	 * center of each histograqm bin
+	 * center of each histogram bin
 	 * @param xbins - the x bins 
 	 * @param ybins - the y bins
 	 * @param x - true for x grid, false for y grid.
@@ -206,7 +245,7 @@ public class Hist3 {
 
 	/**
 	 * Creatre an X or Y surface for plotting the histogram as a surface. The X and y surfaces are the 
-	 * center of each histograqm bin
+	 * center of each histogram bin
 	 * @param xbins - the x bins 
 	 * @param ybins - the y bins
 	 * @param x - true for x grid, false for y grid.
@@ -231,6 +270,46 @@ public class Hist3 {
 		}
 		return surface; 
 	}
+
+
+	/**
+	 * Convert an array of RecievedInfo objects into histogram data based on a threshold. 
+	 * @param recResults - the RecievedInfo array. 
+	 * @param threshold - the threshold in dB. A detection occurs if the recieved level is above threshold. 
+	 * @return a [distance, height, binary value] array. 
+	 */
+	public static double[][] recievedInfo2HistData(ArrayList<RecievedInfo> recResults, double threshold) {
+		//need to get the data into the standard format. 
+		double[][] simResults = new double[recResults.size()][3]; 
+
+		//double distance2D; 
+		for (int i=0; i<recResults.size(); i++) {
+			//require 2D distance. 
+			//distance2D = Math.sqrt(Math.pow(recResults.get(i).distance, 2) - Math.pow(recResults.get(i).height,2)); 
+			simResults[i][0] = recResults.get(i).distance; //2D distance
+			simResults[i][1] = recResults.get(i).height; //depth of animal
+
+			//System.out.println(String.format("Passed threshold? %d  recieved level %.1f threshold: %.1f height: %.1f", i  , recResults.get(i).recievedLevel ,threshold, recResults.get(i).height)); 
+			if (recResults.get(i).recievedLevel>=threshold) {
+				simResults[i][2] = 1.; 
+			}
+			else {
+				simResults[i][2] = 0.; 
+			}
+		}
+
+		return simResults; 
+	}
+	
+
+	/**
+	 * Get the total number of data points added to the histogram
+	 * @return the total number of points
+	 */
+	public int getTotalcount() {
+		return totalcount;
+	}
+
 
 
 }

@@ -372,10 +372,10 @@ public class ProbDetSettingsPane extends BorderPane {
 		nBootSpinner.getValueFactory().setValue(settings.nBootStraps);
 		nRunnerSpinner.getValueFactory().setValue(settings.nRuns);
 
-		depthBin.getValueFactory().setValue(settings.depthBin);
+		depthBin.getValueFactory().setValue(settings.numDepthBins);
 		maxDepth.getValueFactory().setValue(settings.minHeight);
 		
-		rangeBin.getValueFactory().setValue(settings.rangeBin);
+		rangeBin.getValueFactory().setValue(settings.numRangeBins);
 		maxRange.getValueFactory().setValue(settings.maxRange);
 		
 		minNoise.getValueFactory().setValue(settings.noise);
@@ -405,10 +405,10 @@ public class ProbDetSettingsPane extends BorderPane {
 		settings.nBootStraps=nBootSpinner.getValue(); 
 		settings.nRuns=this.nRunnerSpinner.getValue(); 
 		
-		settings.depthBin=this.depthBin.getValue();
+		settings.numDepthBins=this.depthBin.getValue();
 		settings.minHeight=this.maxDepth.getValue();
 
-		settings.rangeBin=this.rangeBin.getValue();
+		settings.numRangeBins=this.rangeBin.getValue();
 		settings.maxRange=this.maxRange.getValue();
 		
 		settings.noise=this.minNoise.getValue();

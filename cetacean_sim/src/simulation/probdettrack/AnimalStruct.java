@@ -23,7 +23,7 @@ public class AnimalStruct {
 	public double[][] clicks;
 
 	/**
-	 * The x, y, z of the track data. Track data {time (MATLAB datenum), x, y, z}
+	 * The Latitude, Longitude and height of the track data. Track data {time (MATLAB datenum), lat (decimal), long (decimal), z (meters)}
 	 * meters.
 	 */
 	public double[][] trackdata;
@@ -46,6 +46,11 @@ public class AnimalStruct {
 	 */
 	public Double systemSens;
 
+	/**
+	 * A list of beam profile measurments which can be used to construct a beam profile 
+	 *  (horizontal angle (RAD), vertical angle (RAD), Beam loss (dB))
+	 */
+	public double[][] beamProfile; 
 //	/**
 //	 * The id of the tag
 //	 */

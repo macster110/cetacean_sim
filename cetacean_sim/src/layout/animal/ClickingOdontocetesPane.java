@@ -334,45 +334,45 @@ public class ClickingOdontocetesPane extends BorderPane implements SettingsPane<
 
 		/*******************Diving Behaviour********************/
 		
-		descentVertAngleStd.setText(String.format("%.2f", Math.toDegrees(settings.getSettings().descentVertAngleStd)));
-		descentVertAngleMean.setText(String.format("%.2f", Math.toDegrees(settings.getSettings().descentVertAngleMean)));
-		
-		ascentVertAngleMean.setText(String.format("%.2f", Math.toDegrees(settings.getSettings().ascentVertAngleMean)));
-		ascentVertAngleStd.setText(String.format("%.2f", Math.toDegrees(settings.getSettings().ascentVertAngleStd)));
-		
-		descentSpeedStd.setText(String.format("%.2f", settings.getSettings().descentSpeedStd));
-		descentSpeedMean.setText(String.format("%.2f", settings.getSettings().descentSpeedMean));
-		
-		ascentSpeedMean.setText(String.format("%.2f", settings.getSettings().ascentSpeedMean));
-		ascentSpeedStd.setText(String.format("%.2f", settings.getSettings().ascentSpeedStd));
-		
-		bottomSpeedMean.setText(String.format("%.2f", settings.getSettings().bottomSpeedMean));
-		bottomSpeedStd.setText(String.format("%.2f", settings.getSettings().bottomSpeedStd));
-	
-		bottomTimeMean.setText(String.format("%.2f", settings.getSettings().bottomTimeMean));
-		bottomTimeStd.setText(String.format("%.2f", settings.getSettings().bottomTimeStd));
-		
-		descentHorzAngleMean.setText(String.format("%.2f", Math.toDegrees(settings.getSettings().descentHorzAngleMean)));
-		descentHorzAngleStd.setText(String.format("%.2f", Math.toDegrees(settings.getSettings().descentHorzAngleStd)));
-		
-		ascentHorzAngleMean.setText(String.format("%.2f", Math.toDegrees(settings.getSettings().ascentHorzAngleMean)));
-		ascentHorzAngleStd.setText(String.format("%.2f", Math.toDegrees(settings.getSettings().ascentHorzAngleStd)));
-		
-		surfaceTimeStd.setText(String.format("%.2f", settings.getSettings().surfaceTimeStd));
-		surfaceTimeMean.setText(String.format("%.2f", settings.getSettings().surfaceTimeMean));
-		
-		/********************Beam Profile*************************/
-		beamProfileData= createBeamProfileList(settings.getSettings().beamProfile);
-        table.setItems(beamProfileData);
-        table.setEditable(true);
-        
-        refreshBeamProfile();
-        
-        /****************Acoustic Behaviour**********************/
-        
-        sourceLevel.setText(String.format("%.2f", settings.getSettings().sourceLevel));
-        
-        ici.setText(String.format("%.2f", settings.getSettings().ici));
+//		descentVertAngleStd.setText(String.format("%.2f", Math.toDegrees(settings.getSettings().descentVertAngleStd)));
+//		descentVertAngleMean.setText(String.format("%.2f", Math.toDegrees(settings.getSettings().descentVertAngleMean)));
+//		
+//		ascentVertAngleMean.setText(String.format("%.2f", Math.toDegrees(settings.getSettings().ascentVertAngleMean)));
+//		ascentVertAngleStd.setText(String.format("%.2f", Math.toDegrees(settings.getSettings().ascentVertAngleStd)));
+//		
+//		descentSpeedStd.setText(String.format("%.2f", settings.getSettings().descentSpeedStd));
+//		descentSpeedMean.setText(String.format("%.2f", settings.getSettings().descentSpeedMean));
+//		
+//		ascentSpeedMean.setText(String.format("%.2f", settings.getSettings().ascentSpeedMean));
+//		ascentSpeedStd.setText(String.format("%.2f", settings.getSettings().ascentSpeedStd));
+//		
+//		bottomSpeedMean.setText(String.format("%.2f", settings.getSettings().bottomSpeedMean));
+//		bottomSpeedStd.setText(String.format("%.2f", settings.getSettings().bottomSpeedStd));
+//	
+//		bottomTimeMean.setText(String.format("%.2f", settings.getSettings().bottomTimeMean));
+//		bottomTimeStd.setText(String.format("%.2f", settings.getSettings().bottomTimeStd));
+//		
+//		descentHorzAngleMean.setText(String.format("%.2f", Math.toDegrees(settings.getSettings().descentHorzAngleMean)));
+//		descentHorzAngleStd.setText(String.format("%.2f", Math.toDegrees(settings.getSettings().descentHorzAngleStd)));
+//		
+//		ascentHorzAngleMean.setText(String.format("%.2f", Math.toDegrees(settings.getSettings().ascentHorzAngleMean)));
+//		ascentHorzAngleStd.setText(String.format("%.2f", Math.toDegrees(settings.getSettings().ascentHorzAngleStd)));
+//		
+//		surfaceTimeStd.setText(String.format("%.2f", settings.getSettings().surfaceTimeStd));
+//		surfaceTimeMean.setText(String.format("%.2f", settings.getSettings().surfaceTimeMean));
+//		
+//		/********************Beam Profile*************************/
+//		beamProfileData= createBeamProfileList(settings.getSettings().beamProfile);
+//        table.setItems(beamProfileData);
+//        table.setEditable(true);
+//        
+//        refreshBeamProfile();
+//        
+//        /****************Acoustic Behaviour**********************/
+//        
+//        sourceLevel.setText(String.format("%.2f", settings.getSettings().sourceLevel));
+//        
+//        ici.setText(String.format("%.2f", settings.getSettings().ici));
        
 		
 	}

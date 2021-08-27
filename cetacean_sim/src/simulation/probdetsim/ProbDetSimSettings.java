@@ -59,14 +59,14 @@ public class ProbDetSimSettings implements Cloneable {
 	public double minHeight=-200;
 
 	/**
-	 * The range bin
+	 * The number of range bins between the minimum and maximum bin. 
 	 */
-	public int rangeBin=25; 
+	public int numRangeBins=25; 
 
 	/**
-	 * The depth bin
+	 * The of number of depth bins between the minimum and maximum bin. 
 	 */
-	public int depthBin=10;
+	public int numDepthBins=10;
 
 
 	/********Recovers********/
@@ -141,8 +141,8 @@ public class ProbDetSimSettings implements Cloneable {
 		this.nBootStraps=nBootStraps; 
 		this.maxRange=maxRange; 
 		this.minHeight=maxDepth; 
-		this.rangeBin=rangeBin;
-		this.depthBin=depthBin;
+		this.numRangeBins=rangeBin;
+		this.numDepthBins=depthBin;
 		this.noise=noise;
 		this.snrThreshold=snrThresh;
 		this.propogation=new SimplePropogation(spreadingCoeff, absorptionCoeff);
@@ -176,8 +176,8 @@ public class ProbDetSimSettings implements Cloneable {
 		System.out.println("even x y: "+ this.evenXY);
 		System.out.println("max range: "+ this.maxRange);
 		System.out.println("max depth: "+ this.minHeight);
-		System.out.println("range bin: "+ this.rangeBin);
-		System.out.println("depth bin: "+ this.depthBin);
+		System.out.println("range bin: "+ this.numRangeBins);
+		System.out.println("depth bin: "+ this.numDepthBins);
 		System.out.println("noise threshold: "+ this.noise);
 
 	}

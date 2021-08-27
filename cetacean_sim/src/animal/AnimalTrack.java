@@ -71,9 +71,16 @@ public class AnimalTrack {
 	 * @param timesTrk- the times to find points for from track start in seconds. 
 	 * return - the  3D Cartesian location (meters)
 	 */
-	public double[][] getTrackPoint(double[] timesTrk) {
+	public double[][] getTrackPoints(double[] timesTrk) {
 		
 		double[][] trackxyz = new double[3][]; 
+		//System.out.println("Interp linear track: " + xyz[0].length);
+		
+//		double[] trackTimes = CetSimUtils.getMinAndMax(times); 
+//		double[] vocTimes = CetSimUtils.getMinAndMax(timesTrk); 
+//		System.out.println("Min track time: " + trackTimes[0] + " max: " + trackTimes[1]); 
+//		System.out.println("Min voc time: " + vocTimes[0] + " max: " + vocTimes[1]); 
+
 		trackxyz[0] = CetSimUtils.interpLinear(times, xyz[0], timesTrk); 
 		trackxyz[1] = CetSimUtils.interpLinear(times, xyz[1], timesTrk); 
 		trackxyz[2] = CetSimUtils.interpLinear(times, xyz[2], timesTrk); 
@@ -86,11 +93,18 @@ public class AnimalTrack {
 	 * @param timesTrk- the times to find points for from track start in seconds. 
 	 * @return - the horizontal and verticla angle in RADIANS. 
 	 */
-	public double[][] getTrackAngle(double[] timesTrk) {
-		
+	public double[][] getTrackAngles(double[] timesTrk) {
 		double[][] trackAngs = new double[2][]; 
-		trackAngs[0] = CetSimUtils.interpLinear(times, animalsAngs[0], timesTrk); 
-		trackAngs[1] = CetSimUtils.interpLinear(times, animalsAngs[1], timesTrk); 
+		//TODO interpolating angles might be tricky....hmmmm.
+		
+//		double[][] trackAngs = new double[2][]; 
+//		trackAngs[0] = CetSimUtils.interpLinear(times, animalsAngs[0], timesTrk); 
+//		trackAngs[1] = CetSimUtils.interpLinear(times, animalsAngs[1], timesTrk); 
+		
+		//probably just need to take closest angle. 
+		trackAngs[0] = CetSimUtils.findClosest(times, animalsAngs[0], timesTrk); 
+		trackAngs[1] = CetSimUtils.findClosest(times, animalsAngs[1], timesTrk); 
+
 		
 		return trackAngs; 
 	}
