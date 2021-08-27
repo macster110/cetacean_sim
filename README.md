@@ -26,4 +26,4 @@ A .jar file is and bin file is located in the cetacean_sim_builds folder. Double
 Copy the .jar file into the same folder as the sim_prob_det_java.m function to use in MATLAB. Note that MATLAB should be running on Java 8 for function to work. clickmethod_settings_jm.m creates a default settings structure for input into sim_prob_det_java.m. This settings structure can also be imported using the CetSim GUI. 
 
 ## Developer Notes ##
-CetSim is based on Java 8
+CetSim is based on Java 8. This is to ensure that the Java code can be called within MATLAB which still uses Java 8. 
