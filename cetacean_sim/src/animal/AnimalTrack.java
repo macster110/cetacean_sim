@@ -94,7 +94,7 @@ public class AnimalTrack {
 	 * @return - the horizontal and verticla angle in RADIANS. 
 	 */
 	public double[][] getTrackAngles(double[] timesTrk) {
-		double[][] trackAngs = new double[2][]; 
+		double[][] trackAngs = new double[3][]; 
 		//TODO interpolating angles might be tricky....hmmmm.
 		
 //		double[][] trackAngs = new double[2][]; 
@@ -104,6 +104,7 @@ public class AnimalTrack {
 		//probably just need to take closest angle. 
 		trackAngs[0] = CetSimUtils.findClosest(times, animalsAngs[0], timesTrk); 
 		trackAngs[1] = CetSimUtils.findClosest(times, animalsAngs[1], timesTrk); 
+		trackAngs[2] = CetSimUtils.findClosest(times, animalsAngs[2], timesTrk); 
 
 		
 		return trackAngs; 

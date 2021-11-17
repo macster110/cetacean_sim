@@ -142,14 +142,25 @@ public class TrackMATImport {
 		//the start of the simulation
 		double[] trackTimes = new double[animalStruct.trackdata.length]; 
 		double[][] trackxyz = new double[3][animalStruct.trackdata.length]; 
-		double[][] trackang = new double[2][animalStruct.trackdata.length]; 
+		double[][] trackang = new double[3][animalStruct.trackdata.length]; 
 		double[] vocTimes = new double[animalStruct.clicks.length]; 
 
 
 		double[] vocAmp = new double[animalStruct.clicks.length]; //this needs to be in dB re 1uPa pp on-axis
 
+		System.out.println("Length track data: " + animalStruct.trackdata.length); 
 
-		LatLong refLatLong = new LatLong(animalStruct.trackdata[0][1], animalStruct.trackdata[0][2]); 
+		int j=0; 
+		
+		//need to make sure we don't hit a NaN for the reference latitude and longitude. 
+		while (Double.isNaN(animalStruct.trackdata[j][1])) {
+			j++; 
+		}
+		
+		LatLong refLatLong = new LatLong(animalStruct.trackdata[j][1], animalStruct.trackdata[j][2]); 
+
+		
+		System.out.println(String.format("The reference latitude and longitude is: %.6f %.6f ", refLatLong.getLatitude(), refLatLong.getLongitude())); 
 		LatLong latLong; 
 		//now need to populate all these with data. 
 		for (int i=0; i<trackTimes.length; i++) {
@@ -168,14 +179,15 @@ public class TrackMATImport {
 
 			//the track angle
 			trackang[0][i] = animalStruct.orientation[i][1]; //horizontal angle radians. 
-			trackang[1][i] = animalStruct.orientation[i][2]; //horizontal angle radians. 
+			trackang[1][i] = animalStruct.orientation[i][2]; //vertical angle radians. 
+			trackang[2][i] = animalStruct.orientation[i][3]; //roll angle radians. 
 
 			//		    vertang =asind((animalpos(3)-trackbefore(4))/diststraight(trackbefore(2:4), animalpos));
 			//		    horzang = atan2d( animalpos(1)-trackbefore(2), animalpos(2)-trackbefore(3));
-			//check if the horizontal angle is NaN
-			if (i<100) {
-				System.out.println("NaN val?: " + trackang[0][i]);
-			}
+//			//check if the horizontal angle is NaN
+//			if (i<100) {
+//				System.out.println("NaN val?: " + trackang[0][i]);
+//			}
 
 			if (Double.isNaN(trackang[0][i])) {
 				if (i==0) {
@@ -199,6 +211,17 @@ public class TrackMATImport {
 				}
 				//System.out.println("New val vert: " + trackang[1][i]);
 			}
+			
+			if (Double.isNaN(trackang[1][i])) {
+				trackang[2][i] = 0;
+			}
+			
+//			//print out the first data check
+//			if (i==j+500000) {
+//				System.out.println(String.format("The horizontal is %.2f and vertical angle is %.2f degrees" , Math.toDegrees(trackang[0][i]) , Math.toDegrees(trackang[1][i]))); 
+//				System.out.println(String.format("The track x, y, z is %.2f %.2f  %.2f m  from lat long of %.6f %.6f " ,trackxyz[0][i]  , trackxyz[1][i],
+//						trackxyz[2][i], latLong.getLatitude(), latLong.getLongitude())); 
+//			}
 
 		}
 
@@ -211,7 +234,15 @@ public class TrackMATImport {
 			//transpose the track matrix to allow java to easily grab all x,y and/or z co-ords in a double[];
 			vocAmp[i] = dBconverter.linear2dB(animalStruct.clicks[i][5]);
 			//now convert this to a dB measurement
+			
+			//print out the first data check
+//			if (i==0) {
+//				System.out.println(String.format("The source level is %.0f dB re 1uPa for linear %.5f sens %.1f vp2 %.1f" ,vocAmp[i], animalStruct.clicks[i][5], animalStruct.systemSens, animalStruct.vp2p)); 
+//			}
 		}
+
+		
+		//System.out.println("Length track data 2 : " +trackxyz[0].length); 
 
 		return new ClickingOdontocete(trackTimes, trackxyz, trackang, vocTimes, vocAmp, animalStruct.beamProfile); 
 	}
@@ -222,7 +253,8 @@ public class TrackMATImport {
 	 * @param args - the arguments. 
 	 */
 	public static void main(String[] args) {
-		String filename = "/Users/au671271/Desktop/tagDataTest.mat";  
+		String filename = "/Users/au671271/Desktop/tagDataTest_hp13_170a.mat";
+
 
 		AnimalStruct animalStruct = importMATTrack(new File(filename)); 
 
@@ -234,7 +266,9 @@ public class TrackMATImport {
 		System.out.println("system sens: " + animalStruct.systemSens);
 
 		AnimalModel animalModel = animalStruct2AnimalModel(animalStruct);
-
+		
+		
+		
 	}
 
 }

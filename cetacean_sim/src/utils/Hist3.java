@@ -30,7 +30,8 @@ public class Hist3 {
 	/**
 	 * The total number of data points added to the histogram
 	 */
-	private int totalcount;
+	private long totalcount;
+
 
 	/**
 	 * Constructor for a blank histogram. 
@@ -149,21 +150,24 @@ public class Hist3 {
 				}
 //				System.out.println("Hist: " + i + " "+ j + " value n: " + histvalue + " total n: " + histcount + " checking for ranges between: " 
 //				+ xbinEdges[i] + " to " + xbinEdges[i+1] + " and depths from " + ybinEdges[j] + " to " + ybinEdges[j+1]);
-				if (findValue==null) histogram[i][j]= histogram[i][j]+histcount; //just standard histogram 
+				if (findValue==null) {
+					histogram[i][j]= histogram[i][j]+histcount; //just standard histogram
+					
+				}
 				else  {
 					//TODO
-					if (histcount==0) histogram[i][j]=0; 
+					//if (histcount==0) histogram[i][j]=0; 
 					//Note: Do not divide this by the bin number because this negates the depth distribution. i.e. dividing a small
 					//number of sim results with a small number of sim attempts makes a much bigger number. Must divide 
 					//by simResults.length to maintain fair comparison across bins. 
 					
 					//recover the total number of N rather than percentage then add new value and covert back to percentage - a little messy but meh... 
-					else histogram[i][j]=(histogram[i][j]*totalcount + histvalue)/ (totalcount+ simResults.length); //the percentage of values which equal findValue;
+					histogram[i][j]=(histogram[i][j]*totalcount + histvalue)/ (totalcount+ simResults.length); //the percentage of values which equal findValue;
 				}
 			}
 		}
 		
-		totalcount=totalcount + simResults.length; 
+		totalcount= totalcount + simResults.length; 
 
 		return histogram; 
 	}
@@ -289,13 +293,15 @@ public class Hist3 {
 			simResults[i][0] = recResults.get(i).distance; //2D distance
 			simResults[i][1] = recResults.get(i).height; //depth of animal
 
-			//System.out.println(String.format("Passed threshold? %d  recieved level %.1f threshold: %.1f height: %.1f", i  , recResults.get(i).recievedLevel ,threshold, recResults.get(i).height)); 
 			if (recResults.get(i).recievedLevel>=threshold) {
 				simResults[i][2] = 1.; 
 			}
 			else {
 				simResults[i][2] = 0.; 
 			}
+			
+			//System.out.println(String.format("Passed threshold? %d  received level %.1f threshold: %.1f height: %.1f recieved? %.0f", i  , recResults.get(i).recievedLevel ,threshold, recResults.get(i).height, simResults[i][2])); 
+
 		}
 
 		return simResults; 
@@ -306,7 +312,7 @@ public class Hist3 {
 	 * Get the total number of data points added to the histogram
 	 * @return the total number of points
 	 */
-	public int getTotalcount() {
+	public long getTotalcount() {
 		return totalcount;
 	}
 

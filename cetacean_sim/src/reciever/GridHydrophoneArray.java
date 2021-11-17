@@ -38,11 +38,24 @@ public class GridHydrophoneArray implements HydrophoneArray {
 	 * Create a grid of hydrophones around a track, excluding ay which are over a maximum range from any point on the track. 
 	 * @param trackxyz - an animal track in Cartesian co-ordinates i.e. x,y,z (meters)
 	 * @param gridSpacing - the grid spacing in meters. 
-	 * @param maxRange - the maximum allowed range between a reciever and any point on the tracj 
+	 * @param maxRange - the maximum allowed range between a receiver and any point on the track 
 	 * @param - the absolute maximum detection range expected. No recievers greater than this range will be generated. 
 	 */
 	public GridHydrophoneArray(double[][] trackyz, double gridSpacing, double maxRange) {
 		this.arrayXYZ = generateReceiverGrid(trackyz, gridSpacing,   maxRange); 
+		this.sensOffset=new double[arrayXYZ.length]; //defualt to zero.  
+	}
+	
+	/**
+	 * Create a grid of hydrophones around a track, excluding ay which are over a maximum range from any point on the track. 
+	 * @param trackxyz - an animal track in Cartesian co-ordinates i.e. x,y,z (meters)
+	 * @param gridSpacing - the grid spacing in meters for the x and y -cordinates. 
+	 * @param depthSpacing - the depth grid spacing in meters
+	 * @param maxRange - the maximum allowed range between a receiver and any point on the track 
+	 * @param - the absolute maximum detection range expected. No recievers greater than this range will be generated. 
+	 */
+	public GridHydrophoneArray(double[][] trackyz, double gridSpacing, double[] depthSpacing, double maxRange) {
+		this.arrayXYZ = generateReceiverGrid(trackyz, gridSpacing, depthSpacing,  maxRange); 
 		this.sensOffset=new double[arrayXYZ.length]; //defualt to zero.  
 	}
 
@@ -91,7 +104,7 @@ public class GridHydrophoneArray implements HydrophoneArray {
 		double[] minMaxY = CetSimUtils.getMinAndMax(trackxyz[1]); 
 		double[] minMaxZ = CetSimUtils.getMinAndMax(trackxyz[2]); 
 		
-		System.out.println("Minmax X: " + minMaxX[0] + "  " + minMaxX[1]);
+		System.out.println("Minmax X: " + minMaxX[0] + "  " + minMaxX[1] + "  " + trackxyz[0].length );
 		System.out.println("Minmax Y: " + minMaxY[0] + "  " + minMaxY[1]);
 		System.out.println("Minmax Z: " + minMaxZ[0] + "  " + minMaxZ[1]);
 
@@ -108,12 +121,28 @@ public class GridHydrophoneArray implements HydrophoneArray {
 	 * @return a list of recievers x, y and z locations. 
 	 */
 	public static double[][] generateReceiverGrid(double[][] gridLims, double gridSpacing) {
+		
+		return generateReceiverGrid(gridLims, null,  gridSpacing); 
+	
+	}
+	
+	
+	/**
+	 * Generate a grid of recievers based on a grid spacing and grid limits in 3D. 
+	 * @param gridLims - the grid limits for x y and i.e {{xmin, xmax}, {ymin, ymax}, {zmin, zmax}} in meters. 
+	 * @param gridLims - the grid spacing for Z - e.g. {10, 20, 30} would mean a grid at 10, 20 and 30m. Can be null in which 
+	 * case the grid will be calculated based on the zmin and zmax and grid spacing. 
+	 * @param gridSpacing - the grid spacing in meters. 
+	 * @return a list of recievers x, y and z locations. 
+	 */
+	public static double[][] generateReceiverGrid(double[][] gridLims, double[] gridZ, double gridSpacing) {
 		//create the recording grid. 
 		
 		double[] gridX = gridPoints(gridLims[0][0], gridLims[0][1], gridSpacing); 
 		double[] gridY = gridPoints(gridLims[1][0], gridLims[1][1], gridSpacing); 
-		double[] gridZ = gridPoints(gridLims[2][0], gridLims[2][1], gridSpacing); 
-		
+		if (gridZ==null) {
+			gridZ = gridPoints(gridLims[2][0], gridLims[2][1], gridSpacing); 
+		}
 		double[][] arrayXYZ= new double[gridX.length*gridY.length*gridZ.length][3]; 
 
 		int n=0; 
@@ -130,22 +159,38 @@ public class GridHydrophoneArray implements HydrophoneArray {
 	
 	}
 	
+	/**
+	 * Generate a grid of receivers based on a grid spacing, a track and a maximum range The receivers will be based on a grid around the track but
+	 * any receiver which is a greater distance than maxRange from any point on the track will be excluded. 
+	 * @param trackxyz - an animal track in cartesian co-ordinates i.e. x,y,z (meters)
+	 * @param gridSpacing - the grid spacing of x, y and z in meters. 
+	 * @param maxRange - the maximum range (3D) a receiver can be from the track. 
+	 * @return a list of receivers x, y and z locations. 
+	 */
+	public static double[][] generateReceiverGrid(double[][] trackxyz, double gridSpacing, double maxRange) {
+		
+		return generateReceiverGrid(trackxyz,  gridSpacing, null,  maxRange);
+		
+	}
+
+	
 
 	/**
 	 * Generate a grid of receivers based on a grid spacing, a track and a maximum range The receivers will be based on a grid around the track but
 	 * any receiver which is a greater distance than maxRange from any point on the track will be excluded. 
 	 * @param trackxyz - an animal track in cartesian co-ordinates i.e. x,y,z (meters)
-	 * @param gridSpacing - the grid spacing in meters. 
+	 * @param gridSpacing - the grid spacing of x and y in meters. 
+	 * @param depthSpacing - the depth spacing lims in meters e.g. 10, 20, 30 means the grid will be at 10, 20 and 30 meters. 
 	 * @param maxRange - the maximum range (3D) a receiver can be from the track. 
 	 * @return a list of receivers x, y and z locations. 
 	 */
-	public static double[][] generateReceiverGrid(double[][] trackxyz, double gridSpacing,  double maxRange) {
+	public static double[][] generateReceiverGrid(double[][] trackxyz, double gridSpacing, double[] depthSpacing, double maxRange) {
 		
 		//calculate the grid limits. 
 		double[][] gridLims = getGridLims(trackxyz,  maxRange);
 		
 		//the receiver grid. 
-		double[][] receiverGrid = generateReceiverGrid(gridLims,  gridSpacing);
+		double[][] receiverGrid = generateReceiverGrid(gridLims, depthSpacing, gridSpacing);
 		
 		return filtReceivers(receiverGrid, trackxyz,  maxRange); 
 		

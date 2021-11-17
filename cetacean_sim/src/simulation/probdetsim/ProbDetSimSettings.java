@@ -108,14 +108,22 @@ public class ProbDetSimSettings implements Cloneable {
 	/**
 	 * The animal model
 	 */
-	public SimpleOdontocete simpleOdontocete =new SimpleOdontocete(); 
+	public SimpleOdontocete simpleOdontocete;
 
 	/**
 	 * Set up settings with default settings
 	 */
 	public ProbDetSimSettings(){
-
+		simpleOdontocete =new SimpleOdontocete(); 
 	}
+	
+	/**
+	 * Hack so that subclasses don't have to create a simpleOdontocete class...Messy
+	 */
+	public ProbDetSimSettings(int nadda){
+//		simpleOdontocete =new SimpleOdontocete(); 
+	}
+
 
 	/**
 	 * Create a settings class with initial settings values. Used primarily to call from MATLAB. 

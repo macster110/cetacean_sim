@@ -2,7 +2,7 @@ package animal;
 
 
 /**
- * Converts a linear to dB measurement
+ * Converts a linear to dB measurement/.m 
  * 
  * @author Jamie Macaulay 
  *

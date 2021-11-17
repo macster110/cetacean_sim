@@ -17,15 +17,19 @@ public class ProbDetTrackTest {
 	
 		public static void main(String[] args) {
 			
-		String filename = "/Users/au671271/Desktop/tagDataTest.mat";  
+//		String filename = "/Users/au671271/Desktop/tagDataTest_hp18_134a.mat";  
+		String filename = "/Users/au671271/Desktop/tagDataTest_hp17_135a.mat";  
+//		String filename = "/Users/au671271/Desktop/tagDataTest_hp12_272a.mat";  
+
 		double noise = 90; //dB 
 		double snrThresh = 16; 
 		double spreadingCoeff = 20; 
 		double absorptionCoeff = 0.04; 
 		
 		//array 
-		double gridSpacing = 100; 
+		double gridSpacing = 2000; 
 		double maxRange = 1000; 
+		double[] depthspacing = new double[] {-5}; 
 		
 		System.out.println("Import animal data");
 		
@@ -36,17 +40,20 @@ public class ProbDetTrackTest {
 		System.out.println("Generate simulated hydrophones");
 				
 		//create the hydrophone array 
-		HydrophoneArray hydrophoneArray = new GridHydrophoneArray(animalModel.getTrack(0).xyz, gridSpacing, maxRange); 
+		HydrophoneArray hydrophoneArray = new GridHydrophoneArray(animalModel.getTrack(0).xyz, gridSpacing, depthspacing, maxRange); 
 		
 		for (int i=0; i<hydrophoneArray.getArrayXYZ().length ; i++) {
 			System.out.println(String.format("Reciever %d x: %.2f y: %.2f, z: %.2f", i,
 					hydrophoneArray.getArrayXYZ()[i][0],  hydrophoneArray.getArrayXYZ()[i][1],  hydrophoneArray.getArrayXYZ()[i][2])); 
 		}
 				
+		//create the prob track dsettings 
 		ProbDetTrackSettings probDetTrackSettings = new ProbDetTrackSettings(animalModel,  hydrophoneArray,  noise,  snrThresh,  spreadingCoeff, 
 				 absorptionCoeff);
 		probDetTrackSettings.minHeight=-30; 
 		probDetTrackSettings.numDepthBins=10; 
+		
+		probDetTrackSettings.useRoll = true; 
 
 		
 		System.out.println("Begin simulation: with " + hydrophoneArray.getArrayXYZ().length + " hydrophones ");
@@ -69,18 +76,28 @@ public class ProbDetTrackTest {
 		
 		//now that the simulation has finished get the histograms. 
 		ArrayList<Hist3> probDetResults = probDetTrack.getProbDetResults();
-		
+		ArrayList<Hist3> trackEffortResults = probDetTrack.getTrackEffortResults(); 
+
 		Hist3 trackResult = probDetResults.get(0); 
+		Hist3 trackEffortResult = trackEffortResults.get(0); 
+
 		
-		System.out.println("------Histogram Results------" + trackResult.getTotalcount() + " measurements");
+		System.out.println("\n\n------Pdet Results------" + trackResult.getTotalcount() + " measurements");
 		//print the results
 		for (int i=0; i<trackResult.getHistogram().length; i++) {
 			System.out.println(); 		
 			for (int j=0; j<trackResult.getHistogram()[i].length; j++) {
-				System.out.print(String.format("%.0f ", trackResult.getHistogram()[i][j])); 		
+				System.out.print(String.format("%.0f ", trackResult.getHistogram()[i][j]*trackResult.getTotalcount())); 		
 			}
 		}
-
+		
+		System.out.println("\n\n------Effort Results------" + trackResult.getTotalcount() + " measurements");
+		for (int i=0; i<trackEffortResult.getHistogram().length; i++) {
+			System.out.println(); 		
+			for (int j=0; j<trackEffortResult.getHistogram()[i].length; j++) {
+				System.out.print(String.format("%.0f ", trackEffortResult.getHistogram()[i][j])); 		
+			}
+		}
 		
 	}
 
