@@ -118,8 +118,6 @@ public class ProbDetTrack {
 			double transloss;
 			double distance;
 			double recievedLevel;
-			int nn = 0;
-			float noDetRL = 0; // definately won't be detected
 
 			Hist3 pDet = new Hist3(this.xBinEdges, this.yBinEdges);
 			Hist3 effortDet = new Hist3(this.xBinEdges, this.yBinEdges);
@@ -140,9 +138,15 @@ public class ProbDetTrack {
 
 					if (simSettings.useRoll) {
 						animalAngle = new double[] { trackOrient[0][i], trackOrient[1][i], trackOrient[2][i] };
+						if (Double.isNaN(animalAngle[2])) {
+							System.out.println("The animal orientation is NaN: " + j); 
+							animalAngle[2] = 0; //dunno why this sometimes happens - issue with sensor fusion algorithm
+						}
 					} else {
 						animalAngle = new double[] { trackOrient[0][i], trackOrient[1][i] };
 					}
+					
+		
 
 					// the 3D distance
 					distance = CetSimUtils.distance2D(animalPos, recieverPos);
@@ -188,9 +192,6 @@ public class ProbDetTrack {
 					// System.out.println(String.format("We have a detection! %.1f ",
 					// recievedLevel));
 					// }
-
-					nn++;
-
 					// notifyStatusListeners(StatusListener.SIM_RUNNING, n , nn/(double)
 					// animalVocalisations.getVocTimes().length*recievers.getArrayXYZ().length);
 				}
@@ -216,6 +217,7 @@ public class ProbDetTrack {
 
 	}
 
+	
 	/**
 	 * Run the simulation for snapshots i.e. instead of determining the probability
 	 * per clicks, it determines the probability per snapshot time bin.
@@ -259,9 +261,27 @@ public class ProbDetTrack {
 			System.out.println("Number of recievers: " + recievers.getArrayXYZ().length);
 
 			// generate the time bins
-			ArrayList<double[]> timeBins = getTimeBins(animalVocalisations.getVocTimes()[0],
-					animalVocalisations.getVocTimes()[animalVocalisations.getVocTimes().length - 1],
-					simSettings.snapTime);
+			double[] timeLims = new double[2]; 
+			if (simSettings.snapTimeLims==null) {
+				//use the first and last vocalisation - may be inaccurate if animals do not vocalise consistently. 
+				timeLims[0] = animalVocalisations.getVocTimes()[0];
+				timeLims[1] = animalVocalisations.getVocTimes()[animalVocalisations.getVocTimes().length - 1]; 
+			}
+			else {
+				timeLims = simSettings.snapTimeLims; 
+			}
+			
+			System.out.println("Time lims: " + timeLims[0] + "  " + timeLims[1]);
+			
+			double[][] timeBins = getTimeBins(timeLims[0],timeLims[1],simSettings.snapTime);
+			
+			double[] timeBinsStart = new double[timeBins.length];
+			for (int i =0; i<timeBinsStart.length; i++) {
+				timeBinsStart[i]=timeBins[i][0]; 
+			}
+			
+			double[][] trackBinXYZ = animal.getTrack(n).getTrackPoints(timeBinsStart);
+
 
 			// iterate through each click
 			double[] animalPos;
@@ -275,7 +295,7 @@ public class ProbDetTrack {
 			Hist3 pDet = new Hist3(this.xBinEdges, this.yBinEdges);
 			Hist3 effortDet = new Hist3(this.xBinEdges, this.yBinEdges);
 
-			for (int k = 0; k < timeBins.size(); k++) {
+			for (int k = 0; k < timeBins.length; k++) {
 
 				// get all vocalisation in the time bin
 				ArrayList<Double> vocTimes = new ArrayList<Double>();
@@ -284,20 +304,21 @@ public class ProbDetTrack {
 				ArrayList<double[]> trackOrients = new ArrayList<double[]>();
 
 				for (int kk = 0; kk < animalVocalisations.getVocTimes().length; kk++) {
-					if (animalVocalisations.getVocTimes()[kk] >= timeBins.get(k)[0]
-							&& animalVocalisations.getVocTimes()[kk] < timeBins.get(k)[1]) {
+					if (animalVocalisations.getVocTimes()[kk] >= timeBins[k][0]
+							&& animalVocalisations.getVocTimes()[kk] < timeBins[k][1]) {
 						vocTimes.add(animalVocalisations.getVocTimes()[kk]);
 						vocAmplitudes.add(animalVocalisations.getVocAmplitudes()[kk]);
 						trackPoints.add(new double[] { trackXYZ[0][kk], trackXYZ[1][kk], trackXYZ[2][kk] });
 						if (simSettings.useRoll) {
 							trackOrients
-									.add(new double[] { trackOrient[0][kk], trackOrient[1][kk], trackOrient[2][kk] });
+									.add(new double[] {trackOrient[0][kk], trackOrient[1][kk], trackOrient[2][kk] });
 						} else {
 							trackOrients.add(new double[] { trackOrient[0][kk], trackOrient[1][kk] });
 						}
 					}
 				}
-
+				
+				
 				// for (int i = 0; i<100000 ; i++) {
 
 				// iterate through each receiver and calculate the received level on each
@@ -312,76 +333,117 @@ public class ProbDetTrack {
 				/**
 				 * We iterate through all recievers.
 				 */
+				int count = 0; 
+				int sum = 0; //the total number of detection made
 				for (int j = 0; j < recievers.getArrayXYZ().length; j++) {
 
-					// hold the results for a sensor
-					double[] recievedLevels = new double[vocTimes.size()];
-					double[] distances = new double[vocTimes.size()];
-					double[] heights = new double[vocTimes.size()];
+					recieverPos = recievers.getArrayXYZ()[j];
 
-					for (int i = 0; i < vocTimes.size(); i++) {
-
-						recieverPos = recievers.getArrayXYZ()[j];
-
-						// create the track points.
-						animalPos = trackPoints.get(i);
-
-						animalAngle = trackOrients.get(i);
-
+					if (vocTimes.size()==0) {
 						// the 3D distance
-						distance = CetSimUtils.distance2D(animalPos, recieverPos);
+						distance = CetSimUtils.distance2D(new double[] {trackBinXYZ[0][k], trackBinXYZ[1][k], trackBinXYZ[2][k] }, recieverPos);
 
-						if (distance > simSettings.maxRange) {
-							// don't bother with the calculation - just set to -1;
-							recievedLevels[i] = -1;
+						recInfo = new RecievedInfo(-1f, (float) distance, (float) trackBinXYZ[2][k], j);
+						count++; 
+					} 
+					else {
+						// hold the results for a sensor
+						double[] recievedLevels = new double[vocTimes.size()];
+						double[] distances = new double[vocTimes.size()];
+						double[] heights = new double[vocTimes.size()];
+
+						for (int i = 0; i < vocTimes.size(); i++) {
+
+							// create the track points.
+							animalPos = trackPoints.get(i);
+
+
+							//animal angle
+							animalAngle = trackOrients.get(i);
+
+							// the 3D distance
+							distance = CetSimUtils.distance2D(animalPos, recieverPos);
+
+							if (distance > simSettings.maxRange) {
+								// don't bother with the calculation - just set to -1;
+								recievedLevels[i] = -1;
+								distances[i] = distance;
+								heights[i] = recieverPos[2];
+								continue;
+							}
+
+							if (animalAngle.length>2 &&  Double.isNaN(animalAngle[2])) {
+								System.out.println("The animal orientation is NaN: " + j); 
+								animalAngle[2] = 0; //dunno why this sometimes happens - issue with sensor fusion algorithm
+							}
+
+							//						System.out.println("animalPos: " + animalPos[0] + "  " + animalPos[1] + "  " +animalPos[2]); 
+							//						System.out.println("animalAngle: " + animalAngle[0] + "  " + animalAngle[1] + "  " +animalAngle[2]); 
+
+							// the transmission loss.
+							transloss = CetSimUtils.tranmissionTotalLoss(recieverPos, animalPos, animalAngle, beamSurface,
+									simSettings.propogation);
+
+							recievedLevel =vocAmplitudes.get(i)+ transloss;
+
+							recievedLevels[i] = recievedLevel;
 							distances[i] = distance;
-							heights[i] = recieverPos[2];
-							continue;
+							heights[i] = animalPos[2];
+
+							// notifyStatusListeners(StatusListener.SIM_RUNNING, n , nn/(double)
+							// animalVocalisations.getVocTimes().length*recievers.getArrayXYZ().length);
 						}
 
-						// the transmission loss.
-						transloss = CetSimUtils.tranmissionTotalLoss(recieverPos, animalPos, animalAngle, beamSurface,
-								simSettings.propogation);
 
-						recievedLevel = animalVocalisations.getVocAmplitudes()[i] + transloss;
-
-						recievedLevels[i] = recievedLevel;
-						distances[i] = distance;
-						heights[i] = recieverPos[2];
-
-						// notifyStatusListeners(StatusListener.SIM_RUNNING, n , nn/(double)
-						// animalVocalisations.getVocTimes().length*recievers.getArrayXYZ().length);
+						// figure out what the received level info should be from the sensors.
+						recInfo = getRecievedInfoSnap(vocTimesD, recievedLevels, distances, heights, j);
 					}
+					
+					if (recInfo==null) continue;
 
-					// figure out what the recieved level info should be from the sensors.
-					recInfo = getRecievedInfoSnap(vocTimesD, recievedLevels, distances, heights, j);
-
+					count++; 
+//					if (recInfo==null) {
+//						System.out.println("vocTimesD: " + vocTimes.size());
+//					}
+					
 					if (recInfo.distance > simSettings.maxRange) {
 						// this is very important - in distance sampling we consider a specified area -
 						// if the distance is
 						// greater than the maximum range then we are outside the area and the result
 						// should not be counted
 						// at all.
-					} else {
+						//System.out.println("recInfo.distance: " + recInfo.distance);
+					} 
+					else {
 						// add the results to an array
 						trackRecInfo.add(recInfo);
 					}
-
 				}
+				
+				
+				for (int i=0; i<trackRecInfo.size() ;i++) {
+					if (trackRecInfo.get(i).recievedLevel>(simSettings.noise + simSettings.snrThreshold)) {
+						sum+=1; 
+					}
+				}
+				
 
 				// now must add the results to the histrogram
 				pDet.addToHist(trackRecInfo, 1.0, simSettings.noise + simSettings.snrThreshold);
 				effortDet.addToHist(trackRecInfo, null, Double.NEGATIVE_INFINITY); // will always be greater
+				
+//				System.out.println("Add track record info: " + trackRecInfo.size() + " timebin n: " + k + " of " +  
+//				timeBins.length + " effort count: " + pDet.getTotalcount() + " total det. " + sum ); 
 
 				if (k % 10 == 0) {
-					notifyStatusListeners(StatusListener.SIM_RUNNING, n, k / (double) timeBins.size());
+					notifyStatusListeners(StatusListener.SIM_RUNNING, n, k / (double) timeBins.length);
 				}
 
 				// now have a giant array of distances and received levels.
-
-				probDetResults.add(pDet);
-				probDetEffort.add(effortDet);
 			}
+			
+			probDetResults.add(pDet);
+			probDetEffort.add(effortDet);
 		}
 
 		notifyStatusListeners(StatusListener.SIM_FINIHSED, animal.getNumberOfAnimals().intValue(), 1);
@@ -408,6 +470,8 @@ public class ProbDetTrack {
 	 */
 	public RecievedInfo getRecievedInfoSnap(double[] times, double[] recievedLevels, double[] distances,
 			double[] heights, int recieverID) {
+		
+		
 		double recievedLevel = Double.NEGATIVE_INFINITY;
 		int index = -1;
 
@@ -420,8 +484,17 @@ public class ProbDetTrack {
 				index = i;
 			}
 		}
-
+		
+		try {
 		return new RecievedInfo((float) recievedLevel, (float) distances[index], (float) heights[index], recieverID);
+		}
+		catch (Exception e) {
+			System.out.println("ERROR in index: " + recievedLevels.length +  " " + times.length);
+			for (int i=0; i<recievedLevels.length; i++) {
+				System.out.println("RecievedLevel " + i + " : " + recievedLevels[i] );
+			}
+			return null;
+		}
 	}
 
 	/**
@@ -432,16 +505,23 @@ public class ProbDetTrack {
 	 * @param bin       - the bin time in seconds.
 	 * @return a list of time bins - {{bin start, bin end},...};
 	 */
-	private ArrayList<double[]> getTimeBins(double timestart, double timeend, double bin) {
+	private double[][] getTimeBins(double timestart, double timeend, double bin) {
 		double timebin = timestart;
 
 		ArrayList<double[]> timeBins = new ArrayList<double[]>();
 		while (timebin < timeend) {
 			timeBins.add(new double[] { timebin, timebin + bin });
 			timebin = timebin + bin;
+			//System.out.println("timebin: " +timebin +  " timestart: " + timestart + " timeend " + timeend);
 		}
-
-		return timeBins;
+		
+		
+		double[][] timeBinsD = new double[timeBins.size()][];
+		for (int i=0; i<timeBinsD.length; i++) {
+			timeBinsD[i] = timeBins.get(i); 
+		}
+		
+		return timeBinsD; 
 	}
 
 	/**

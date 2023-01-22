@@ -129,7 +129,6 @@ public class Hist3 {
 			totalcount = 0; 
 		}
 		
-
 		int histcount=0; 
 		int histvalue = 0; 
 		for (int i=0; i<xbinEdges.length-1; i++) {
@@ -140,10 +139,14 @@ public class Hist3 {
 					//					if (n%1000==0) {
 					//						System.out.println("Histograming: " + simResults[n][0] + " "+   simResults[n][1] + " " + simResults[n][2] + " " +(findValue!=null && findValue.doubleValue()==simResults[n][2]));
 					//					}
-					if (simResults[n][0]>xbinEdges[i] && simResults[n][0]<=xbinEdges[i+1] &&
+//					if (n==218) {
+//						System.out.println("Sim n: " + simResults[n][0]  + "  " + simResults[n][1] + "  " + simResults[n][2]+ "  " + xbinEdges[i]); 
+//					}
+					if (simResults[n][0]>=xbinEdges[i] && simResults[n][0]<xbinEdges[i+1] &&
 							simResults[n][1]>ybinEdges[j] && simResults[n][1]<=ybinEdges[j+1]) {
 						histcount++;
 						if (findValue!=null && findValue.doubleValue()==simResults[n][2]) {
+							//System.out.println("Add to hist: " + n + " " + simResults[n][1] + " Edge 1: " + ybinEdges[j] + " Edge 2: " + ybinEdges[j+1]); 
 							histvalue++; 
 						}
 					}
@@ -295,12 +298,12 @@ public class Hist3 {
 
 			if (recResults.get(i).recievedLevel>=threshold) {
 				simResults[i][2] = 1.; 
+				//System.out.println(String.format("Passed threshold? %d  received level %.1f threshold: %.1f height: %.1f recieved? %.0f", i  , recResults.get(i).recievedLevel ,threshold, recResults.get(i).height, simResults[i][2])); 
 			}
 			else {
 				simResults[i][2] = 0.; 
 			}
 			
-			//System.out.println(String.format("Passed threshold? %d  received level %.1f threshold: %.1f height: %.1f recieved? %.0f", i  , recResults.get(i).recievedLevel ,threshold, recResults.get(i).height, simResults[i][2])); 
 
 		}
 

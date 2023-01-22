@@ -1,8 +1,7 @@
-package doug;
+package utils;
 
 import Jama.Matrix;
-import utils.CetSimUtils;
-import utils.Vector;
+import doug.PamQuaternion;
 
 public class AnimalAngles {
 
@@ -26,9 +25,17 @@ public class AnimalAngles {
 		
 		//TEST 1
 		//the output angles should be  horz/vert = 158.1/-11.5 degrees (correspond to MATLAB code.)
-		double[] hPhone = new double[] {0,0,0}; 
-		double[] animalPos = new double[] {0,10,0}; 
-		double[] animalAngles = new double[] {2,0,0.5}; 
+//		double[] hPhone = new double[] {0,0,0}; 
+//		double[] animalPos = new double[] {0,10,0}; 
+//		double[] animalAngles = new double[] {2,0,0.5}; 
+		
+		
+		//this was casuing issues but looks like it weas because of a round error causing a slight value above 1 for Math.acos. 
+		//Now fixed
+		double[] hPhone = new double[] { -3857.5112769122607,  6000.0,  -5.0};
+		double[] animalPos = new double[] { -3396.856331110508,  5529.633595660635,  -0.7926494011680916};
+		double[] animalAngles = new double[] { -0.37947098289311537,  -0.028178274612023817,  -0.07934110468613};
+		
 				
 		double[] relAngles =  getRelativeAngles2(hPhone, animalPos, animalAngles);
 		
@@ -55,6 +62,10 @@ public class AnimalAngles {
 	 * @return the relative horizontal and vertical angles in RADIANS. 
 	 */
 	public static double[] getRelativeAngles2(double[] hPhone, double[] animalPos, double[] animalAngles) {
+		
+		if (animalAngles[2]==0) {
+			return getRelativeAngles(hPhone, animalPos, animalAngles);
+		}
 				
 		//calculate a vector between the animal and hydrophone
 		double[] vecHyArrd= new double[3];
@@ -84,8 +95,12 @@ public class AnimalAngles {
 	
 		//now use the projections to calculate the angles
 		//Vertical angle
-		double vertAng = Math.acos(E.dot(vecHyd)/(E.magnitude()*vecHyd.magnitude()));
-	
+		
+		//Sometimes a rounding error can lead to a value slightly above one - have to add a maxmimum here to 
+		//compensate for that. 
+		double vertAng = Math.acos(Math.min(E.dot(vecHyd)/(E.magnitude()*vecHyd.magnitude()), 1.0));
+		
+
 		Vector vecHydN = vecHyd.normalize(); 
 		if (vecHydN.getZ()<E.getZ()) {
 			vertAng=-vertAng; 

@@ -27,9 +27,16 @@ public class ProbDetTrackSettings extends ProbDetSimSettings {
 	public boolean useRoll = true; 
 	
 	/**
-	 * The length of the snapshot in seconds. 
+	 * The length of the snapshot in seconds. Note that this will only be used in the snapshot method. 
 	 */
-	public double snapTime = 10; 
+	public double snapTime = 10.; 
+	
+	
+	/**
+	 * The start and end of the simulation. Note that this will only be used in the snapshot method. 
+	 * (seocnds from tag start.)
+	 */
+	public double[] snapTimeLims = null; 
 	
 	
 	/**

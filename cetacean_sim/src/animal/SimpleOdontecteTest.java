@@ -22,7 +22,7 @@ public class SimpleOdontecteTest {
 		double[] animalpos = new double[] {0,0,0}; 
 		double[] animalangle = new double[] {Math.toRadians(0), Math.toRadians(90)}; 
 		
-		double[] testangles = doug.AnimalAngles.getRelativeAngles(reciever, animalpos, animalangle);
+		double[] testangles = utils.AnimalAngles.getRelativeAngles(reciever, animalpos, animalangle);
 
 		System.out.println("Horz angle: " + Math.toDegrees(testangles[0]) + " Vert angle: "+ Math.toDegrees(testangles[1])); 
 		

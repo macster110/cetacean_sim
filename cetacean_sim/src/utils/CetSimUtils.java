@@ -4,7 +4,6 @@ import java.util.Arrays;
 
 import org.apache.commons.math3.util.MathUtils;
 
-import doug.AnimalAngles;
 import propogation.Propogation;
 
 /**
@@ -159,7 +158,12 @@ public class CetSimUtils extends SurfaceUtils {
 			e.printStackTrace();
 			System.out.println("recieverPos: " + recieverPos[0] + "  " + recieverPos[1]+ "  " + recieverPos[2]); 
 			System.out.println("animalPos: " + animalPos[0] + "  " + animalPos[1]+ "  " + animalPos[2]); 
-			System.out.println("animalAngle: " + animalAngle[0] + "  " + animalAngle[1]); 
+			if (animalAngle.length==2) {
+				System.out.println("animalAngle: " + animalAngle[0] + "  " + animalAngle[1]); 
+			}
+			else {
+				System.out.println("animalAngle: " + animalAngle[0] + "  " + animalAngle[1]+  "  " + animalAngle[2]); 
+			}
 			System.out.println("relativeAngles: " + relativeAngles[0] + "  " + relativeAngles[1]);
 			
 			return -50; 

@@ -135,7 +135,7 @@ public class TrackMATImport {
 	 * Convert an animal struct (which parallels the MATLAB structure) into an AnimalModel object. 
 	 * @param animalStruct - the struct to use. 
 	 * @param simStart - the start of the simulation in MATLAB date number format. This is when seconds are referenced to. 
-	 * @param 
+	 * @param dBConvert - converts the linear amplitude to a dB amplitude (takes into account tag position etc.)
 	 */
 	public static AnimalModel animalStruct2AnimalModel(AnimalStruct animalStruct, double simStart, Linear2DBConverter dBconverter ) {
 
@@ -165,17 +165,19 @@ public class TrackMATImport {
 		//now need to populate all these with data. 
 		for (int i=0; i<trackTimes.length; i++) {
 			//convert to seconds. 
-			trackTimes[i] = (animalStruct.trackdata[i][0] - simStart)*60*24*24; 
+			trackTimes[i] = (animalStruct.trackdata[i][0] - simStart)*60*60*24; 
 			//transpose the track matrix to allow java to easily grab all x,y and/or z co-ords in a double[];
 
 			//need to convert from latitude and longitude to northings and eastings. 
 			latLong = new LatLong(animalStruct.trackdata[i][1], animalStruct.trackdata[i][2]); 
 
+			//System.out.println(" latLong: " +  latLong.getLatitude() + "  " + latLong.getLongitude()); 
+
 			trackxyz[0][i] = refLatLong.distanceToMetresX(latLong); //Eastings
 			trackxyz[1][i] = refLatLong.distanceToMetresY(latLong); //Northings
 			trackxyz[2][i] = animalStruct.trackdata[i][3]; //depth
 			
-			//System.out.println(" Track data: " + trackxyz[2][i]); 
+			//System.out.println(" Track data: " +  trackxyz[0][i] + "  " + trackxyz[1][i] + "  " + trackxyz[2][i]); 
 
 			//the track angle
 			trackang[0][i] = animalStruct.orientation[i][1]; //horizontal angle radians. 
@@ -228,8 +230,10 @@ public class TrackMATImport {
 		
 		//the vocalisation times. 
 		for (int i=0; i<vocTimes.length; i++) {
+			
 			//convert to seconds. 
-			vocTimes[i] = (animalStruct.clicks[i][0] - simStart)*60*24*24; 
+			vocTimes[i] = (animalStruct.clicks[i][0] - simStart)*60.*60*24.; 
+			//System.out.println("Click times " + animalStruct.clicks[i][0] + " sec " +vocTimes[i]); 
 
 			//transpose the track matrix to allow java to easily grab all x,y and/or z co-ords in a double[];
 			vocAmp[i] = dBconverter.linear2dB(animalStruct.clicks[i][5]);
@@ -266,8 +270,6 @@ public class TrackMATImport {
 		System.out.println("system sens: " + animalStruct.systemSens);
 
 		AnimalModel animalModel = animalStruct2AnimalModel(animalStruct);
-		
-		
 		
 	}
 
