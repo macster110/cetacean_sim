@@ -60,8 +60,7 @@ probdetq =  interpprobsurf(probdet.hist, probdet.xbinedges, probdet.ybinedges);
 
 %% Plot the results
 
-%Probability density function. th earea under this graph is the overall
-%probability of detection. 
+%Probability density function
 figure(1)
 clf
 hold on
@@ -74,8 +73,7 @@ ylabel('$$\hat{P}$$', 'Interpreter','Latex');
 
 title({'Probability density function'},{['Total $$\hat{P}$$ is ' num2str(p1)]}, 'Interpreter','Latex');
 
-%Detection function (i.e. compensate for the static devices detecting more
-%animals at larger ranges because the monitored area is larger).
+%Detection function (i.e. )
 figure(2)
 clf
 E = sqrt((2*settings.maxrange)/(settings.maxrange^2)); 
