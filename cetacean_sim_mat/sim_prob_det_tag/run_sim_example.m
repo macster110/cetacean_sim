@@ -1,6 +1,14 @@
 %% Load some tag data and simualte the probability of detection
 % Uses real tag data to simulate the probability of detecting an animal on
 % a static acoustic monitoring device at a defined depth.
+%
+% Note that this is essentially a MATLAB wrapper for a Java program called
+% CetaceanSim
+% https://github.com/macster110/cetacean_sim/tree/master/cetacean_sim. This
+% organises the data, sends to CetaceanSim for processing and fetches the
+% results. Things are done this way because MATLAB is an order of magnitude
+% slower than Java at these types of processing tasks so directly calling
+% java code greatly speeds up the simulation. 
 
 %clear previous data and close figures
 clear
