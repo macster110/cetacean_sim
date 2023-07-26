@@ -1,4 +1,4 @@
-# Example code for tag data. 
+# Example code for tag data 
 
 This code can be used to run a probability simualtion from some example tag data. 
 
