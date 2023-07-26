@@ -1,0 +1,107 @@
+function [] = probdettrackj(trackstruct, varargin)
+%PROBDETTRACKJ Run the probability of detection simulation for a track using java. 
+%   Detailed explanation goes here
+clear
+
+% load the track data. 
+% load('/Users/au671271/Desktop/tagDataTest.mat');
+
+cornerloss =  -45; %dB
+maxrange=1200; %meters
+rangebins=50; 
+depthbins=20; 
+maxdepth=30; %meters
+gridSpacing = 200; %meters
+snrThresh = 16; 
+spreadingCoeff = 20; 
+absorptionCoeff = 0.04; 
+noise = 90; 
+
+prefix='';   % prefix in print out statements
+
+% iArg = 0;
+% while iArg < numel(varargin)
+%     iArg = iArg + 1;
+%     switch(varargin{iArg})
+%         case 'Prefix'
+%             iArg = iArg + 1;
+%             prefix = varargin{iArg};
+%     end
+% end
+
+% need to add the jar to the java path
+p = mfilename('fullpath');
+[filepath,~,~] = fileparts(p);
+
+javajarpath=[filepath '/cetsim_1_0.jar'];
+
+disp(javajarpath);
+
+javaaddpath(javajarpath);
+
+%% convert the track data to an animal struct. 
+
+animalStruct  = simulation.probdettrack.AnimalStruct; 
+animalStruct.clicks = tagdata2.clicks; 
+animalStruct.trackdata = tagdata2.trackdata; 
+animalStruct.orientation = tagdata2.orientation; 
+animalStruct.vp2p = java.lang.Double(tagdata2.vp2p); 
+animalStruct.systemSens = java.lang.Double(tagdata2.sens); 
+% the beam profile might be included in the tag data or could be externel. 
+if (isfield(tagdata2, 'beamprofile'))
+    animalStruct.beamProfile = tagdata2.beamProfile;
+else
+    [Xq, Yq, tlq, beamraw] = measured_porp_beam(); 
+    animalStruct.beamProfile = beamraw; 
+end
+
+%% now run the simualtion
+trackImport = simulation.probdettrack.TrackMATImport; 
+		
+%convert the raw data in the struct into a Java animal model object. 
+animalModel = trackImport.animalStruct2AnimalModel(animalStruct); 
+						
+%create the hydrophone array 
+hydrophoneArray = reciever.GridHydrophoneArray(animalModel.getTrack(0).xyz, gridSpacing, maxrange); 
+
+%create the track simulation class. 
+probDetTrack = simulation.probdettrack.ProbDetTrack;
+
+% create the settings obejct for the simulation
+probDetTrackSettings = simulation.probdettrack.ProbDetTrackSettings(animalModel,  hydrophoneArray, ...
+    noise,  snrThresh,  spreadingCoeff, absorptionCoeff);
+probDetTrackSettings.minHeight=-maxdepth;
+probDetTrackSettings.numDepthBins=depthbins;
+probDetTrackSettings.numRangeBins=rangebins;
+probDetTrackSettings.maxRange=maxrange;
+
+%print the current progress of the simulation
+probDetTrack.enableStatusPrint();
+
+%setup the simulation
+probDetTrack.setupProbTrack(probDetTrackSettings);
+
+%run the simulation
+probDetTrack.runProbTrack(probDetTrackSettings);
+
+%get the histogram results 
+probDetResults = probDetTrack.getProbDetResults();
+
+
+javarmpath(javajarpath)
+
+
+% function object = struct2class(classname, s)
+%    %converts structure s to an object of class classname.
+%    %assumes classname has a constructor which takes no arguments
+%    object = eval(classname);  %create object
+%    for fn = fieldnames(s)'    %enumerat fields
+%       try
+%           object.(fn{1}) = s.(fn{1});   %and copy
+%       catch
+%           warning('Could not copy field %s', fn{1});
+%       end
+%    end
+% end
+
+end

@@ -78,8 +78,8 @@ public class AnimalTrack {
 		
 //		double[] trackTimes = CetSimUtils.getMinAndMax(times); 
 //		double[] vocTimes = CetSimUtils.getMinAndMax(timesTrk); 
-//		System.out.println("Min track time: " + trackTimes[0] + " max: " + trackTimes[1]); 
-//		System.out.println("Min voc time: " + vocTimes[0] + " max: " + vocTimes[1]); 
+		System.out.println("Min track time: " + times[0] + " max: " + times[times.length-1]); 
+		System.out.println("Min voc time: " + timesTrk[0] + " max: " + timesTrk[timesTrk.length-1]); 
 
 		trackxyz[0] = CetSimUtils.interpLinear(times, xyz[0], timesTrk); 
 		trackxyz[1] = CetSimUtils.interpLinear(times, xyz[1], timesTrk); 

@@ -201,9 +201,9 @@ public class ProbDetTrack {
 							i / (double) animalVocalisations.getVocTimes().length);
 				}
 
-				// now must add the results to the histrogram
-				pDet.addToHist(trackRecInfo, 1.0, simSettings.noise + simSettings.snrThreshold);
-				effortDet.addToHist(trackRecInfo, null, Double.NEGATIVE_INFINITY); // will always be greater
+				// now must add the results to the histogram
+				pDet.		addToHist(trackRecInfo, 1.0, simSettings.noise + simSettings.snrThreshold);
+				effortDet.	addToHist(trackRecInfo, null, Double.NEGATIVE_INFINITY); // will always be greater
 			}
 
 			// now have a giant array of distances and received levels.
@@ -246,7 +246,7 @@ public class ProbDetTrack {
 
 			// get the track points for the vocalisation times.
 			double[][] trackXYZ = animal.getTrack(n).getTrackPoints(animalVocalisations.getVocTimes());
-
+			
 			double[] depthMinMax = CetSimUtils.getMinAndMax(trackXYZ[2]);
 			System.out.println("Depth minmax: " + depthMinMax[0] + "  " + depthMinMax[1]);
 
@@ -281,6 +281,15 @@ public class ProbDetTrack {
 			}
 			
 			double[][] trackBinXYZ = animal.getTrack(n).getTrackPoints(timeBinsStart);
+			
+			
+			
+			System.out.println("Time bins start: " + timeBins[0][0]);
+			for (int xx = 0; xx<trackBinXYZ[0].length; xx++) {
+				if (Double.isNaN(trackBinXYZ[0][xx])) {
+					System.out.println("Is nan at " + xx + " for time: " + timeBins[xx][0]);
+				}
+			}
 
 
 			// iterate through each click
@@ -342,6 +351,9 @@ public class ProbDetTrack {
 					if (vocTimes.size()==0) {
 						// the 3D distance
 						distance = CetSimUtils.distance2D(new double[] {trackBinXYZ[0][k], trackBinXYZ[1][k], trackBinXYZ[2][k] }, recieverPos);
+						if (trackRecInfo.size()>430) {
+								System.out.println(String.format("%.2f trackx %.2f",distance, trackBinXYZ[0][k]));
+						}
 
 						recInfo = new RecievedInfo(-1f, (float) distance, (float) trackBinXYZ[2][k], j);
 						count++; 
@@ -363,6 +375,7 @@ public class ProbDetTrack {
 
 							// the 3D distance
 							distance = CetSimUtils.distance2D(animalPos, recieverPos);
+		
 
 							if (distance > simSettings.maxRange) {
 								// don't bother with the calculation - just set to -1;
@@ -397,9 +410,11 @@ public class ProbDetTrack {
 
 						// figure out what the received level info should be from the sensors.
 						recInfo = getRecievedInfoSnap(vocTimesD, recievedLevels, distances, heights, j);
+			
+						
 					}
 					
-					if (recInfo==null) continue;
+//					if (recInfo==null) continue;
 
 					count++; 
 //					if (recInfo==null) {
@@ -407,6 +422,7 @@ public class ProbDetTrack {
 //					}
 					
 					if (recInfo.distance > simSettings.maxRange) {
+				
 						// this is very important - in distance sampling we consider a specified area -
 						// if the distance is
 						// greater than the maximum range then we are outside the area and the result
@@ -418,6 +434,8 @@ public class ProbDetTrack {
 						// add the results to an array
 						trackRecInfo.add(recInfo);
 					}
+					
+					
 				}
 				
 				
@@ -432,8 +450,14 @@ public class ProbDetTrack {
 				pDet.addToHist(trackRecInfo, 1.0, simSettings.noise + simSettings.snrThreshold);
 				effortDet.addToHist(trackRecInfo, null, Double.NEGATIVE_INFINITY); // will always be greater
 				
-//				System.out.println("Add track record info: " + trackRecInfo.size() + " timebin n: " + k + " of " +  
-//				timeBins.length + " effort count: " + pDet.getTotalcount() + " total det. " + sum ); 
+//				if (trackRecInfo.size()>400) {
+//					System.out.println("Add track record info: " + trackRecInfo.size() + " timebin n: " + k + " of " +  
+//					timeBins.length + " effort count: " + pDet.getTotalcount() + " total det. " + sum ); 
+//					for (int bb=0; bb<trackRecInfo.size(); bb++) {
+//						System.out.print(String.format("%.2f", trackRecInfo.get(bb).distance));
+//					}
+//				}
+				
 
 				if (k % 10 == 0) {
 					notifyStatusListeners(StatusListener.SIM_RUNNING, n, k / (double) timeBins.length);
@@ -441,7 +465,7 @@ public class ProbDetTrack {
 
 				// now have a giant array of distances and received levels.
 			}
-			
+						
 			probDetResults.add(pDet);
 			probDetEffort.add(effortDet);
 		}

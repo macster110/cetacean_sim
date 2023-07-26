@@ -22,7 +22,7 @@ public class ProbDetTrackTestSnap {
 		//filename = "/Users/au671271/Desktop/tagdata_sim_snap_60s.mat";  
 		filename = "/Users/au671271/Desktop/tagDataTest_hp15_117a.mat";
 		filename = "/Users/au671271/Desktop/tagDataTest_hp18_134a_subsmpl.mat";
-		filename = "/Users/au671271/Desktop/tagDataTest_hp17_135a.mat";
+		filename = "/Users/au671271/Desktop/tagDataTest_hp17_135a_tagonoff.mat";
 
 
 		double noise = 90; //dB 
@@ -30,10 +30,12 @@ public class ProbDetTrackTestSnap {
 		double spreadingCoeff = 20; 
 		double absorptionCoeff = 0.04; 
 //		double[] timeLims = new double[] {0,60}; 
-		double[] timeLims = null; //seconds from start;
+//		double[] timeLims = null; //seconds from start;
+		//temp!!!!!!!!!!
+		double[] timeLims = new double[] {5511.024-5511.02, 50542.59-5511.02};//TEMP
 
 		//array 
-		double gridSpacing = 300; 
+		double gridSpacing = 400; 
 		double maxRange = 1200; 
 		double[] depthspacing = new double[] {-5}; 
 
@@ -103,13 +105,17 @@ public class ProbDetTrackTestSnap {
 		
 		System.out.println("\n\n------Pdet Sum det------" + sum + " detections");
 
+		int effortsum = 0;
 		System.out.println("\n\n------Effort Results------" + trackResult.getTotalcount() + " measurements");
 		for (int i=0; i<trackEffortResult.getHistogram().length; i++) {
 			System.out.println(); 		
 			for (int j=0; j<trackEffortResult.getHistogram()[i].length; j++) {
 				System.out.print(String.format("%.0f ", trackEffortResult.getHistogram()[i][j])); 		
+				effortsum+=trackEffortResult.getHistogram()[i][j]; 
 			}
 		}
+		
+		System.out.println(String.format("Effort sum %d ", effortsum)); 	
 
 	}
 
