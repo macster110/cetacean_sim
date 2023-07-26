@@ -1,11 +1,12 @@
-%% test a single tag of detection for different behaviours
+%% Load some tag data and simualte the probability of detection
+% Uses real tag data to simulate the probability of detecting an animal on
+% a static acoustic monitoring device at a defined depth.
 
-%testdata
+%clear previous data and close figures
 clear
 close all
 
 %% Set up the simulation
-
 % load an example tag
 tagdata2 = load('tagdata_example.mat');
 tagdata=tagdata2.tagdata;
@@ -49,8 +50,8 @@ timelims = tagdata.tagonoff;
 index = tagdata.clicks(:,1)>timelims(1) & tagdata.clicks(:,1)<timelims(2);
 tagdata.clicks =tagdata.clicks(index,:);
 
-%% Run the simualation
 
+%% Run the simualation
 %run the simulation
 [probdet, effortdet, hydrophonearray, animalStruct] = simprobdettrackj(tagdata, settings);
 
@@ -59,7 +60,6 @@ probdetq =  interpprobsurf(probdet.hist, probdet.xbinedges, probdet.ybinedges);
 
 
 %% Plot the results
-
 %Probability density function. th earea under this graph is the overall
 %probability of detection. 
 figure(1)
