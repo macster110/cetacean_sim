@@ -73,9 +73,9 @@ probdetq =  interpprobsurf(probdet.hist, probdet.xbinedges, probdet.ybinedges);
 figure(1)
 clf
 hold on
-    %convert the 3D probability of detection to a 2D probability of detection.
-    [p2, p1, areacomp] = prob3_2_prob2(probdetq);
-    plot(p2(:,1), p2(:,2), 'LineWidth', 2)
+%convert the 3D probability of detection to a 2D probability of detection.
+[p2, p1, areacomp] = prob3_2_prob2(probdetq);
+plot(p2(:,1), p2(:,2), 'LineWidth', 2)
 
 xlabel('Range (m)')
 ylabel('$$\hat{P}$$', 'Interpreter','Latex');
