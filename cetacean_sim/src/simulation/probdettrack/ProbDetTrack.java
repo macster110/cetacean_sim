@@ -1,6 +1,7 @@
 package simulation.probdettrack;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import animal.AnimalModel;
 import animal.AnimalVocalisations;
@@ -19,6 +20,8 @@ import utils.SurfaceUtils;
  *
  */
 public class ProbDetTrack {
+
+	private static final int ADDITONAL_TIME_ARRAY_SIZE = 0;
 
 	/**
 	 * The settings for the simulation
@@ -41,12 +44,12 @@ public class ProbDetTrack {
 	private double[] xBinEdges;
 
 	/**
-	 * The probability of detection results for each track.
+	 * The probability of detection results for each track per animal.
 	 */
 	private ArrayList<Hist3> probDetResults = new ArrayList<Hist3>();
 
 	/**
-	 * Histogram of track effortv- i.e. how many clicks were in each bin.
+	 * Histogram of track effortv- i.e. how many clicks were in each bin per animal.
 	 */
 	private ArrayList<Hist3> probDetEffort = new ArrayList<Hist3>();
 
@@ -54,6 +57,12 @@ public class ProbDetTrack {
 	 * List of status listeners for updates to the Monte Carlo Simulation.
 	 */
 	private ArrayList<StatusListener> statusListeners = new ArrayList<StatusListener>();
+
+	/**
+	 * Time series of clicks and distances on receivers per animal
+	 */
+	private ArrayList<RecievedInfo[][]> vocRecievedData = new ArrayList<RecievedInfo[][]>();
+	
 
 	/**
 	 * Get the simulation ready to run
@@ -71,7 +80,8 @@ public class ProbDetTrack {
 			System.out.print(String.format("%.1f ", yBinEdges[i]));
 		}
 	}
-
+	
+	
 	/**
 	 * Run the simulation to determine the probability of detecting a single click.
 	 */
@@ -121,7 +131,14 @@ public class ProbDetTrack {
 
 			Hist3 pDet = new Hist3(this.xBinEdges, this.yBinEdges);
 			Hist3 effortDet = new Hist3(this.xBinEdges, this.yBinEdges);
+			
+			RecievedInfo[][]  trackRecTimeSeries = null;
+			if (simSettings.saveTimeSeries) {
+				//save a time series of the track only for data units that pass threshold
+				trackRecTimeSeries = new RecievedInfo[recievers.getArrayXYZ().length][];
+			}
 
+			RecievedInfo recievedInfo;
 			for (int i = 0; i < animalVocalisations.getVocTimes().length; i++) {
 				// for (int i = 0; i<100000 ; i++) {
 
@@ -129,6 +146,7 @@ public class ProbDetTrack {
 
 				// create the track info array. This holds a received level for each reciver.
 				ArrayList<RecievedInfo> trackRecInfo = new ArrayList<RecievedInfo>(recievers.getArrayXYZ().length);
+				
 
 				for (int j = 0; j < recievers.getArrayXYZ().length; j++) {
 					recieverPos = recievers.getArrayXYZ()[j];
@@ -185,8 +203,16 @@ public class ProbDetTrack {
 					// }
 
 					// add the results to an array
+					 recievedInfo = new RecievedInfo((float) recievedLevel, (float) distance, (float) trackXYZ[2][i], j); 
 					trackRecInfo
-							.add(new RecievedInfo((float) recievedLevel, (float) distance, (float) trackXYZ[2][i], j));
+							.add(recievedInfo);
+					
+					if (trackRecTimeSeries!=null) {
+						if (recievedLevel>=(simSettings.noise + simSettings.snrThreshold)) {
+							//add to the time series. 
+							trackRecTimeSeries[j] = addtoTimeSeries(trackRecTimeSeries[j], recievedInfo );
+						}
+					}
 
 					// if (recievedLevel>(simSettings.noise + simSettings.snrThreshold)) {
 					// System.out.println(String.format("We have a detection! %.1f ",
@@ -217,7 +243,35 @@ public class ProbDetTrack {
 
 	}
 
-	
+	/**
+	 * Add a new received level to time series of received levels. This keeps growing the arrays slowly to save memory. 
+	 * @param recievedInfos - the current array holding a time series of data
+	 * @param recievedInfo - the recievedInfo object to add
+	 * @return the same array as recievedInfos but with the new recievedInfo added. 
+	 */
+	private RecievedInfo[] addtoTimeSeries(RecievedInfo[] recievedInfos, RecievedInfo recievedInfo) {
+		int index = 0 ; //the index to add to. 
+		if (recievedInfos ==null) {
+			recievedInfos = new RecievedInfo[10];
+			index = 0; 
+		}
+		else {
+			int i=recievedInfos.length-1;
+			while (recievedInfos[i]==null && i>0) {
+				i--;	
+			}
+			index = i+1;
+			if (index>recievedInfos.length) {
+				RecievedInfo[] newArray = Arrays.copyOf(recievedInfos, recievedInfos.length + ADDITONAL_TIME_ARRAY_SIZE);
+				recievedInfos = newArray;
+			}
+		}
+		
+		recievedInfos[index] = recievedInfo;
+		return recievedInfos;
+	}
+
+
 	/**
 	 * Run the simulation for snapshots i.e. instead of determining the probability
 	 * per clicks, it determines the probability per snapshot time bin.

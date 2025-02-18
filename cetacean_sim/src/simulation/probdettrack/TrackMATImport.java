@@ -52,6 +52,11 @@ public class TrackMATImport {
 				//System.out.println("mlArrayRetrived: " + mfr.getContent()); 
 
 			}
+			else if (mfr.getMLArray("tagdata")!=null) {
+					//if exported by cetsim with sim results. 
+					mlArrayRetrived = (MLStructure) mfr.getMLArray("tagdata");
+				}
+
 			else {
 				System.err.println("Could not find the tagdata structure");
 				return null; 

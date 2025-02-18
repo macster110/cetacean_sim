@@ -18,8 +18,9 @@ public class ProbDetTrackTest {
 		public static void main(String[] args) {
 			
 //		String filename = "/Users/au671271/Desktop/tagDataTest_hp18_134a.mat";  
-		String filename = "/Users/au671271/Desktop/tagDataTest_hp17_135a.mat";  
+//		String filename = "/Users/au671271/Desktop/tagDataTest_hp17_135a.mat";  
 //		String filename = "/Users/au671271/Desktop/tagDataTest_hp12_272a.mat";  
+		String filename = "/Users/au671271/Desktop/hp18_134a_tagdata_example.mat";
 
 		double noise = 90; //dB 
 		double snrThresh = 16; 
@@ -27,7 +28,7 @@ public class ProbDetTrackTest {
 		double absorptionCoeff = 0.04; 
 		
 		//array 
-		double gridSpacing = 500; 
+		double gridSpacing = 1000; 
 		double maxRange = 1000; 
 		double[] depthspacing = new double[] {-5}; 
 		
@@ -47,7 +48,7 @@ public class ProbDetTrackTest {
 					hydrophoneArray.getArrayXYZ()[i][0],  hydrophoneArray.getArrayXYZ()[i][1],  hydrophoneArray.getArrayXYZ()[i][2])); 
 		}
 				
-		//create the prob track dsettings 
+		//create the prob track settings 
 		ProbDetTrackSettings probDetTrackSettings = new ProbDetTrackSettings(animalModel,  hydrophoneArray,  noise,  snrThresh,  spreadingCoeff, 
 				 absorptionCoeff);
 		probDetTrackSettings.minHeight=-30; 

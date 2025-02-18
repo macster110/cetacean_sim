@@ -38,6 +38,11 @@ public class ProbDetTrackSettings extends ProbDetSimSettings {
 	 */
 	public double[] snapTimeLims = null; 
 	
+	/**
+	 * Save a time series of clicks on all devices. 
+	 */
+	public boolean saveTimeSeries = false;
+	
 	
 	/**
 	 * Create a settings class with initial settings values. Used primarily to call from MATLAB. 
