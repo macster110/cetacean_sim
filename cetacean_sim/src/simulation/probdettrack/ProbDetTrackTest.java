@@ -20,7 +20,8 @@ public class ProbDetTrackTest {
 //		String filename = "/Users/au671271/Desktop/tagDataTest_hp18_134a.mat";  
 //		String filename = "/Users/au671271/Desktop/tagDataTest_hp17_135a.mat";  
 //		String filename = "/Users/au671271/Desktop/tagDataTest_hp12_272a.mat";  
-		String filename = "/Users/au671271/Desktop/hp18_134a_tagdata_example.mat";
+//		String filename = "/Users/au671271/Desktop/hp18_134a_tagdata_example.mat";
+		String filename = "/Users/au671271/Desktop/hp17_135a_tagdata_example.mat";
 
 		double noise = 90; //dB 
 		double snrThresh = 16; 
@@ -54,9 +55,8 @@ public class ProbDetTrackTest {
 		probDetTrackSettings.minHeight=-30; 
 		probDetTrackSettings.numDepthBins=30; 
 		
-		probDetTrackSettings.useRoll = true; 
-
-
+		probDetTrackSettings.useRoll = true;
+		probDetTrackSettings.saveTimeSeries = true;
 		
 		System.out.println("Begin simulation: with " + hydrophoneArray.getArrayXYZ().length + " hydrophones ");
 
@@ -72,7 +72,7 @@ public class ProbDetTrackTest {
 		
 		System.out.println("Starting simulation");
 
-		probDetTrack.runProbTrackSnap(probDetTrackSettings);
+		probDetTrack.runProbTrack(probDetTrackSettings);
 		
 		System.out.println("Simulation finished");
 		

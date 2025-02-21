@@ -21,7 +21,7 @@ import utils.SurfaceUtils;
  */
 public class ProbDetTrack {
 
-	private static final int ADDITONAL_TIME_ARRAY_SIZE = 0;
+	private static final int ADDITONAL_TIME_ARRAY_SIZE = 10;
 
 	/**
 	 * The settings for the simulation
@@ -31,7 +31,7 @@ public class ProbDetTrack {
 	/**
 	 * The results.
 	 */
-	public ArrayList<RecievedInfo> recInfo;
+	public ArrayList<RecievedInfo[][]> recInfo = new  ArrayList<RecievedInfo[][]>();
 
 	/**
 	 * The y edges of the histogram
@@ -203,14 +203,16 @@ public class ProbDetTrack {
 					// }
 
 					// add the results to an array
-					 recievedInfo = new RecievedInfo((float) recievedLevel, (float) distance, (float) trackXYZ[2][i], j); 
-					trackRecInfo
-							.add(recievedInfo);
+					recievedInfo = new RecievedInfo((float) recievedLevel, (float) distance, (float) trackXYZ[2][i], j); 
+					trackRecInfo.add(recievedInfo);
 					
 					if (trackRecTimeSeries!=null) {
+
 						if (recievedLevel>=(simSettings.noise + simSettings.snrThreshold)) {
 							//add to the time series. 
+							recievedInfo.time = animalVocalisations.getVocTimes()[i];
 							trackRecTimeSeries[j] = addtoTimeSeries(trackRecTimeSeries[j], recievedInfo );
+							//System.out.println("RecievedInfo length: " + trackRecTimeSeries[j].length);
 						}
 					}
 
@@ -232,6 +234,10 @@ public class ProbDetTrack {
 				effortDet.	addToHist(trackRecInfo, null, Double.NEGATIVE_INFINITY); // will always be greater
 			}
 
+			if (trackRecTimeSeries!=null) {
+				this.recInfo.add(trackRecTimeSeries);
+			}
+			
 			// now have a giant array of distances and received levels.
 
 			probDetResults.add(pDet);
@@ -261,7 +267,7 @@ public class ProbDetTrack {
 				i--;	
 			}
 			index = i+1;
-			if (index>recievedInfos.length) {
+			if (index>=recievedInfos.length) {
 				RecievedInfo[] newArray = Arrays.copyOf(recievedInfos, recievedInfos.length + ADDITONAL_TIME_ARRAY_SIZE);
 				recievedInfos = newArray;
 			}
@@ -622,6 +628,15 @@ public class ProbDetTrack {
 	public ArrayList<Hist3> getTrackEffortResults() {
 		return probDetEffort;
 	}
+	
+	/**
+	 * Get a time series for each click detector. 
+	 * 
+	 * @return time series for each simulated hydrophone. 
+	 */
+	public ArrayList<RecievedInfo[][]> getTrackDetTimeSeries() {
+		return this.recInfo;
+	}
 
 	/**
 	 * Notify the status listeners of a change in state or progress of the
@@ -704,6 +719,52 @@ public class ProbDetTrack {
 	 *
 	 */
 	public class RecievedInfo {
+		
+		public double getTime() {
+			return time;
+		}
+
+		public void setTime(double time) {
+			this.time = time;
+		}
+
+		public float getRecievedLevel() {
+			return recievedLevel;
+		}
+
+		public void setRecievedLevel(float recievedLevel) {
+			this.recievedLevel = recievedLevel;
+		}
+
+		public float getDistance() {
+			return distance;
+		}
+
+		public void setDistance(float distance) {
+			this.distance = distance;
+		}
+
+		public float getHeight() {
+			return height;
+		}
+
+		public void setHeight(float height) {
+			this.height = height;
+		}
+
+		public int getRecieverID() {
+			return recieverID;
+		}
+
+		public void setRecieverID(int recieverID) {
+			this.recieverID = recieverID;
+		}
+
+		/**
+		 * The time in seconds
+		 */
+		public double time;
+
 
 		/**
 		 * The received level in dB re 1uPa pp
