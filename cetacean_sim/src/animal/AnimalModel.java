@@ -5,6 +5,7 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.StringProperty;
 import layout.animal.BeamProfile;
 import layout.utils.SettingsPane;
+import utils.LatLong;
 
 /**
  * Defines an animal in the simulation
@@ -34,6 +35,7 @@ public interface AnimalModel {
 	 * @return the track of an animal.
 	 */
 	public AnimalTrack getTrack(int animalN);
+
 
 	/**
 	 * Get the beam profile. This allows the calculations of transmission loss

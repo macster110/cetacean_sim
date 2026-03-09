@@ -10,6 +10,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 import com.jmatio.io.MatFileReader;
@@ -178,11 +180,14 @@ public class DefaultBeamProfiles {
 		File file = null;
 		URL res = getClass().getResource(fileurl);
 		
+		Path modelPath = Paths.get(fileurl);
+
+		
 		
 		//hmmmmm this does not seem top work on MACOS....need to figure this out. 
 		if (res.getProtocol().equals("jar")) {
 			try {
-				InputStream input = DefaultBeamProfiles.class.getResourceAsStream(fileurl);
+				InputStream input = DefaultBeamProfiles.class.getResourceAsStream(modelPath.toString());
 				file = File.createTempFile("tempfile", ".tmp");
 				OutputStream out = new FileOutputStream(file);
 				int read;

@@ -253,7 +253,7 @@ public class TrackMATImport {
 		
 		//System.out.println("Length track data 2 : " +trackxyz[0].length); 
 
-		return new ClickingOdontocete(trackTimes, trackxyz, trackang, vocTimes, vocAmp, animalStruct.beamProfile); 
+		return new ClickingOdontocete(trackTimes, trackxyz, trackang, refLatLong, vocTimes, vocAmp, animalStruct.beamProfile); 
 	}
 
 

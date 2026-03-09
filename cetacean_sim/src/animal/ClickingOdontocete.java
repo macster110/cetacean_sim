@@ -11,6 +11,7 @@ import javafx.beans.property.StringProperty;
 import layout.animal.BeamProfile;
 import layout.animal.ClickingOdontocetesPane;
 import layout.utils.SettingsPane;
+import utils.LatLong;
 
 /**
  * A clicking odontocete with a beam profile and diving behaviour. 
@@ -42,7 +43,7 @@ public class ClickingOdontocete implements AnimalModel, Cloneable {
 	/**
 	 * A list of animal tracks. 
 	 */
-	public List<AnimalTrack> animalTrack; 
+	public List<AnimalTrack> animalTracks; 
 	
 	/**
 	 * A list of the animal vocalisations.
@@ -68,11 +69,14 @@ public class ClickingOdontocete implements AnimalModel, Cloneable {
 	 * @param vocalsiations
 	 * @param beamProfileRaw
 	 */
-	public ClickingOdontocete(double[] tracktimes, double[][] trackxyz, double[][] trackang, double[] vocTimes, double[] vocAmp, double[][] beamProfileRaw) {
+	public ClickingOdontocete(double[] tracktimes, double[][] trackxyz, double[][] trackang, LatLong refLatLong, double[] vocTimes, double[] vocAmp, double[][] beamProfileRaw) {
 		beamProfile = new BeamProfile("Custom Beam", beamProfileRaw); 
 		
+		AnimalTrack animalTrack = new AnimalTrack(tracktimes, trackxyz, trackang);
+		animalTrack.setRefLatLong(refLatLong);
+		
 		//the animal tracks
-		animalTrack = Arrays.asList(new AnimalTrack(tracktimes, trackxyz, trackang)); 
+		animalTracks = Arrays.asList(animalTrack); 
 		
 		//animal voclaisations
 		animalVoc = Arrays.asList(new ClickingAnimalVoc(vocTimes, vocAmp)); 
@@ -81,6 +85,7 @@ public class ClickingOdontocete implements AnimalModel, Cloneable {
 		beamProfile = new BeamProfile("Custom Beam", beamProfileRaw); 
 
 		nAnimals.set(1);
+		
 		
 	}
 
@@ -141,7 +146,7 @@ public class ClickingOdontocete implements AnimalModel, Cloneable {
 
 	@Override
 	public AnimalTrack getTrack(int animalN) {
-		return animalTrack.get(animalN);
+		return animalTracks.get(animalN);
 	}
 
 
@@ -160,7 +165,7 @@ public class ClickingOdontocete implements AnimalModel, Cloneable {
 			outString +=  "No. clicks: " + animalVoc.get(i).getVocAmplitudes().length; 
 			outString += "\n"; 
 
-			outString +=  "No. track points: " + animalTrack.get(i).getTrackTimes().length; 
+			outString +=  "No. track points: " + animalTracks.get(i).getTrackTimes().length; 
 			outString += "\n"; 
 		}
 		return outString;

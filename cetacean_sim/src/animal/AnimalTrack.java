@@ -1,6 +1,7 @@
 package animal;
 
 import utils.CetSimUtils;
+import utils.LatLong;
 
 /**
  * An animal track. The position of an animal and location of vocalisations. 
@@ -24,7 +25,11 @@ public class AnimalTrack {
 	 * The horizontal and vertical angle of the animal at each point on the track (RADIANS). 
 	 */
 	public double[][] animalsAngs; 
-
+	
+	/**
+	 * The reference latitude and longitude
+	 */
+	public LatLong refLatOng; 
 
 	AnimalTrack(double[] times, double[][] xyz, double[][] angs){
 		this.times=times;
@@ -109,5 +114,16 @@ public class AnimalTrack {
 		
 		return trackAngs; 
 	}
+	
+
+	public LatLong getRefLatLong() {
+		return refLatOng;
+	}
+
+
+	public void setRefLatLong(LatLong refLatOng) {
+		this.refLatOng = refLatOng;
+	}
+
 
 }

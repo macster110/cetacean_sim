@@ -211,6 +211,7 @@ public class ProbDetTrack {
 						if (recievedLevel>=(simSettings.noise + simSettings.snrThreshold)) {
 							//add to the time series. 
 							recievedInfo.time = animalVocalisations.getVocTimes()[i];
+							recievedInfo.clickID = i;
 							trackRecTimeSeries[j] = addtoTimeSeries(trackRecTimeSeries[j], recievedInfo );
 							//System.out.println("RecievedInfo length: " + trackRecTimeSeries[j].length);
 						}
@@ -787,12 +788,28 @@ public class ProbDetTrack {
 		 */
 		public int recieverID;
 
+
+		/**
+		 * Optional click identifier
+		 */
+		private int clickID = -1;
+
+		public int getClickID() {
+			return clickID;
+		}
+
+		public void setClickID(int clickID) {
+			this.clickID = clickID;
+		}
+
 		public RecievedInfo(float recievedLevel, float distance, float height, int recieverID) {
 			this.recievedLevel = recievedLevel;
 			this.distance = distance;
 			this.recieverID = recieverID;
 			this.height = height;
 		}
+		
+	
 	}
 
 }
