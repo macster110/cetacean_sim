@@ -1,1 +1,14 @@
+# Maven
+/target/
 /bin/
+
+# Eclipse
+.settings/
+*.class
+
+# OS
+.DS_Store
+
+# IDE
+*.iml
+.idea/
